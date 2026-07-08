@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>Black Wheel Instrument</title>
+
+<style>
+
+html,body{
+
+    margin:0;
+    overflow:hidden;
+    background:black;
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    height:100%;
+
+    font-family:Helvetica,Arial,sans-serif;
+
+}
+
+</style>
+
+</head>
+
+<canvas id="wheel"></canvas>
+
+<script>
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+}
+
+window.addEventListener("resize", resize);
+
+resize();
+
+ctx.fillStyle="white";
+
+ctx.beginPath();
+
+ctx.arc(
+
+    canvas.width/2,
+    canvas.height/2,
+
+    8,
+
+    0,
+
+    Math.PI*2
+
+);
+
+ctx.fill();
+
+</script>
+
+</html>
