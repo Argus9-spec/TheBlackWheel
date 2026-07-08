@@ -13,6 +13,7 @@ html,body{
     margin:0;
     overflow:hidden;
     background:black;
+
     color:white;
 
     display:flex;
@@ -37,35 +38,52 @@ html,body{
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
-function resize(){
-
+function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
 }
 
 window.addEventListener("resize", resize);
-
 resize();
 
-ctx.fillStyle="white";
+let angle = 0;
 
-ctx.beginPath();
+const radius = 140;
+const starRadius = 7;
 
-ctx.arc(
+function draw() {
 
-    canvas.width/2,
-    canvas.height/2,
+    angle += 0.01;
 
-    8,
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    0,
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
 
-    Math.PI*2
+    // Center point
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fill();
 
-);
+    // Eight rotating stars
+    for (let i = 0; i < 8; i++) {
 
-ctx.fill();
+        const a = angle + i * Math.PI / 4;
+
+        const x = cx + Math.cos(a) * radius;
+        const y = cy + Math.sin(a) * radius;
+
+        ctx.beginPath();
+        ctx.arc(x, y, starRadius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+}
+
+draw();
 
 </script>
 
