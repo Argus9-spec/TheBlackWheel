@@ -34,7 +34,6 @@ html,body{
 <canvas id="wheel"></canvas>
 
 <script>
-
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
@@ -46,41 +45,71 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-let angle = 0;
+const stars = [];
 
-const radius = 140;
-const starRadius = 7;
+// -------------------------------------------------
+// Deterministic Star Field
+// -------------------------------------------------
+
+const STAR_COUNT = 64;
+
+for (let i = 0; i < STAR_COUNT; i++) {
+
+    const angle = i * 2 * Math.PI / STAR_COUNT;
+
+    const radius =
+        40 +
+        ((i * 73) % 220);
+
+    stars.push({
+        angle: angle,
+        radius: radius
+    });
+
+}
+
+let rotation = 0;
 
 function draw() {
 
-    angle += 0.01;
+    rotation += 0.01;
 
     ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0,0,canvas.width,canvas.height);
 
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
 
-    // Center point
     ctx.fillStyle = "white";
+
+    // Center
+
     ctx.beginPath();
-    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.arc(cx,cy,4,0,Math.PI*2);
     ctx.fill();
 
-    // Eight rotating stars
-    for (let i = 0; i < 8; i++) {
+    // Draw stars
 
-        const a = angle + i * Math.PI / 4;
+    for (const star of stars) {
 
-        const x = cx + Math.cos(a) * radius;
-        const y = cy + Math.sin(a) * radius;
+        const a = star.angle + rotation;
+
+        const x =
+            cx +
+            Math.cos(a) * star.radius;
+
+        const y =
+            cy +
+            Math.sin(a) * star.radius;
 
         ctx.beginPath();
-        ctx.arc(x, y, starRadius, 0, Math.PI * 2);
+        ctx.arc(x,y,2,0,Math.PI*2);
         ctx.fill();
+
     }
 
     requestAnimationFrame(draw);
+
 }
 
 draw();
