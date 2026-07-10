@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>Black Wheel Instrument</title>
+
+<style>
+
+html,body{
+
+    margin:0;
+    overflow:hidden;
+    background:black;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    height:100%;
+
+    font-family:Helvetica,Arial,sans-serif;
+
+}
+#controls {
+    position: fixed;
+    left: 24px;
+    bottom: 24px;
+    width: 280px;
+    padding: 16px;
+    box-sizing: border-box;
+
+    color: white;
+    background: rgba(0, 0, 0, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+
+    transition: opacity 0.25s ease;
+}
+
+#controls.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#controls label {
+    display: block;
+    margin-bottom: 12px;
+}
+
+#speedSlider {
+    width: 100%;
+}
+
+#speedReadout {
+    margin-top: 8px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.controlHint {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 9px;
+    opacity: 0.55;
+}
+:fullscreen {
+    background: black;
+}
+
+:fullscreen body {
+    background: black;
+}
+
+
+
+</style>
+
+</head>
+
+<canvas id="wheel"></canvas>
+<div id="controls">
+    <label for="speedSlider">ROTATION SPEED</label>
+
+    <input
+        id="speedSlider"
+        type="range"
+        min="-0.003"
+        max="0.003"
+        step="0.0001"
+        value="0.001"
+    >
+
+    <div id="speedReadout">0.0010</div>
+    <div class="controlHint">REVERSE ← · STOP · → FORWARD</div>
+
+<label for="sizeSlider">WHEEL SIZE</label>
+
+<input
+    id="sizeSlider"
+    type="range"
+    min="0.20"
+    max="0.80"
+    step="0.01"
+    value="0.46"
+>
+
+<div id="sizeReadout">46%</div>
+
+<label for="dotSlider">DOT SIZE</label>
+
+<input
+    id="dotSlider"
+    type="range"
+    min="0.5"
+    max="5"
+    step="0.1"
+    value="2"
+>
+
+<div id="dotReadout">2.0 px</div>
+
+<label for="brightnessSlider">LUMINOSITY</label>
+
+<input
+    id="brightnessSlider"
+    type="range"
+    min="0.05"
+    max="1"
+    step="0.05"
+    value="1"
+>
+
+<div id="brightnessReadout">100%</div>
+
+<label for="densitySlider">STAR DENSITY</label>
+
+<input
+    id="densitySlider"
+    type="range"
+    min="1"
+    max="4"
+    step="1"
+    value="1"
+>
+
+<div id="densityReadout">ORIGINAL · 428 STARS</div>
+
+</div>
+
+<script type="module">
+ import { blackWheelV1 } from "./data/blackWheelV1.js";   
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+canvas.style.touchAction = "none";
+canvas.style.cursor = "grab";
+
+canvas.addEventListener("pointerdown", function (event) {
+    isDragging = true;
+
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+
+    offsetStartX = wheelOffsetX;
+    offsetStartY = wheelOffsetY;
+
+    canvas.setPointerCapture(event.pointerId);
+    canvas.style.cursor = "grabbing";
+});
+
+canvas.addEventListener("pointermove", function (event) {
+    if (!isDragging) return;
+
+    wheelOffsetX =
+        offsetStartX + (event.clientX - dragStartX);
+
+    wheelOffsetY =
+        offsetStartY + (event.clientY - dragStartY);
+});
+
+canvas.addEventListener("pointerup", function (event) {
+    isDragging = false;
+
+    if (canvas.hasPointerCapture(event.pointerId)) {
+        canvas.releasePointerCapture(event.pointerId);
+    }
+
+    canvas.style.cursor = "grab";
+});
+
+canvas.addEventListener("pointercancel", function (event) {
+    isDragging = false;
+
+    if (canvas.hasPointerCapture(event.pointerId)) {
+        canvas.releasePointerCapture(event.pointerId);
+    }
+
+    canvas.style.cursor = "grab";
+});
+
+canvas.addEventListener(
+    "wheel",
+    function (event) {
+        event.preventDefault();
+
+        const zoomDirection = event.deltaY < 0 ? 1 : -1;
+        const zoomStep = 0.04;
+
+        wheelScale += zoomDirection * zoomStep;
+
+       wheelScale = Math.max(0.20, Math.min(0.80, wheelScale));
+
+        sizeSlider.value = wheelScale.toFixed(2);
+        sizeReadout.textContent =
+            `${Math.round(wheelScale * 100)}%`;
+    },
+    { passive: false }
+);
+
+const stars = blackWheelV1.stars;
+
+const centerStarIndex = stars.reduce(
+    (closestIndex, star, index) => {
+        const distance = Math.hypot(star.x, star.y);
+        const closestStar = stars[closestIndex];
+        const closestDistance = Math.hypot(
+            closestStar.x,
+            closestStar.y
+        );
+
+        return distance < closestDistance
+            ? index
+            : closestIndex;
+    },
+    0
+);
+
+function deterministicValue(seed) {
+    const value = Math.sin(seed * 12.9898) * 43758.5453;
+    return value - Math.floor(value);
+}
+
+function buildDensityStars(level) {
+    if (level === 1) {
+        return [...stars];
+    }
+
+    const expandedStars = [...stars];
+    const targetCount = stars.length * level;
+
+    const minimumSpacing = 0.020;
+    const minimumSpacingSquared =
+        minimumSpacing * minimumSpacing;
+
+    // The field expands slightly as density increases.
+    const maximumRadius =
+        0.985 + (level - 1) * 0.018;
+
+    function canPlaceStar(x, y) {
+        for (const existingStar of expandedStars) {
+            const dx = x - existingStar.x;
+            const dy = y - existingStar.y;
+
+            if (
+                dx * dx + dy * dy <
+                minimumSpacingSquared
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function addInheritedStar(x, y) {
+        const inheritedStar =
+            stars[
+                expandedStars.length %
+                stars.length
+            ];
+
+        expandedStars.push({
+            ...inheritedStar,
+            x,
+            y
+        });
+    }
+
+    let attempt = 0;
+    const maximumAttempts = targetCount * 1200;
+
+    while (
+        expandedStars.length < targetCount &&
+        attempt < maximumAttempts
+    ) {
+        const seed =
+            level * 2000000 +
+            attempt * 2;
+
+        const angle =
+            deterministicValue(seed + 1) *
+            Math.PI *
+            2;
+
+        const radius =
+            Math.sqrt(
+                deterministicValue(seed + 2)
+            ) *
+            maximumRadius;
+
+        const candidateX =
+            Math.cos(angle) * radius;
+
+        const candidateY =
+            Math.sin(angle) * radius;
+
+        if (canPlaceStar(candidateX, candidateY)) {
+            addInheritedStar(
+                candidateX,
+                candidateY
+            );
+        }
+
+        attempt++;
+    }
+
+    return expandedStars;
+}
+
+let renderedStars;
+
+let rotation = 0;
+let rotationSpeed = 0.001;
+let wheelScale = 0.46;
+let dotSize = 2;
+let luminosity = 0;
+let densityLevel = 1;
+
+renderedStars = buildDensityStars(densityLevel);
+
+let wheelOffsetX = 0;
+let wheelOffsetY = 0;
+
+let hPressTimer = null;
+const doubleHDelay = 300;
+
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let offsetStartX = 0;
+let offsetStartY = 0;
+
+const speedSlider = document.getElementById("speedSlider");
+const speedReadout = document.getElementById("speedReadout");
+const sizeSlider = document.getElementById("sizeSlider");
+const sizeReadout = document.getElementById("sizeReadout");
+const dotSlider = document.getElementById("dotSlider");
+const dotReadout = document.getElementById("dotReadout");
+const brightnessSlider =
+    document.getElementById("brightnessSlider");
+
+const brightnessReadout =
+    document.getElementById("brightnessReadout");
+
+const densitySlider =
+    document.getElementById("densitySlider");
+
+const densityReadout =
+    document.getElementById("densityReadout");
+
+
+
+
+function updateSpeedDisplay() {
+    const magnitude = Math.abs(rotationSpeed).toFixed(4);
+
+    if (rotationSpeed > 0) {
+        speedReadout.textContent = `FORWARD  ${magnitude}`;
+    } else if (rotationSpeed < 0) {
+        speedReadout.textContent = `REVERSE  ${magnitude}`;
+    } else {
+        speedReadout.textContent = "STOPPED";
+    }
+}
+
+speedSlider.addEventListener("input", function () {
+    rotationSpeed = Number(speedSlider.value);
+    updateSpeedDisplay();
+});
+
+sizeSlider.addEventListener("input", function () {
+    wheelScale = Number(sizeSlider.value);
+    sizeReadout.textContent =
+        `${Math.round(wheelScale * 100)}%`;
+});
+
+dotSlider.addEventListener("input", function () {
+    dotSize = Number(dotSlider.value);
+    dotReadout.textContent = `${dotSize.toFixed(1)} px`;
+});
+
+brightnessSlider.addEventListener("input", function () {
+    luminosity = Number(brightnessSlider.value) * 20;
+
+    brightnessReadout.textContent =
+        `${Math.round(Number(brightnessSlider.value) * 100)}%`;
+});
+
+densitySlider.addEventListener("input", function () {
+    densityLevel = Number(densitySlider.value);
+    renderedStars = buildDensityStars(densityLevel);
+
+    const starCount = renderedStars.length;
+
+    if (densityLevel === 1) {
+        densityReadout.textContent =
+            `ORIGINAL · ${starCount} STARS`;
+    } else {
+        densityReadout.textContent =
+            `${densityLevel}× · ${starCount} STARS`;
+    }
+});
+
+updateSpeedDisplay();
+
+sizeSlider.addEventListener("input", function () {
+    wheelScale = Number(sizeSlider.value);
+    sizeReadout.textContent =
+        `${Math.round(wheelScale * 100)}%`;
+});
+
+const controls = document.getElementById("controls");
+
+document.addEventListener("keydown", function (event) {
+    const key = event.key.toLowerCase();
+
+    if (key === "h") {
+        if (event.repeat) return;
+
+        if (hPressTimer !== null) {
+            clearTimeout(hPressTimer);
+            hPressTimer = null;
+
+           if (!document.fullscreenElement) {
+               controls.classList.add("hidden");
+               document.documentElement.requestFullscreen();
+           } else {
+               document.exitFullscreen();
+           }
+
+            return;
+        }
+
+        hPressTimer = setTimeout(function () {
+            controls.classList.toggle("hidden");
+            hPressTimer = null;
+        }, doubleHDelay);
+    }
+
+    if (key === "r") {
+        wheelOffsetX = 0;
+        wheelOffsetY = 0;
+    }
+});
+
+function draw() {
+rotation += rotationSpeed;
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+   const cx = canvas.width / 2 + wheelOffsetX;
+   const cy = canvas.height / 2 + wheelOffsetY;
+    
+
+   
+// Draw stars
+
+const wheelRadius =
+    Math.min(canvas.width, canvas.height) * wheelScale;
+
+const cosR = Math.cos(rotation);
+const sinR = Math.sin(rotation);
+
+for (
+    let starIndex = 0;
+    starIndex < renderedStars.length;
+    starIndex++
+) {
+    const star = renderedStars[starIndex];
+
+    const rotatedX =
+        star.x * cosR -
+        star.y * sinR;
+
+    const rotatedY =
+        star.x * sinR +
+        star.y * cosR;
+
+    const x = cx + rotatedX * wheelRadius;
+    const y = cy + rotatedY * wheelRadius;
+
+  const scaledDotSize = dotSize * (wheelScale / 0.46);
+
+  const starColor =
+    starIndex === centerStarIndex
+        ? "#ff3b30"
+        : "white";
+
+// Draw the glow behind the star
+if (luminosity > 0) {
+    ctx.save();
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+    ctx.shadowColor = starColor;
+    ctx.shadowBlur = luminosity;
+
+    ctx.beginPath();
+    ctx.arc(x, y, scaledDotSize, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+// Draw a crisp white star on top
+ctx.fillStyle = starColor;
+ctx.shadowBlur = 0;
+
+ctx.beginPath();
+ctx.arc(x, y, scaledDotSize, 0, Math.PI * 2);
+ctx.fill();
+}
+    requestAnimationFrame(draw);
+
+}
+
+draw();
+
+</script>
+
+</html>
