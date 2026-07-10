@@ -154,6 +154,19 @@ html,body{
 
 <div id="densityReadout">ORIGINAL · 428 STARS</div>
 
+<label for="magnitudeSlider">MAGNITUDE RANDOMIZER</label>
+
+<input
+    id="magnitudeSlider"
+    type="range"
+    min="0"
+    max="1"
+    step="0.05"
+    value="0"
+>
+
+<div id="magnitudeReadout">0%</div>
+
 </div>
 
 <script type="module">
@@ -352,6 +365,7 @@ let wheelScale = 0.46;
 let dotSize = 2;
 let luminosity = 0;
 let densityLevel = 1;
+let magnitudeVariation = 0;
 
 renderedStars = buildDensityStars(densityLevel);
 
@@ -384,6 +398,12 @@ const densitySlider =
 
 const densityReadout =
     document.getElementById("densityReadout");
+
+const magnitudeSlider =
+    document.getElementById("magnitudeSlider");
+
+const magnitudeReadout =
+    document.getElementById("magnitudeReadout");   
 
 
 
@@ -426,6 +446,14 @@ brightnessSlider.addEventListener("input", function () {
 densitySlider.addEventListener("input", function () {
     densityLevel = Number(densitySlider.value);
     renderedStars = buildDensityStars(densityLevel);
+
+magnitudeSlider.addEventListener("input", function () {
+    magnitudeVariation =
+        Number(magnitudeSlider.value);
+
+    magnitudeReadout.textContent =
+        `${Math.round(magnitudeVariation * 100)}%`;
+});
 
     const starCount = renderedStars.length;
 
@@ -517,7 +545,31 @@ for (
     const x = cx + rotatedX * wheelRadius;
     const y = cy + rotatedY * wheelRadius;
 
-  const scaledDotSize = dotSize * (wheelScale / 0.46);
+  const baseScaledDotSize =
+    dotSize * (wheelScale / 0.46);
+
+// Permanent deterministic magnitude
+const magnitudeSeed =
+    deterministicValue(
+        starIndex * 7919 + 104729
+    );
+
+const magnitudeRank =
+    Math.pow(magnitudeSeed, 4);
+
+const maximumExtraScale = 2;
+
+const magnitudeMultiplier =
+    starIndex === centerStarIndex
+        ? 1
+        : 1 +
+          magnitudeVariation *
+          magnitudeRank *
+          maximumExtraScale;
+
+const scaledDotSize =
+    baseScaledDotSize *
+    magnitudeMultiplier;
 
   const starColor =
     starIndex === centerStarIndex
