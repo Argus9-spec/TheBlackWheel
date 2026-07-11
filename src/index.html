@@ -565,6 +565,32 @@ magnitudeSlider.addEventListener("input", function () {
         `${Math.round(magnitudeVariation * 100)}%`;
 });
 
+skyButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+        const skyNumber =
+            Number(button.dataset.sky);
+
+        currentSky = skies[skyNumber];
+        stars = currentSky.stars;
+
+        centerStarIndex =
+            findCenterStarIndex(stars);
+
+        renderedStars =
+            buildDensityStars(densityLevel);
+
+        densityReadout.textContent =
+            `${currentSky.name.toUpperCase()} · ` +
+            `${renderedStars.length} STARS`;
+
+        skyButtons.forEach(function (otherButton) {
+            otherButton.classList.remove("active");
+        });
+
+        button.classList.add("active");
+    });
+});
+
 centerStarButton.addEventListener("click", function () {
     showCenterStar = !showCenterStar;
 
