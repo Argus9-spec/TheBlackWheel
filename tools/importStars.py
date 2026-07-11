@@ -1,10 +1,19 @@
 from PIL import Image
 
 import os
+import sys
 
-INPUT = "assets/stars copy.png"
+if len(sys.argv) != 5:
+    print(
+        'Usage: python3 tools/importStars.py '
+        '"input.png" "output.js" "exportName" "Display Name"'
+    )
+    sys.exit(1)
 
-OUTPUT = "src/data/blackWheelV1.js"
+INPUT = sys.argv[1]
+OUTPUT = sys.argv[2]
+EXPORT_NAME = sys.argv[3]
+DISPLAY_NAME = sys.argv[4]
 
 THRESHOLD = 200
 
@@ -64,8 +73,8 @@ print("Last star:", stars[-1])
 os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
 
 with open(OUTPUT, "w") as file:
-    file.write("export const blackWheelV1 = {\n")
-    file.write('  name: "Matt Black Wheel V1",\n')
+    file.write(f"export const {EXPORT_NAME} = {{\n")
+    file.write(f'  name: "{DISPLAY_NAME}",\n')
     file.write(f"  width: {w},\n")
     file.write(f"  height: {h},\n")
     file.write(f"  starCount: {len(stars)},\n")

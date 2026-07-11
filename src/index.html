@@ -112,6 +112,32 @@ html,body{
     border-color: #ff8a84;
 }
 
+#skyButtons {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+#skyButtons button {
+    flex: 1;
+    padding: 6px;
+
+    background: white;
+    color: black;
+
+    border: 1px solid #999;
+    border-radius: 4px;
+
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#skyButtons button.active {
+    background: #666;
+    color: white;
+    border-color: white;
+}
+
 </style>
 
 </head>
@@ -197,6 +223,14 @@ html,body{
 
 <div id="magnitudeReadout">0%</div>
 
+<label>SKY</label>
+
+<div id="skyButtons">
+    <button type="button" data-sky="1">I</button>
+    <button type="button" data-sky="2" class="active">II</button>
+    <button type="button" data-sky="3">III</button>
+</div>
+
 <button id="centerStarButton">
     CENTER STAR
 </button>
@@ -204,7 +238,9 @@ html,body{
 </div>
 
 <script type="module">
- import { blackWheelV1 } from "./data/blackWheelV1.js";   
+import { blackWheelV1 } from "./data/blackWheelV1.js";
+import { skyII } from "./data/skyII.js";
+import { skyIII } from "./data/skyIII.js";
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
@@ -281,23 +317,40 @@ canvas.addEventListener(
     { passive: false }
 );
 
-const stars = blackWheelV1.stars;
+const skies = {
+    1: blackWheelV1,
+    2: skyII,
+    3: skyIII
+};
 
-const centerStarIndex = stars.reduce(
-    (closestIndex, star, index) => {
-        const distance = Math.hypot(star.x, star.y);
-        const closestStar = stars[closestIndex];
-        const closestDistance = Math.hypot(
-            closestStar.x,
-            closestStar.y
-        );
+let currentSky = skies[2];
+let stars = currentSky.stars;
 
-        return distance < closestDistance
-            ? index
-            : closestIndex;
-    },
-    0
-);
+function findCenterStarIndex(starList) {
+    return starList.reduce(
+        (closestIndex, star, index) => {
+            const distance =
+                Math.hypot(star.x, star.y);
+
+            const closestStar =
+                starList[closestIndex];
+
+            const closestDistance =
+                Math.hypot(
+                    closestStar.x,
+                    closestStar.y
+                );
+
+            return distance < closestDistance
+                ? index
+                : closestIndex;
+        },
+        0
+    );
+}
+
+let centerStarIndex =
+    findCenterStarIndex(stars);
 
 function deterministicValue(seed) {
     const value = Math.sin(seed * 12.9898) * 43758.5453;
@@ -434,6 +487,9 @@ const densitySlider =
 const densityReadout =
     document.getElementById("densityReadout");
 
+    densityReadout.textContent =
+    `${currentSky.name.toUpperCase()} · ${renderedStars.length} STARS`;  
+
 const magnitudeSlider =
     document.getElementById("magnitudeSlider");
 
@@ -442,6 +498,11 @@ const magnitudeReadout =
     
 const centerStarButton =
     document.getElementById("centerStarButton");
+
+const skyButtons =
+    document.querySelectorAll(
+        "#skyButtons button"
+    );
 
 
 
