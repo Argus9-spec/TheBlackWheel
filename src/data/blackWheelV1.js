@@ -1,5 +1,5 @@
 export const blackWheelV1 = {
-  name: "Matt Black Wheel V1",
+  name: "Sky I",
   width: 3988,
   height: 3844,
   starCount: 428,

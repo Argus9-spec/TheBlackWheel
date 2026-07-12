@@ -162,6 +162,12 @@ canvas {
     touch-action: none;
 }
 
+#controls label:not(:first-child) {
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    padding-top: 14px;
+    margin-top: 14px;
+}
+
 @media (max-width: 700px) {
     #controls {
         left: 14px;
@@ -197,12 +203,11 @@ canvas {
         font-size: 16px;
     }
 
-    #speedReadout,
-    #sizeReadout,
-    #dotReadout,
-    #brightnessReadout,
-    #densityReadout,
-    #magnitudeReadout {
+   #speedReadout,
+   #sizeReadout,
+   #dotReadout,
+   #densityReadout,
+   #magnitudeReadout {
         font-size: 14px;
         line-height: 1.35;
     }
@@ -241,31 +246,18 @@ canvas {
 
 <div id="sizeReadout">46%</div>
 
-<label for="dotSlider">DOT SIZE</label>
+<label for="dotSlider">STAR SIZE</label>
 
 <input
     id="dotSlider"
     type="range"
-    min="0.5"
-    max="5"
-    step="0.1"
-    value="2"
+    min="0.20"
+    max="3.3"
+    step="0.01"
+    value="0.50"
 >
 
-<div id="dotReadout">2.0 px</div>
-
-<label for="brightnessSlider">LUMINOSITY</label>
-
-<input
-    id="brightnessSlider"
-    type="range"
-    min="0.05"
-    max="1"
-    step="0.05"
-    value="1"
->
-
-<div id="brightnessReadout">100%</div>
+<div id="dotReadout">0.50 px</div>
 
 <label for="densitySlider">STAR DENSITY</label>
 
@@ -296,9 +288,9 @@ canvas {
 <label>SKY</label>
 
 <div id="skyButtons">
-    <button type="button" data-sky="1">I</button>
-    <button type="button" data-sky="2" class="active">II</button>
-    <button type="button" data-sky="3">III</button>
+    <button type="button" data-sky="1" class="active">I</button>
+<button type="button" data-sky="2">II</button>
+<button type="button" data-sky="3">III</button>
 </div>
 
 <button id="centerStarButton">
@@ -307,16 +299,82 @@ canvas {
 
 </div>
 
+<script>
+window.addEventListener("error", function (event) {
+    document.body.innerHTML = `
+        <pre style="
+            color: white;
+            background: #400;
+            padding: 24px;
+            font-size: 18px;
+            white-space: pre-wrap;
+        ">
+BLACK WHEEL ERROR
+
+${event.message}
+
+File:
+${event.filename}
+
+Line:
+${event.lineno}
+
+Column:
+${event.colno}
+        </pre>
+    `;
+});
+
+window.addEventListener("unhandledrejection", function (event) {
+    document.body.innerHTML = `
+        <pre style="
+            color: white;
+            background: #400;
+            padding: 24px;
+            font-size: 18px;
+            white-space: pre-wrap;
+        ">
+BLACK WHEEL MODULE ERROR
+
+${event.reason}
+        </pre>
+    `;
+});
+</script>
+
 <script type="module">
-import { blackWheelV1 } from "./data/blackWheelV1.js";
+import { blackWheelV1 } from "./data/blackWheelV1.js?v=3";
 import { skyII } from "./data/skyII.js";
 import { skyIII } from "./data/skyIII.js";
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
+let viewWidth = window.innerWidth;
+let viewHeight = window.innerHeight;
 function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    viewWidth = window.innerWidth;
+    viewHeight = window.innerHeight;
+
+    const pixelRatio =
+        Math.min(window.devicePixelRatio || 1, 2);
+
+    canvas.style.width = `${viewWidth}px`;
+    canvas.style.height = `${viewHeight}px`;
+
+    canvas.width =
+        Math.round(viewWidth * pixelRatio);
+
+    canvas.height =
+        Math.round(viewHeight * pixelRatio);
+
+    ctx.setTransform(
+        pixelRatio,
+        0,
+        0,
+        pixelRatio,
+        0,
+        0
+    );
 }
 
 window.addEventListener("resize", resize);
@@ -486,7 +544,7 @@ const skies = {
     3: skyIII
 };
 
-let currentSky = skies[2];
+let currentSky = skies[1];
 let stars = currentSky.stars;
 
 function findCenterStarIndex(starList) {
@@ -610,12 +668,11 @@ function buildDensityStars(level) {
 let renderedStars;
 
 let rotation = 0;
-let rotationSpeed = 0.001;
+let rotationSpeed = 0.0015;
 let wheelScale = 0.46;
-let dotSize = 2;
-let luminosity = 0;
-let densityLevel = 1;
-let magnitudeVariation = 0;
+let dotSize = 0.5;
+let densityLevel = 4;
+let magnitudeVariation = 1;
 let showCenterStar = false;
 
 renderedStars = buildDensityStars(densityLevel);
@@ -643,11 +700,6 @@ const sizeSlider = document.getElementById("sizeSlider");
 const sizeReadout = document.getElementById("sizeReadout");
 const dotSlider = document.getElementById("dotSlider");
 const dotReadout = document.getElementById("dotReadout");
-const brightnessSlider =
-    document.getElementById("brightnessSlider");
-
-const brightnessReadout =
-    document.getElementById("brightnessReadout");
 
 const densitySlider =
     document.getElementById("densitySlider");
@@ -666,6 +718,11 @@ const magnitudeReadout =
     
 const centerStarButton =
     document.getElementById("centerStarButton");
+
+centerStarButton.classList.toggle(
+    "active",
+    showCenterStar
+);
 
 const skyButtons =
     document.querySelectorAll(
@@ -687,6 +744,25 @@ function updateSpeedDisplay() {
     }
 }
 
+// Synchronize controls with canonical startup state
+magnitudeVariation
+speedSlider.value = rotationSpeed;
+sizeSlider.value = wheelScale;
+dotSlider.value = dotSize;
+densitySlider.value = densityLevel;
+magnitudeSlider.value = magnitudeVariation;
+
+updateSpeedDisplay();
+
+sizeReadout.textContent =
+    `${Math.round(wheelScale * 100)}%`;
+
+dotReadout.textContent =
+    `${dotSize.toFixed(1)} px`;
+
+magnitudeReadout.textContent =
+    `${Math.round(magnitudeVariation * 100)}%`;
+
 speedSlider.addEventListener("input", function () {
     rotationSpeed = Number(speedSlider.value);
     updateSpeedDisplay();
@@ -701,13 +777,6 @@ sizeSlider.addEventListener("input", function () {
 dotSlider.addEventListener("input", function () {
     dotSize = Number(dotSlider.value);
     dotReadout.textContent = `${dotSize.toFixed(1)} px`;
-});
-
-brightnessSlider.addEventListener("input", function () {
-    luminosity = Number(brightnessSlider.value) * 20;
-
-    brightnessReadout.textContent =
-        `${Math.round(Number(brightnessSlider.value) * 100)}%`;
 });
 
 densitySlider.addEventListener("input", function () {
@@ -835,103 +904,131 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
-function draw() {
-rotation += rotationSpeed;
+let lastFrameTime = null;
+
+function draw(timestamp) {
+    if (lastFrameTime === null) {
+        lastFrameTime = timestamp;
+    }
+
+    const deltaTime = Math.min(timestamp - lastFrameTime, 100);
+    lastFrameTime = timestamp;
+
+    rotation += rotationSpeed * (deltaTime / 16.6667);
 
     ctx.fillStyle = "black";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillRect(0, 0, viewWidth, viewHeight);
 
-   const cx = canvas.width / 2 + wheelOffsetX;
-   const cy = canvas.height / 2 + wheelOffsetY;
-    
+    const cx = viewWidth / 2 + wheelOffsetX;
+    const cy = viewHeight / 2 + wheelOffsetY;
 
-   
-// Draw stars
+    const wheelRadius =
+        Math.min(viewWidth, viewHeight) * wheelScale;
 
-const wheelRadius =
-    Math.min(canvas.width, canvas.height) * wheelScale;
+    const cosR = Math.cos(rotation);
+    const sinR = Math.sin(rotation);
 
-const cosR = Math.cos(rotation);
-const sinR = Math.sin(rotation);
+    for (
+        let starIndex = 0;
+        starIndex < renderedStars.length;
+        starIndex++
+    ) {
+        if (starIndex === centerStarIndex) {
+            continue;
+        }
 
-for (
-    let starIndex = 0;
-    starIndex < renderedStars.length;
-    starIndex++
-) {
-    const star = renderedStars[starIndex];
+        const star = renderedStars[starIndex];
 
-    const rotatedX =
-        star.x * cosR -
-        star.y * sinR;
+        const rotatedX =
+            star.x * cosR -
+            star.y * sinR;
 
-    const rotatedY =
-        star.x * sinR +
-        star.y * cosR;
+        const rotatedY =
+            star.x * sinR +
+            star.y * cosR;
 
-    const x = cx + rotatedX * wheelRadius;
-    const y = cy + rotatedY * wheelRadius;
+        const x = cx + rotatedX * wheelRadius;
+        const y = cy + rotatedY * wheelRadius;
 
-  const baseScaledDotSize =
-    dotSize * (wheelScale / 0.46);
+        const baseScaledDotSize =
+            dotSize * (wheelScale / 0.46);
 
-// Permanent deterministic magnitude
-const magnitudeSeed =
-    deterministicValue(
-        starIndex * 7919 + 104729
-    );
+        const magnitudeSeed =
+            deterministicValue(
+                starIndex * 7919 + 104729
+            );
 
-const magnitudeRank =
-    Math.pow(magnitudeSeed, 4);
+        const magnitudeRank =
+            Math.pow(magnitudeSeed, 4);
 
-const maximumExtraScale = 2;
+        const maximumExtraScale = 2;
 
-const magnitudeMultiplier =
-    starIndex === centerStarIndex
-        ? 1
-        : 1 +
-          magnitudeVariation *
-          magnitudeRank *
-          maximumExtraScale;
+        const magnitudeMultiplier =
+            1 +
+            magnitudeVariation *
+            magnitudeRank *
+            maximumExtraScale;
 
-const scaledDotSize =
-    baseScaledDotSize *
-    magnitudeMultiplier;
+        const scaledDotSize =
+            baseScaledDotSize *
+            magnitudeMultiplier;
 
-  const starColor =
-    showCenterStar &&
-    starIndex === centerStarIndex
-        ? "#ff3b30"
-        : "white";
+        ctx.fillStyle = "white";
+        ctx.shadowBlur = 0;
 
-// Draw the glow behind the star
-if (luminosity > 0) {
-    ctx.save();
+        ctx.beginPath();
+        ctx.arc(
+            x,
+            y,
+            scaledDotSize,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+    }
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
-    ctx.shadowColor = starColor;
-    ctx.shadowBlur = luminosity;
+    // Draw constant-size center measurement star
+    // at its true imported wheel position.
+    const centerStarSize =
+    1.03 * (wheelScale / 0.46);
+    const centerStar =
+        renderedStars[centerStarIndex];
+
+    const centerRotatedX =
+        centerStar.x * cosR -
+        centerStar.y * sinR;
+
+    const centerRotatedY =
+        centerStar.x * sinR +
+        centerStar.y * cosR;
+
+    const centerStarX =
+        cx + centerRotatedX * wheelRadius;
+
+    const centerStarY =
+        cy + centerRotatedY * wheelRadius;
+
+    ctx.fillStyle =
+        showCenterStar
+            ? "#ff3b30"
+            : "white";
+
+    ctx.shadowBlur = 0;
 
     ctx.beginPath();
-    ctx.arc(x, y, scaledDotSize, 0, Math.PI * 2);
+    ctx.arc(
+        centerStarX,
+        centerStarY,
+        centerStarSize,
+        0,
+        Math.PI * 2
+    );
     ctx.fill();
 
-    ctx.restore();
-}
-
-// Draw a crisp white star on top
-ctx.fillStyle = starColor;
-ctx.shadowBlur = 0;
-
-ctx.beginPath();
-ctx.arc(x, y, scaledDotSize, 0, Math.PI * 2);
-ctx.fill();
-}
     requestAnimationFrame(draw);
-
 }
 
-draw();
+requestAnimationFrame(draw);
 
 </script>
 
