@@ -4,6 +4,15 @@
 
 <meta charset="UTF-8">
 
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Black Wheel">
+
 <title>Black Wheel Instrument</title>
 
 <style>
@@ -25,7 +34,15 @@ html,body{
 
     font-family:Helvetica,Arial,sans-serif;
 
+    width: 100%;
+    height: 100%;
+    overscroll-behavior: none;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+
 }
+
 #controls {
     position: fixed;
     left: 24px;
@@ -138,6 +155,59 @@ html,body{
     border-color: white;
 }
 
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100dvh;
+    touch-action: none;
+}
+
+@media (max-width: 700px) {
+    #controls {
+        left: 14px;
+        bottom: 18px;
+        width: 310px;
+        max-height: 72dvh;
+        overflow-y: auto;
+
+        padding: 18px;
+        font-size: 16px;
+        letter-spacing: 1px;
+    }
+
+    #controls label {
+        margin-top: 14px;
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
+
+    #controls input[type="range"] {
+        width: 100%;
+        height: 34px;
+    }
+
+    #controls input[type="range"]::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+    }
+
+    #skyButtons button,
+    #centerStarButton {
+        min-height: 46px;
+        font-size: 16px;
+    }
+
+    #speedReadout,
+    #sizeReadout,
+    #dotReadout,
+    #brightnessReadout,
+    #densityReadout,
+    #magnitudeReadout {
+        font-size: 14px;
+        line-height: 1.35;
+    }
+}
+
 </style>
 
 </head>
@@ -164,7 +234,7 @@ html,body{
     id="sizeSlider"
     type="range"
     min="0.20"
-    max="0.80"
+    max="1.10"
     step="0.01"
     value="0.46"
 >
@@ -269,7 +339,7 @@ canvas.addEventListener("pointerdown", function (event) {
 });
 
 canvas.addEventListener("pointermove", function (event) {
-    if (!isDragging) return;
+    if (!isDragging || isPinching) return;
 
     wheelOffsetX =
         offsetStartX + (event.clientX - dragStartX);
@@ -308,11 +378,104 @@ canvas.addEventListener(
 
         wheelScale += zoomDirection * zoomStep;
 
-       wheelScale = Math.max(0.20, Math.min(0.80, wheelScale));
+       wheelScale = Math.max(0.20, Math.min(1.10, wheelScale));
 
         sizeSlider.value = wheelScale.toFixed(2);
         sizeReadout.textContent =
             `${Math.round(wheelScale * 100)}%`;
+    },
+    { passive: false }
+);
+
+function getTouchDistance(touchA, touchB) {
+    const dx = touchB.clientX - touchA.clientX;
+    const dy = touchB.clientY - touchA.clientY;
+
+    return Math.hypot(dx, dy);
+}
+
+canvas.addEventListener(
+    "touchstart",
+    function (event) {
+        if (event.touches.length !== 2) return;
+
+        event.preventDefault();
+
+isPinching = true;
+isDragging = false;
+suppressTapUntil = Date.now() + 700;
+
+pinchStartDistance =
+
+            getTouchDistance(
+                event.touches[0],
+                event.touches[1]
+            );
+
+        pinchStartScale = wheelScale;
+    },
+    { passive: false }
+);
+
+canvas.addEventListener(
+    "touchmove",
+    function (event) {
+        if (
+            !isPinching ||
+            event.touches.length !== 2
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+
+        suppressTapUntil = Date.now() + 700;
+
+        const currentDistance =
+            getTouchDistance(
+                event.touches[0],
+                event.touches[1]
+            );
+
+        const pinchRatio =
+            currentDistance / pinchStartDistance;
+
+        wheelScale =
+            pinchStartScale * pinchRatio;
+
+        wheelScale =
+            Math.max(
+                0.20,
+                Math.min(1.10, wheelScale)
+            );
+
+        sizeSlider.value =
+            wheelScale.toFixed(2);
+
+        sizeReadout.textContent =
+            `${Math.round(wheelScale * 100)}%`;
+    },
+    { passive: false }
+);
+
+canvas.addEventListener(
+    "touchend",
+    function (event) {
+        if (
+            isPinching &&
+            event.touches.length < 2
+        ) {
+            isPinching = false;
+            suppressTapUntil = Date.now() + 700;
+        }
+    },
+    { passive: false }
+);
+
+canvas.addEventListener(
+    "touchcancel",
+    function () {
+        isPinching = false;
     },
     { passive: false }
 );
@@ -469,6 +632,11 @@ let dragStartY = 0;
 let offsetStartX = 0;
 let offsetStartY = 0;
 
+let isPinching = false;
+let pinchStartDistance = 0;
+let pinchStartScale = wheelScale;
+let suppressTapUntil = 0;
+
 const speedSlider = document.getElementById("speedSlider");
 const speedReadout = document.getElementById("speedReadout");
 const sizeSlider = document.getElementById("sizeSlider");
@@ -609,6 +777,31 @@ sizeSlider.addEventListener("input", function () {
 });
 
 const controls = document.getElementById("controls");
+
+let lastCanvasTapTime = 0;
+
+canvas.addEventListener("pointerup", function (event) {
+    if (event.pointerType !== "touch") return;
+
+   if (
+    isPinching ||
+    Date.now() < suppressTapUntil
+) {
+    lastCanvasTapTime = 0;
+    return;
+}
+
+    const now = Date.now();
+    const timeSinceLastTap =
+        now - lastCanvasTapTime;
+
+    if (timeSinceLastTap < 350) {
+        controls.classList.toggle("hidden");
+        lastCanvasTapTime = 0;
+    } else {
+        lastCanvasTapTime = now;
+    }
+});
 
 document.addEventListener("keydown", function (event) {
     const key = event.key.toLowerCase();
