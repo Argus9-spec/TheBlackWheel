@@ -149,68 +149,88 @@ html,body{
     font-weight: bold;
 }
 
-#skyButtons button.active {
-    background: #666;
-    color: white;
-    border-color: white;
-}
-
 canvas {
-    display: block;
+
     width: 100vw;
-    height: 100dvh;
+
+    height: 100vh;
+
     touch-action: none;
+
 }
 
-#controls label:not(:first-child) {
-    border-top: 1px solid rgba(255, 255, 255, 0.18);
-    padding-top: 14px;
-    margin-top: 14px;
+#closeControlsButton {
+
+    position: absolute;
+
+    top: 6px;
+
+    right: 8px;
+
+    width: 30px;
+
+    height: 30px;
+
+    padding: 0;
+
+    color: white;
+
+    background: transparent;
+
+    border: none;
+
+    font-size: 24px;
+
+    line-height: 30px;
+
+    cursor: pointer;
+
 }
 
 @media (max-width: 700px) {
     #controls {
-        left: 14px;
-        bottom: 18px;
-        width: 310px;
-        max-height: 72dvh;
-        overflow-y: auto;
+        left: 12px;
+        bottom: 14px;
+        width: 292px;
 
-        padding: 18px;
-        font-size: 16px;
-        letter-spacing: 1px;
+        max-height: none;
+        overflow-y: visible;
+
+        padding: 14px;
+        font-size: 14px;
+        letter-spacing: 0.8px;
     }
 
     #controls label {
-        margin-top: 14px;
-        margin-bottom: 6px;
-        font-size: 14px;
-    }
+    margin-bottom: 4px;
+    font-size: 12px;
+}
 
-    #controls input[type="range"] {
-        width: 100%;
-        height: 34px;
-    }
+   #controls input[type="range"] {
+    width: 100%;
+    height: 26px;
+}
 
-    #controls input[type="range"]::-webkit-slider-thumb {
-        width: 28px;
-        height: 28px;
-    }
+   #controls input[type="range"]::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+}
 
-    #skyButtons button,
-    #centerStarButton {
-        min-height: 46px;
-        font-size: 16px;
-    }
+   #skyButtons button,
+#centerStarButton {
+    min-height: 36px;
+    font-size: 13px;
+}
 
    #speedReadout,
    #sizeReadout,
    #dotReadout,
    #densityReadout,
    #magnitudeReadout {
-        font-size: 14px;
-        line-height: 1.35;
-    }
+    font-size: 12px;let wheelOffsetX = 0;
+let wheelOffsetY = 0;
+    line-height: 1.2;
+}
 }
 
 </style>
@@ -219,6 +239,19 @@ canvas {
 
 <canvas id="wheel"></canvas>
 <div id="controls">
+
+    <button
+
+        id="closeControlsButton"
+
+        type="button"
+
+        aria-label="Hide controls">
+
+        ×
+
+    </button>
+
     <label for="speedSlider">ROTATION SPEED</label>
 
     <input
@@ -301,6 +334,16 @@ canvas {
 
 <script>
 window.addEventListener("error", function (event) {
+
+    const isGenericSafariError =
+        event.message === "Script error." &&
+        event.lineno === 0 &&
+        event.colno === 0;
+
+if (isGenericSafariError) {
+    return;
+}
+
     document.body.innerHTML = `
         <pre style="
             color: white;
@@ -678,7 +721,11 @@ let showCenterStar = false;
 renderedStars = buildDensityStars(densityLevel);
 
 let wheelOffsetX = 0;
-let wheelOffsetY = 0;
+
+let wheelOffsetY =
+    window.innerWidth <= 700
+        ? -70
+        : 0;
 
 let hPressTimer = null;
 const doubleHDelay = 300;
@@ -847,6 +894,16 @@ sizeSlider.addEventListener("input", function () {
 
 const controls = document.getElementById("controls");
 
+const closeControlsButton =
+    document.getElementById("closeControlsButton");
+
+closeControlsButton.addEventListener(
+    "click",
+    function () {
+        controls.classList.add("hidden");
+    }
+);
+
 let lastCanvasTapTime = 0;
 
 canvas.addEventListener("pointerup", function (event) {
@@ -919,8 +976,19 @@ function draw(timestamp) {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, viewWidth, viewHeight);
 
-    const cx = viewWidth / 2 + wheelOffsetX;
-    const cy = viewHeight / 2 + wheelOffsetY;
+    const viewport = window.visualViewport;
+
+const cx =
+    (viewport
+        ? viewport.offsetLeft + viewport.width / 2
+        : viewWidth / 2) +
+    wheelOffsetX;
+
+const cy =
+    (viewport
+        ? viewport.offsetTop + viewport.height / 2
+        : viewHeight / 2) +
+    wheelOffsetY;
 
     const wheelRadius =
         Math.min(viewWidth, viewHeight) * wheelScale;
