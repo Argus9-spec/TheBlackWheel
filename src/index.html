@@ -45,6 +45,8 @@ html,body{
 
 #controls {
     position: fixed;
+    z-index: 30;
+    
     left: 24px;
     bottom: 24px;
     width: 280px;
@@ -97,8 +99,8 @@ html,body{
     background: black;
 }
 
-#centerStarButton {
-
+#centerStarButton,
+#phantomAxisButton {
     width: 100%;
 
     margin-top: 10px;
@@ -121,12 +123,15 @@ html,body{
 }
 
 #centerStarButton.active {
-
     background: #ff3b30;
-
     color: white;
-
     border-color: #ff8a84;
+}
+
+#phantomAxisButton.active {
+    background: black;
+    color: white;
+    border-color: white;
 }
 
 #skyButtons {
@@ -159,6 +164,282 @@ canvas {
 
 }
 
+#phantomMask {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+    z-index: 10;
+
+    pointer-events: auto;
+
+    --aperture-size: 860px;
+    --aperture-top: 120px;
+    --aperture-left:
+        calc(50% - var(--aperture-size) / 2);
+}
+
+#phantomMask.active {
+    display: block;
+}
+
+#phantomControls {
+    position: absolute;
+    z-index: 20;
+
+    left: 50%;
+    bottom: 32px;
+    transform: translateX(-50%);
+
+    display: flex;
+    gap: 10px;
+
+    width: min(520px, calc(100% - 40px));
+
+    pointer-events: auto;
+    
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+    opacity 0.6s ease,
+    visibility 0.6s ease;
+
+}
+
+#phantomControls button {
+    flex: 1;
+
+    min-height: 42px;
+    padding: 10px 12px;
+
+    background: black;
+    color: white;
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 5px;
+
+    font-weight: bold;
+    letter-spacing: 1px;
+
+    cursor: pointer;
+}
+
+#phantomControls.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+#phantomGuidance {
+    position: absolute;
+    z-index: 20;
+
+    left: 50%;
+    bottom: 110px;
+    transform: translateX(-50%);
+
+    color: white;
+    text-align: center;
+
+    pointer-events: none;
+}
+
+#phantomArrow {
+    opacity: 0;
+
+    font-size: 52px;
+    line-height: 1;
+
+    transform: translateY(8px);
+}
+
+#phantomEye {
+    position: relative;
+
+    width: 74px;
+    height: 44px;
+
+    margin: 10px auto 0;
+
+    opacity: 0;
+
+    border: 3px solid white;
+    border-radius: 50% / 62%;
+
+    box-sizing: border-box;
+}
+
+#phantomEye::before {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    width: 23px;
+    height: 23px;
+
+    transform: translate(-50%, -50%);
+
+    border: 3px solid white;
+    border-radius: 50%;
+
+    box-sizing: border-box;
+}
+
+#phantomEye::after {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    width: 9px;
+    height: 9px;
+
+    transform: translate(-50%, -50%);
+
+    background: white;
+    border-radius: 50%;
+}
+
+#phantomGuidance.play #phantomEye {
+    animation:
+        phantomEyeSequence
+        4.2s
+        ease
+        forwards;
+}
+
+#phantomGuidance.play #phantomArrow {
+    animation:
+        phantomArrowSequence
+        4.2s
+        ease
+        forwards;
+}
+
+@keyframes phantomEyeSequence {
+    0% {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+    15% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    82% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+}
+
+@keyframes phantomArrowSequence {
+    0%,
+    20% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    34% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    68% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    82% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+}
+
+.maskPanel {
+    position: absolute;
+    background: black;
+}
+
+.maskTop {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--aperture-top);
+}
+
+.maskLeft {
+    top: var(--aperture-top);
+    left: 0;
+    width: var(--aperture-left);
+    height: var(--aperture-size);
+}
+
+.maskRight {
+    top: var(--aperture-top);
+    right: 0;
+    width: var(--aperture-left);
+    height: var(--aperture-size);
+}
+
+.maskBottom {
+    left: 0;
+    right: 0;
+    top:
+        calc(
+            var(--aperture-top) +
+            var(--aperture-size)
+        );
+    bottom: 0;
+}
+
+#phantomAperture {
+    position: absolute;
+    z-index: 15;
+
+    left: 50%;
+    top: var(--aperture-top);
+
+    width: var(--aperture-size);
+    height: var(--aperture-size);
+
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 0 200vmax black;
+
+    pointer-events: none;
+
+    display: none;
+}
+
+#phantomMask.mask-off #phantomAperture {
+    box-shadow: none;
+}
+
+#phantomAperture {
+    display: block;
+}
+
+#phantomMask .maskPanel {
+    display: none;
+}
+
 #closeControlsButton {
 
     position: absolute;
@@ -187,25 +468,53 @@ canvas {
 
 }
 
+#controls label:not(:first-child) {
+    border-top: 1px solid rgba(255,255,255,.18);
+    padding-top: 14px;
+    margin-top: 14px;
+}
+
 @media (max-width: 700px) {
+
     #controls {
+
         left: 12px;
+
         bottom: 14px;
+
         width: 292px;
 
         max-height: none;
+
         overflow-y: visible;
 
         padding: 14px;
+
         font-size: 14px;
+
         letter-spacing: 0.8px;
+
+        transform: scale(0.88);
+
+        transform-origin: bottom left;
+
+    }
+
+    #phantomMask {
+
+        --aperture-size: 90vw;
+
+        --aperture-top: 14vh;
+
     }
 
     #controls label {
-    margin-bottom: 4px;
-    font-size: 12px;
-}
 
+        margin-bottom: 4px;
+
+        font-size: 12px;
+
+    }
    #controls input[type="range"] {
     width: 100%;
     height: 26px;
@@ -227,10 +536,9 @@ canvas {
    #dotReadout,
    #densityReadout,
    #magnitudeReadout {
-    font-size: 12px;let wheelOffsetX = 0;
-let wheelOffsetY = 0;
-    line-height: 1.2;
-}
+       font-size: 12px;
+       line-height: 1.2;
+    }
 }
 
 </style>
@@ -238,6 +546,37 @@ let wheelOffsetY = 0;
 </head>
 
 <canvas id="wheel"></canvas>
+
+<div id="phantomMask">
+    <div class="maskPanel maskTop"></div>
+    <div class="maskPanel maskLeft"></div>
+    <div class="maskPanel maskRight"></div>
+    <div class="maskPanel maskBottom"></div>
+    
+    <div id="phantomAperture"></div>
+
+    <div id="phantomGuidance">
+        <div id="phantomArrow">↑</div>
+        <div id="phantomEye"></div>
+    </div>
+
+    <div id="phantomControls">
+        
+
+        <button
+            id="maskVisibilityButton"
+            type="button">
+            MASK OFF
+        </button>
+
+        <button
+            id="phantomReturnButton"
+            type="button">
+            RETURN
+        </button>
+    </div>
+</div>
+
 <div id="controls">
 
     <button
@@ -328,6 +667,10 @@ let wheelOffsetY = 0;
 
 <button id="centerStarButton">
     CENTER STAR
+</button>
+
+<button id="phantomAxisButton" type="button">
+    PHANTOM AXIS
 </button>
 
 </div>
@@ -766,6 +1109,24 @@ const magnitudeReadout =
 const centerStarButton =
     document.getElementById("centerStarButton");
 
+const phantomMask =
+    document.getElementById("phantomMask");
+
+const phantomGuidance =
+    document.getElementById("phantomGuidance");
+
+const phantomControls =
+    document.getElementById("phantomControls");
+
+const maskVisibilityButton =
+    document.getElementById("maskVisibilityButton");
+
+const phantomReturnButton =
+    document.getElementById("phantomReturnButton");
+
+let phantomControlsTimer = null;
+let phantomMaskVisible = true;
+
 centerStarButton.classList.toggle(
     "active",
     showCenterStar
@@ -884,6 +1245,198 @@ centerStarButton.addEventListener("click", function () {
     );
 });
 
+phantomAxisButton.addEventListener(
+    "click",
+    function () {
+
+        if (!phantomAxisMode) {
+
+            // Save exact observation state
+            const currentSkyNumber =
+                Number(
+                    [...skyButtons]
+                        .find(
+                            button =>
+                                button.classList.contains("active")
+                        )
+                        ?.dataset.sky || 1
+                );
+
+            savedObservationState = {
+                wheelScale,
+                wheelOffsetX,
+                wheelOffsetY,
+                rotationSpeed,
+                dotSize,
+                densityLevel,
+                magnitudeVariation,
+                showCenterStar,
+                skyNumber: currentSkyNumber
+            };
+
+            phantomAxisMode = true;
+
+            const phantomViewportHeight =
+                  window.visualViewport
+                ? window.visualViewport.height
+                : viewHeight;
+
+            const viewportWidth =
+                  window.visualViewport
+                ? window.visualViewport.width
+                : window.innerWidth;
+
+            const isPhone =
+                  viewportWidth <= 700;
+
+            const isTablet =
+                  viewportWidth > 700 &&
+                  viewportWidth <= 1200;
+
+        wheelScale =
+    isPhone
+        ? 0.94
+        : isTablet
+            ? 1.08
+            : 1.45;
+
+wheelOffsetX = 0;
+
+wheelOffsetY =
+    isPhone
+        ? phantomViewportHeight * 0.17
+        : isTablet
+            ? phantomViewportHeight * 0.38
+            : phantomViewportHeight * 0.64;
+
+rotationSpeed = 0.0007;
+
+speedSlider.value = rotationSpeed;
+updateSpeedDisplay();
+
+dotSize = 0.3;
+
+dotSlider.value = dotSize;
+
+dotReadout.textContent =
+    `${dotSize.toFixed(1)} px`;
+
+            phantomAxisButton.classList.add("active");
+
+            phantomMask.classList.add("active");
+            phantomMaskVisible = true;
+            phantomMask.classList.remove("mask-off");
+
+            maskVisibilityButton.textContent =
+                "MASK OFF";
+
+            playPhantomGuidance();
+
+            setTimeout(function () {
+                if (phantomAxisMode) {
+                    showPhantomControls();
+                }
+            }, 4400);
+
+            controls.classList.add("hidden");
+
+        } else {
+
+            if (savedObservationState) {
+
+                wheelScale =
+                    savedObservationState.wheelScale;
+
+                wheelOffsetX =
+                    savedObservationState.wheelOffsetX;
+
+                wheelOffsetY =
+                    savedObservationState.wheelOffsetY;
+
+                rotationSpeed =
+                    savedObservationState.rotationSpeed;
+
+                dotSize =
+                    savedObservationState.dotSize;
+
+                densityLevel =
+                    savedObservationState.densityLevel;
+
+                magnitudeVariation =
+                    savedObservationState.magnitudeVariation;
+
+                showCenterStar =
+                    savedObservationState.showCenterStar;
+
+                currentSky =
+                    skies[savedObservationState.skyNumber];
+
+                stars = currentSky.stars;
+
+                centerStarIndex =
+                    findCenterStarIndex(stars);
+
+                renderedStars =
+                    buildDensityStars(densityLevel);
+
+                // Restore controls and readouts
+                speedSlider.value = rotationSpeed;
+                sizeSlider.value = wheelScale;
+                dotSlider.value = dotSize;
+                densitySlider.value = densityLevel;
+                magnitudeSlider.value =
+                    magnitudeVariation;
+
+                updateSpeedDisplay();
+
+                sizeReadout.textContent =
+                    `${Math.round(wheelScale * 100)}%`;
+
+                dotReadout.textContent =
+                    `${dotSize.toFixed(1)} px`;
+
+                densityReadout.textContent =
+                    `${currentSky.name.toUpperCase()} · ` +
+                    `${renderedStars.length} STARS`;
+
+                magnitudeReadout.textContent =
+                    `${Math.round(
+                        magnitudeVariation * 100
+                    )}%`;
+
+                centerStarButton.classList.toggle(
+                    "active",
+                    showCenterStar
+                );
+
+                skyButtons.forEach(function (button) {
+                    button.classList.toggle(
+                        "active",
+                        Number(button.dataset.sky) ===
+                            savedObservationState.skyNumber
+                    );
+                });
+            }
+
+            phantomAxisMode = false;
+            savedObservationState = null;
+
+            phantomAxisButton.classList.remove("active");
+            phantomMask.classList.remove("active");
+            hidePhantomControls();
+
+            phantomMaskVisible = true;
+            phantomMask.classList.remove("mask-off");
+
+            maskVisibilityButton.textContent =
+                "MASK OFF";
+            controls.classList.remove("hidden");
+
+
+        }
+    }
+);
+
 updateSpeedDisplay();
 
 sizeSlider.addEventListener("input", function () {
@@ -903,6 +1456,10 @@ closeControlsButton.addEventListener(
         controls.classList.add("hidden");
     }
 );
+
+let phantomAxisMode = false;
+
+let savedObservationState = null;
 
 let lastCanvasTapTime = 0;
 
@@ -963,6 +1520,80 @@ document.addEventListener("keydown", function (event) {
 
 let lastFrameTime = null;
 
+function playPhantomGuidance() {
+    phantomGuidance.classList.remove("play");
+
+    // Forces the animation to restart on every entry.
+    void phantomGuidance.offsetWidth;
+
+    phantomGuidance.classList.add("play");
+
+    setTimeout(function () {
+        phantomGuidance.classList.remove("play");
+    }, 4300);
+}
+
+function showPhantomControls() {
+    phantomControls.classList.add("visible");
+
+    clearTimeout(phantomControlsTimer);
+
+    phantomControlsTimer =
+        setTimeout(function () {
+            phantomControls.classList.remove("visible");
+        }, 4000);
+}
+
+function hidePhantomControls() {
+    clearTimeout(phantomControlsTimer);
+    phantomControls.classList.remove("visible");
+}
+
+phantomMask.addEventListener(
+    "click",
+    function () {
+        if (!phantomAxisMode) {
+            return;
+        }
+
+        showPhantomControls();
+    }
+);
+
+phantomControls.addEventListener(
+    "click",
+    function (event) {
+        event.stopPropagation();
+    }
+);
+
+maskVisibilityButton.addEventListener(
+    "click",
+    function () {
+        phantomMaskVisible =
+            !phantomMaskVisible;
+
+        phantomMask.classList.toggle(
+            "mask-off",
+            !phantomMaskVisible
+        );
+
+        maskVisibilityButton.textContent =
+            phantomMaskVisible
+                ? "MASK OFF"
+                : "MASK ON";
+
+        showPhantomControls();
+    }
+);
+
+phantomReturnButton.addEventListener(
+    "click",
+    function () {
+        phantomAxisButton.click();
+    }
+);
+
 function draw(timestamp) {
     if (lastFrameTime === null) {
         lastFrameTime = timestamp;
@@ -971,7 +1602,15 @@ function draw(timestamp) {
     const deltaTime = Math.min(timestamp - lastFrameTime, 100);
     lastFrameTime = timestamp;
 
-    rotation += rotationSpeed * (deltaTime / 16.6667);
+    const apparentSpeedScale =
+    phantomAxisMode
+        ? 0.94 / wheelScale
+        : 1;
+
+rotation +=
+    rotationSpeed *
+    apparentSpeedScale *
+    (deltaTime / 16.6667);
 
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, viewWidth, viewHeight);
