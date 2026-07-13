@@ -626,10 +626,10 @@ canvas {
     min="0.20"
     max="3.3"
     step="0.01"
-    value="0.50"
+    value="0.3"
 >
 
-<div id="dotReadout">0.50 px</div>
+<div id="dotReadout">0.3 px</div>
 
 <label for="densitySlider">STAR DENSITY</label>
 
@@ -1054,11 +1054,11 @@ function buildDensityStars(level) {
 let renderedStars;
 
 let rotation = 0;
-let rotationSpeed = 0.0015;
+let rotationSpeed = 0.0010;
 let wheelScale = 0.46;
-let dotSize = 0.5;
-let densityLevel = 4;
-let magnitudeVariation = 1;
+let dotSize = 0.3;
+let densityLevel = 3;
+let magnitudeVariation = 0.5;
 let showCenterStar = false;
 
 renderedStars = buildDensityStars(densityLevel);
@@ -1245,6 +1245,111 @@ centerStarButton.addEventListener("click", function () {
     );
 });
 
+let phantomJourneyFrame = null;
+
+function easeInOutCubic(value) {
+    return value < 0.5
+        ? 4 * value * value * value
+        : 1 -
+          Math.pow(-2 * value + 2, 3) / 2;
+}
+
+function animatePhantomJourney(
+    targetState,
+    duration,
+    onComplete
+) {
+    if (phantomJourneyFrame !== null) {
+        cancelAnimationFrame(phantomJourneyFrame);
+    }
+
+    const startTime = performance.now();
+
+    const startState = {
+        wheelScale,
+        wheelOffsetX,
+        wheelOffsetY,
+        rotationSpeed,
+        dotSize
+    };
+
+    function interpolate(start, end, amount) {
+        return start + (end - start) * amount;
+    }
+
+    function step(currentTime) {
+        const elapsed =
+            currentTime - startTime;
+
+        const progress =
+            Math.min(elapsed / duration, 1);
+
+        const eased =
+            easeInOutCubic(progress);
+
+        wheelScale =
+            interpolate(
+                startState.wheelScale,
+                targetState.wheelScale,
+                eased
+            );
+
+        wheelOffsetX =
+            interpolate(
+                startState.wheelOffsetX,
+                targetState.wheelOffsetX,
+                eased
+            );
+
+        wheelOffsetY =
+            interpolate(
+                startState.wheelOffsetY,
+                targetState.wheelOffsetY,
+                eased
+            );
+
+        rotationSpeed =
+            interpolate(
+                startState.rotationSpeed,
+                targetState.rotationSpeed,
+                eased
+            );
+
+        dotSize =
+            interpolate(
+                startState.dotSize,
+                targetState.dotSize,
+                eased
+            );
+
+        sizeSlider.value = wheelScale;
+        speedSlider.value = rotationSpeed;
+        dotSlider.value = dotSize;
+
+        sizeReadout.textContent =
+            `${Math.round(wheelScale * 100)}%`;
+
+        dotReadout.textContent =
+            `${dotSize.toFixed(1)} px`;
+
+        updateSpeedDisplay();
+
+        if (progress < 1) {
+            phantomJourneyFrame =
+                requestAnimationFrame(step);
+        } else {
+            phantomJourneyFrame = null;
+
+            if (onComplete) {
+                onComplete();
+            }
+        }
+    }
+
+    phantomJourneyFrame =
+        requestAnimationFrame(step);
+}
+
 phantomAxisButton.addEventListener(
     "click",
     function () {
@@ -1293,52 +1398,65 @@ phantomAxisButton.addEventListener(
                   viewportWidth > 700 &&
                   viewportWidth <= 1200;
 
-        wheelScale =
-    isPhone
-        ? 0.94
-        : isTablet
-            ? 1.08
-            : 1.45;
+        const phantomTargetState = {
+    wheelScale:
+        isPhone
+            ? 0.94
+            : isTablet
+                ? 1.08
+                : 1.45,
 
-wheelOffsetX = 0;
+    wheelOffsetX: 0,
 
-wheelOffsetY =
-    isPhone
-        ? phantomViewportHeight * 0.17
-        : isTablet
-            ? phantomViewportHeight * 0.38
-            : phantomViewportHeight * 0.64;
+    wheelOffsetY:
+        isPhone
+            ? phantomViewportHeight * 0.17
+            : isTablet
+                ? phantomViewportHeight * 0.38
+                : phantomViewportHeight * 0.64,
 
-rotationSpeed = 0.0007;
+    rotationSpeed: 0.0007,
 
-speedSlider.value = rotationSpeed;
-updateSpeedDisplay();
+    dotSize: 0.3
+};
 
-dotSize = 0.3;
+phantomAxisButton.classList.add("active");
 
-dotSlider.value = dotSize;
+/*
+Hide the ordinary controls first.
+The wheel journey then begins unobstructed.
+*/
+controls.classList.add("hidden");
 
-dotReadout.textContent =
-    `${dotSize.toFixed(1)} px`;
+animatePhantomJourney(
+    phantomTargetState,
+    1800,
+    function () {
 
-            phantomAxisButton.classList.add("active");
+        /*
+        The aperture appears only after
+        the wheel reaches its destination.
+        */
+        phantomMask.classList.add("active");
 
-            phantomMask.classList.add("active");
-            phantomMaskVisible = true;
-            phantomMask.classList.remove("mask-off");
+        phantomMaskVisible = true;
+        phantomMask.classList.remove("mask-off");
 
-            maskVisibilityButton.textContent =
-                "MASK OFF";
+        maskVisibilityButton.textContent =
+            "MASK OFF";
 
-            playPhantomGuidance();
+        /*
+        Guidance begins after arrival.
+        */
+        playPhantomGuidance();
 
-            setTimeout(function () {
-                if (phantomAxisMode) {
-                    showPhantomControls();
-                }
-            }, 4400);
-
-            controls.classList.add("hidden");
+        setTimeout(function () {
+            if (phantomAxisMode) {
+                showPhantomControls();
+            }
+        }, 4400);
+    }
+);
 
         } else {
 
@@ -1589,8 +1707,59 @@ maskVisibilityButton.addEventListener(
 
 phantomReturnButton.addEventListener(
     "click",
-    function () {
-        phantomAxisButton.click();
+    function (event) {
+        event.stopPropagation();
+
+        if (
+            !phantomAxisMode ||
+            !savedObservationState
+        ) {
+            return;
+        }
+
+        /*
+        Reverse the entrance presentation first.
+        */
+        hidePhantomControls();
+
+        phantomGuidance.classList.remove("play");
+
+        phantomMask.classList.remove("active");
+
+        /*
+        Travel back to the exact observation
+        scale, position, speed, and star size
+        saved before Phantom Axis entry.
+        */
+        const returnTargetState = {
+            wheelScale:
+                savedObservationState.wheelScale,
+
+            wheelOffsetX:
+                savedObservationState.wheelOffsetX,
+
+            wheelOffsetY:
+                savedObservationState.wheelOffsetY,
+
+            rotationSpeed:
+                savedObservationState.rotationSpeed,
+
+            dotSize:
+                savedObservationState.dotSize
+        };
+
+        animatePhantomJourney(
+            returnTargetState,
+            1800,
+            function () {
+                /*
+                The existing exit branch restores
+                density, sky, center-star state,
+                readouts, and the ordinary controls.
+                */
+                phantomAxisButton.click();
+            }
+        );
     }
 );
 
@@ -1697,17 +1866,18 @@ const cy =
     // Draw constant-size center measurement star
     // at its true imported wheel position.
     const centerStarSize =
-    1.03 * (wheelScale / 0.46);
-    const centerStar =
-        renderedStars[centerStarIndex];
+    0.6 * (wheelScale / 0.46);
 
-    const centerRotatedX =
-        centerStar.x * cosR -
-        centerStar.y * sinR;
+const centerStar =
+    renderedStars[centerStarIndex];
 
-    const centerRotatedY =
-        centerStar.x * sinR +
-        centerStar.y * cosR;
+const centerRotatedX =
+    centerStar.x * cosR -
+    centerStar.y * sinR;
+
+const centerRotatedY =
+    centerStar.x * sinR +
+    centerStar.y * cosR;
 
     const centerStarX =
         cx + centerRotatedX * wheelRadius;
