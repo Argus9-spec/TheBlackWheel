@@ -100,9 +100,7 @@ html,body{
 }
 
 #centerStarButton,
-#observationGuideButton,
 #phantomAxisButton {
-
     width: 100%;
 
     margin-top: 10px;
@@ -543,130 +541,6 @@ canvas {
     }
 }
 
-.guide-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.92);
-}
-
-.guide-overlay[hidden] {
-    display: none;
-}
-
-.guide-panel {
-    position: relative;
-
-    width: min(680px, 100%);
-    max-height: calc(100vh - 48px);
-    overflow-y: auto;
-
-    padding: 34px 34px 30px;
-
-    color: #fff;
-    background: #000;
-    border: 1px solid #666;
-    border-radius: 12px;
-
-    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.8);
-}
-
-.guide-panel h2 {
-    margin: 0 44px 22px 0;
-
-    font-size: 1.3rem;
-    letter-spacing: 0.12em;
-}
-
-.guide-panel h3 {
-    margin: 0 0 20px;
-
-    color: #bbb;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-}
-
-.guide-panel ul {
-    margin: 0;
-    padding-left: 1.35rem;
-}
-
-.guide-panel li {
-    margin-bottom: 18px;
-
-    line-height: 1.55;
-}
-
-.guide-panel li:last-child {
-    margin-bottom: 0;
-}
-
-.guide-close-button {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-
-    width: 36px;
-    height: 36px;
-
-    padding: 0;
-
-    color: #fff;
-    background: transparent;
-    border: 1px solid #555;
-    border-radius: 50%;
-
-    font-size: 24px;
-    line-height: 30px;
-    cursor: pointer;
-}
-
-.guide-close-button:hover {
-    background: #222;
-    border-color: #888;
-}
-
-@media (max-width: 600px) {
-    .guide-overlay {
-        padding: 12px;
-    }
-
-    .guide-panel {
-        max-height: calc(100vh - 24px);
-        padding: 28px 22px 24px;
-        border-radius: 10px;
-    }
-
-    .guide-panel h2 {
-        font-size: 1.05rem;
-    }
-
-    .guide-panel li {
-        margin-bottom: 15px;
-    }
-}
-
-.observation-angle-item {
-    margin-top: 26px;
-}
-
-.observation-angle-diagram {
-    width: 100%;
-    margin-top: 20px;
-}
-
-.observation-angle-diagram img {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
 </style>
 
 </head>
@@ -744,7 +618,7 @@ canvas {
 
 <div id="sizeReadout">46%</div>
 
-<label for="dotSlider">POINT SIZE</label>
+<label for="dotSlider">STAR SIZE</label>
 
 <input
     id="dotSlider"
@@ -757,7 +631,7 @@ canvas {
 
 <div id="dotReadout">0.3 px</div>
 
-<label for="densitySlider">POINT DENSITY</label>
+<label for="densitySlider">STAR DENSITY</label>
 
 <input
     id="densitySlider"
@@ -770,7 +644,7 @@ canvas {
 
 <div id="densityReadout">ORIGINAL · 428 STARS</div>
 
-<label for="magnitudeSlider">MAGNITUDE VARIATION</label>
+<label for="magnitudeSlider">MAGNITUDE RANDOMIZER</label>
 
 <input
     id="magnitudeSlider"
@@ -783,7 +657,7 @@ canvas {
 
 <div id="magnitudeReadout">0%</div>
 
-<label>FIELD</label>
+<label>SKY</label>
 
 <div id="skyButtons">
     <button type="button" data-sky="1" class="active">I</button>
@@ -792,80 +666,13 @@ canvas {
 </div>
 
 <button id="centerStarButton">
-    CENTER
-</button>
-
-<button id="observationGuideButton" type="button">
-    OBSERVATION GUIDE
+    CENTER STAR
 </button>
 
 <button id="phantomAxisButton" type="button">
-    PHANTOM AXIS ILLUSION
+    PHANTOM AXIS
 </button>
 
-</div>
-
-<div id="observationGuideOverlay" class="guide-overlay" hidden>
-    <section
-        id="observationGuidePanel"
-        class="guide-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="observationGuideTitle"
-    >
-        <button
-            id="observationGuideCloseButton"
-            class="guide-close-button"
-            type="button"
-            aria-label="Close Observation Guide"
-        >
-            ×
-        </button>
-
-        <h2 id="observationGuideTitle">
-            OBSERVATION GUIDE
-        </h2>
-
-        <h3>OBSERVATION CONDITIONS</h3>
-
-        <ul>
-            <li><strong>Darkness.</strong></li>
-
-            
-
-          <li>
-    Place the <strong>device</strong> flat on a table with its
-    bottom edge facing you.
-</li>
-
-<div class="observation-angle-diagram">
-    <img
-        src="../assets/observation-angle.svg"
-        alt="Two diagrams showing the device viewed from its bottom edge at 75 degrees and 70 degrees."
-    >
-</div>
-
-<li class="observation-angle-item">
-    <strong>Observation angle:</strong>
-    approximately 70°–75°.
-</li>
-
-<li>
-    To observe the <strong>Phantom Turning Illusion</strong>,
-    look directly above the Center, keeping the Center outside
-    the circular viewing aperture. Also keep the upper edge of
-    the wheel outside the aperture.
-</li>
-
-            <li>
-                <strong>Control observation:</strong>
-                To observe only the original turning of the wheel, and not
-                the Phantom Turning Illusion, simply observe any other
-                location on the wheel while maintaining the same viewing
-                orientation.
-            </li>
-        </ul>
-    </section>
 </div>
 
 <script>
@@ -1302,15 +1109,6 @@ const magnitudeReadout =
 const centerStarButton =
     document.getElementById("centerStarButton");
 
-const observationGuideButton =
-    document.getElementById("observationGuideButton");
-
-const observationGuideOverlay =
-    document.getElementById("observationGuideOverlay");
-
-const observationGuideCloseButton =
-    document.getElementById("observationGuideCloseButton");
-
 const phantomMask =
     document.getElementById("phantomMask");
 
@@ -1551,35 +1349,6 @@ function animatePhantomJourney(
     phantomJourneyFrame =
         requestAnimationFrame(step);
 }
-
-observationGuideButton.addEventListener(
-    "click",
-    function () {
-
-        observationGuideOverlay.hidden = false;
-
-    }
-);
-
-observationGuideCloseButton.addEventListener(
-    "click",
-    function () {
-
-        observationGuideOverlay.hidden = true;
-
-    }
-);
-
-observationGuideOverlay.addEventListener(
-    "click",
-    function (event) {
-
-        if (event.target === observationGuideOverlay) {
-            observationGuideOverlay.hidden = true;
-        }
-
-    }
-);
 
 phantomAxisButton.addEventListener(
     "click",
@@ -1960,7 +1729,7 @@ phantomReturnButton.addEventListener(
         /*
         Travel back to the exact observation
         scale, position, speed, and star size
-        saved before Phantom Axis Illusion entry.
+        saved before Phantom Axis entry.
         */
         const returnTargetState = {
             wheelScale:

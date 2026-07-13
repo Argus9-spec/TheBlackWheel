@@ -1,0 +1,262 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 800 300"
+    role="img"
+    aria-labelledby="title description"
+>
+    <title id="title">Observation angle range</title>
+
+    <desc id="description">
+        Two matching diagrams show a device lying flat on a table,
+        viewed at seventy-five degrees and seventy degrees, with
+        the bottom edge of each device identified on the right.
+    </desc>
+
+    <style>
+        .line {
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .dashed {
+            stroke-dasharray: 8 8;
+        }
+
+        .label {
+            fill: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+        }
+
+        .edge-label {
+            fill: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            letter-spacing: 0.06em;
+        }
+    </style>
+
+    <!-- Black background -->
+    <rect
+        width="800"
+        height="300"
+        fill="#000000"
+    />
+
+    <!-- 75-degree diagram -->
+    <g transform="translate(20 10)">
+
+        <!-- Table -->
+        <line
+            class="line"
+            x1="20"
+            y1="245"
+            x2="350"
+            y2="245"
+        />
+
+        <!-- Device -->
+        <rect
+            class="line"
+            x="45"
+            y="210"
+            width="230"
+            height="35"
+            rx="5"
+        />
+
+        <!-- Bottom-edge reference -->
+        <line
+            class="line dashed"
+            x1="275"
+            y1="210"
+            x2="275"
+            y2="145"
+        />
+
+        <line
+            class="line"
+            x1="275"
+            y1="225"
+            x2="300"
+            y2="207"
+        />
+
+        <text
+            class="edge-label"
+            x="306"
+            y="211"
+        >
+            BOTTOM
+        </text>
+
+        <!-- Sightline: exactly 75 degrees from horizontal -->
+        <!-- Shortened so it stops clearly beneath the eye -->
+        <line
+            class="line dashed"
+            x1="115"
+            y1="210"
+            x2="146.058"
+            y2="94.089"
+        />
+
+        <!-- Engineering eye -->
+
+        <!-- Inverted V -->
+        <path
+            class="line"
+            d="
+                M137.823 76
+                L153.823 50
+                L169.823 76
+            "
+        />
+
+        <!-- Bottom curved line -->
+        <path
+            class="line"
+            d="
+                M137.823 76
+                Q153.823 88
+                169.823 76
+            "
+        />
+
+        <!-- Eye center -->
+        <circle
+            class="line"
+            cx="153.823"
+            cy="72"
+            r="6"
+        />
+
+        <!-- Exact 75-degree angle arc -->
+        <path
+            class="line"
+            d="
+                M167 210
+                A52 52 0 0 0
+                128.459 159.772
+            "
+        />
+
+        <!-- Degree label shifted right, clear of arc -->
+        <text
+            class="label"
+            x="174"
+            y="184"
+        >
+            75°
+        </text>
+    </g>
+
+    <!-- 70-degree diagram -->
+    <g transform="translate(410 10)">
+
+        <!-- Table -->
+        <line
+            class="line"
+            x1="20"
+            y1="245"
+            x2="350"
+            y2="245"
+        />
+
+        <!-- Device -->
+        <rect
+            class="line"
+            x="45"
+            y="210"
+            width="230"
+            height="35"
+            rx="5"
+        />
+
+        <!-- Bottom-edge reference -->
+        <line
+            class="line dashed"
+            x1="275"
+            y1="210"
+            x2="275"
+            y2="145"
+        />
+
+        <line
+            class="line"
+            x1="275"
+            y1="225"
+            x2="300"
+            y2="207"
+        />
+
+        <text
+            class="edge-label"
+            x="306"
+            y="211"
+        >
+            BOTTOM
+        </text>
+
+        <!-- Sightline: exactly 70 degrees from horizontal -->
+        <!-- Shortened so it stops clearly beneath the eye -->
+        <line
+            class="line dashed"
+            x1="115"
+            y1="210"
+            x2="156.042"
+            y2="97.237"
+        />
+
+        <!-- Engineering eye -->
+
+        <!-- Inverted V -->
+        <path
+            class="line"
+            d="
+                M150.303 80
+                L166.303 54
+                L182.303 80
+            "
+        />
+
+        <!-- Bottom curved line -->
+        <path
+            class="line"
+            d="
+                M150.303 80
+                Q166.303 92
+                182.303 80
+            "
+        />
+
+        <!-- Eye center -->
+        <circle
+            class="line"
+            cx="166.303"
+            cy="76"
+            r="6"
+        />
+
+        <!-- Exact 70-degree angle arc -->
+        <path
+            class="line"
+            d="
+                M167 210
+                A52 52 0 0 0
+                132.785 161.136
+            "
+        />
+
+        <!-- Degree label shifted right, clear of arc -->
+        <text
+            class="label"
+            x="174"
+            y="184"
+        >
+            70°
+        </text>
+    </g>
+</svg>
