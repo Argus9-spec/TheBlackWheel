@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+>
 
 <meta charset="UTF-8">
 
@@ -553,7 +557,7 @@ canvas {
     justify-content: center;
 
     padding: 24px;
-    background: rgba(0, 0, 0, 0.92);
+    background: rgba(0, 0, 0, 0.78);
 }
 
 .guide-overlay[hidden] {
@@ -561,40 +565,133 @@ canvas {
 }
 
 .guide-panel {
-    position: relative;
+    position: relative;background: #000;
 
     width: min(680px, 100%);
     max-height: calc(100vh - 48px);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 
     padding: 34px 34px 30px;
 
     color: #fff;
-    background: #000;
-    border: 1px solid #666;
+    background: rgba(0, 0, 0, 0.58);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-right: 0;
     border-radius: 12px;
 
     box-shadow: 0 20px 70px rgba(0, 0, 0, 0.8);
 }
 
 .guide-panel h2 {
-    margin: 0 44px 22px 0;
-
-    font-size: 1.3rem;
+    margin: 0 44px 36px 0;
+    color: #bbb;
+    font-size: 1.4rem;
+    line-height: 1.25;
     letter-spacing: 0.12em;
 }
 
 .guide-panel h3 {
-    margin: 0 0 20px;
+    display: inline-block;
+    margin: 0 0 22px;
 
     color: #bbb;
-    font-size: 0.85rem;
+    font-size: 1rem;
+    line-height: 1.35;
     letter-spacing: 0.12em;
+
+    padding-bottom: 4px;
+    border-bottom: 1px solid #bbb;
+}
+
+/* Hide the browser's native scrollbar while preserving scrolling */
+.guide-panel {
+    scrollbar-width: none;
+}
+
+.guide-panel::-webkit-scrollbar {
+    display: none;
+}
+
+/* Custom scrollbar */
+.guide-scrollbar {
+    position: fixed;
+
+    width: 8px;
+
+    pointer-events: auto;
+    touch-action: none;
+    z-index: 1002;
+}
+
+.guide-scrollbar::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 1px;
+    background: #555;
+}
+
+.guide-scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    right: -4px;
+
+    width: 14px;
+    min-height: 36px;
+
+    background: transparent;
+
+    transform: translateY(0);
+    z-index: 2;
+
+    cursor: grab;
+    touch-action: none;
+    pointer-events: auto;
+}
+
+.guide-scrollbar-thumb::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    right: 4px;
+    bottom: 0;
+
+    width: 6px;
+
+    background: #555;
+    border-radius: 999px 0 0 999px;
+}
+
+.guide-panel p,
+.guide-panel li {
+    font-size: 1.15rem;
+    line-height: 1.8;
 }
 
 .guide-panel ul {
     margin: 0;
     padding-left: 1.35rem;
+}
+
+.guide-divider {
+    height: 1px;
+    margin: 40px 0;
+    background: #3a3a3a;
+    border: 0;
+}
+
+.recognition-closing {
+    text-align: left;
+    line-height: 1.9;
+    margin: 32px 0;
+    font-weight: 500;
 }
 
 .guide-panel li {
@@ -644,7 +741,7 @@ canvas {
     }
 
     .guide-panel h2 {
-        font-size: 1.05rem;
+        font-size: 1.6rem;
     }
 
     .guide-panel li {
@@ -805,7 +902,11 @@ canvas {
 
 </div>
 
-<div id="observationGuideOverlay" class="guide-overlay" hidden>
+<div
+    id="observationGuideOverlay"
+    class="guide-overlay"
+    hidden
+>
     <section
         id="observationGuidePanel"
         class="guide-panel"
@@ -826,46 +927,467 @@ canvas {
             OBSERVATION GUIDE
         </h2>
 
-        <h3>OBSERVATION CONDITIONS</h3>
+        <h3>VIEWING TUBES</h3>
+
+        <p>
+            The Black Wheel Instrument is designed to be observed through
+            viewing tubes.
+        </p>
+
+        <p>
+            The viewing tubes isolate a small region of the rotating field
+            and make the organization easier to perceive.
+        </p>
+
+        <p>
+            The <strong>Phantom Axis Illusion</strong> button guides you
+            directly to this observational region.
+        </p>
+
+        <p>
+            It is a guide for investigation with the viewing tubes.
+        </p>
+
+        <p>
+            It is not a replacement for the viewing tubes.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>VIEWING ANGLE</h3>
+
+          <div class="observation-angle-diagram">
+            <img
+                src="../assets/observation-angle.svg?v=18"
+                alt="Viewing angles of 45 degrees and 75 degrees."
+            >
+        </div>
+
+        <p>
+            Observe the display at approximately
+            <strong>45°–75°</strong>
+            for the strongest experience.
+        </p>
+
+        <p>
+            Different viewing angles reveal different aspects of the
+            organization while remaining within the same observational
+            region.
+        </p>
+
+      
+        <p>
+            This viewing angle is essential for the intended observation.
+        </p>
+
+        <p>
+            If using a laptop, tilt the display fully backward.
+        </p>
+
+        <p>
+            Observe above the Center and below the upper edge of the wheel
+            through the viewing tubes.
+        </p>
+
+        <p>
+            If using a fixed desktop display, position yourself so you
+            observe the display at approximately the same viewing angle.
+        </p>
+
+        <p>
+            This viewing angle optimizes the southern orientation used by
+            the Black Wheel Instrument.
+        </p>
+
+        <p>
+            The Phantom Axis Illusion occurs only within this southern
+            observational region.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>LAPTOP • DESKTOP • iPAD</h3>
+
+        <p>
+            Use two standard cardboard toilet paper rolls lightly glued
+            together with a small dab of glue at the rim of one end.
+        </p>
+
+        <p>
+            Align the tubes carefully and allow the glue to dry standing
+            upright on a flat surface with the glued rims downward. This
+            keeps the tubes evenly aligned.
+        </p>
+
+        <p>
+            Once dry, the binocular viewing tubes can be gently spread at
+            the unglued end, allowing them to fit the face comfortably.
+        </p>
+
+        <p>
+            To construct the viewing tubes, you will need:
+        </p>
 
         <ul>
-            <li><strong>Darkness.</strong></li>
+            <li>Two cardboard toilet paper rolls</li>
+            <li>Any glue</li>
+        </ul>
 
-            
+        <p>
+            This construction works extremely well.
+        </p>
 
-          <li>
-    Place the <strong>device</strong> flat on a table with its
-    bottom edge facing you.
-</li>
+        <div class="guide-divider"></div>
 
-<div class="observation-angle-diagram">
-    <img
-        src="../assets/observation-angle.svg"
-        alt="Two diagrams showing the device viewed from its bottom edge at 75 degrees and 70 degrees."
-    >
-</div>
+        <h3>iPHONE</h3>
 
-<li class="observation-angle-item">
-    <strong>Observation angle:</strong>
-    approximately 70°–75°.
-</li>
+        <p>
+            I recommend using one viewing tube.
+        </p>
 
-<li>
-    To observe the <strong>Phantom Turning Illusion</strong>,
-    look directly above the Center, keeping the Center outside
-    the circular viewing aperture. Also keep the upper edge of
-    the wheel outside the aperture.
-</li>
+        <p>
+            The viewing distance is generally too narrow for comfortable
+            binocular viewing when using standard toilet paper rolls.
+        </p>
 
+        <h4>Recommended</h4>
+
+        <p>
+            A rolled construction-paper tube approximately:
+        </p>
+
+        <ul>
+            <li>6 inches long</li>
+            <li>1–1¼ inches inside diameter</li>
+        </ul>
+
+        <p>
+            This provides the greatest comfort and the widest range of
+            observation.
+        </p>
+
+        <p>
+            Binocular viewing tubes may also be constructed using two of
+            these recommended construction-paper tubes.
+        </p>
+
+        <p>
+            Two equally sized tubes lightly glued together at one end,
+            like the toilet-paper-roll binoculars, can also work
+            wonderfully. Tube length may require slight adjustment from
+            person to person.
+        </p>
+
+        <h4>Also Works Very Well</h4>
+
+        <ul>
+            <li>One standard cardboard paper towel roll</li>
             <li>
-                <strong>Control observation:</strong>
-                To observe only the original turning of the wheel, and not
-                the Phantom Turning Illusion, simply observe any other
-                location on the wheel while maintaining the same viewing
-                orientation.
+                Two standard cardboard toilet paper rolls taped together
+                end-to-end
+            </li>
+            <li>
+                One standard cardboard toilet paper roll also works
+                surprisingly well
             </li>
         </ul>
+
+        <p>
+            A single toilet paper roll provides a shorter viewing distance
+            while still producing an excellent observation.
+        </p>
+
+        <p>
+            Two toilet paper rolls taped together end-to-end provide a
+            longer viewing tube and generally produce the best results
+            using common household materials.
+        </p>
+
+        <p>
+            Tape is recommended when rolling your own tubes because both
+            the tube length and diameter can be adjusted easily while
+            experimenting. Tube length is easily modified with scissors.
+            Tape is fast, secure, and easy to modify.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>
+            TO OBSERVE<br>
+            THE PHANTOM AXIS<br>
+            ILLUSION
+        </h3>
+
+        <p>
+            Use in a very dark room.
+        </p>
+
+        <p>
+            Clean the display.
+        </p>
+
+        <p>
+            Place the device flat with its bottom edge facing you.
+        </p>
+
+        <p>
+            To observe the Phantom Axis Illusion, look directly above the
+            Center while keeping the Center outside the circular viewing
+            aperture.
+        </p>
+
+        <p>
+            Also keep the upper edge of the wheel outside the circular
+            viewing aperture.
+        </p>
+
+        <p>
+            For your first observation, use the Phantom Axis Illusion
+            button to locate the region, then turn off the mask.
+        </p>
+
+        <p>
+            The organization remains present at every level of screen zoom
+            within this region.
+        </p>
+
+        <p>
+            Under the proper viewing conditions, the organization appears
+            immediately.
+        </p>
+
+        <p>
+            External visual cues compete with the organization for
+            perceptual dominance.
+        </p>
+
+        <p>
+            Observe the same device from above or from either side, and
+            the original rotation immediately returns.
+        </p>
+
+        <p>
+            When the perceptual system commits to the organization, the
+            Phantom Axis Illusion becomes embodied.
+        </p>
+
+        <p>
+            The rotating points continue exactly as before.
+        </p>
+
+        <p class="guide-inscription">
+            Nothing<br>
+            changes<br>
+            position.<br><br>
+
+            Only the mental interpretation<br>
+            of the rotating field<br>
+            reorganizes.
+        </p>
+
+        <div class="guide-divider"></div>
+
+       <h3>CONTROL OBSERVATION</h3>
+
+<p>
+    To observe only the original turning of the wheel, simply observe any
+    other location on the wheel through the viewing tubes while maintaining
+    the same viewing orientation.
+</p>
+
+<p>
+    If viewing the wheel on a laptop, first locate the Phantom Axis
+    Illusion region. Without changing your position, slowly tilt the
+    display toward you. The original rotation immediately returns.
+</p>
+
+<p>
+    The Phantom Axis Illusion is directional and polarized within the
+    rotating field.
+</p>
+
+        <div class="guide-divider"></div>
+
+        <h3>WHERE YOU'VE SEEN THIS BEFORE</h3>
+
+        <p>
+            The Phantom Axis Illusion is not unique to the Black Wheel.
+        </p>
+
+        <p>
+            The Black Wheel simply isolates an organization that already
+            appears throughout ordinary experience.
+        </p>
+
+        <p>
+            Once recognized, it becomes surprisingly difficult to
+            overlook.
+        </p>
+
+        <p>
+            The Black Wheel does not create this organization.
+        </p>
+
+        <p>
+            It reveals it.
+        </p>
+
+        <p>
+            The instrument allows it to be examined deliberately.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>PASSING A TREE</h3>
+
+        <p>
+            While riding in a moving vehicle, direct your attention toward
+            the ground near the base of a passing tree.
+        </p>
+
+        <p>
+            The organization appears immediately.
+        </p>
+
+        <p>
+            The organization remains centered near the base of the tree.
+        </p>
+
+        <p>
+            The field does not reorganize.
+        </p>
+
+        <p>
+            Only the observer’s interpretation of the surrounding motion
+            reorganizes.
+        </p>
+
+        <p>
+            Once recognized, this organization becomes surprisingly
+            familiar.
+        </p>
+
+        <p>
+            We seldom notice it because of its familiarity.
+        </p>
+
+        <p>
+            The mind accepts it.
+        </p>
+
+        <p>
+            It is simply the way motion appears.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>ROTATIONAL MOTION</h3>
+
+        <p>
+            When the observer remains stationary and the field rotates,
+            the organization no longer appears perpendicular to motion.
+        </p>
+
+        <p>
+            Instead, it appears as a radial organization extending from
+            the center toward the edge of the rotating field.
+        </p>
+
+        <p>
+            The Black Wheel isolates this organization.
+        </p>
+
+        <p>
+            The Phantom Axis Illusion is the observer's recognition of it.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>CAMERA MOVEMENT</h3>
+
+        <p>
+            Orbital camera movements frequently produce the same
+            organization.
+        </p>
+
+        <p>
+            Once recognized, the Phantom Axis Illusion becomes
+            increasingly difficult to overlook during ordinary camera
+            movement.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>OBSERVATIONAL LOCALITY</h3>
+
+        <p>
+            The organization does not occur everywhere.
+        </p>
+
+        <p>
+            It appears only within specific observational localities where
+            relative motion is available to observation.
+        </p>
+
+        <p>
+            The Black Wheel allows these localities to be explored
+            deliberately.
+        </p>
+
+        <p>
+            The Phantom Axis Illusion is one such locality.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>RECOGNITION</h3>
+
+        <p>
+            The Black Wheel does not teach the organization.
+        </p>
+
+        <p>
+            It teaches the observer how to recognize it.
+        </p>
+
+        <p>
+            Recognition changes nothing in the field.
+        </p>
+
+        <p>
+            Recognition changes the observer.
+        </p>
+
+        <div class="guide-divider"></div>
+
+        <h3>AFTER RECOGNITION</h3>
+
+        <p class="recognition-closing">
+            The organization<br>
+            is no longer confined<br>
+            to the Black Wheel.<br><br>
+
+            It begins appearing<br>
+            throughout ordinary experience.<br><br>
+
+            The Black Wheel<br>
+            has not introduced<br>
+            something new.<br><br>
+
+            It has isolated<br>
+            something familiar.
+        </p>
     </section>
+
+    <div
+        class="guide-scrollbar"
+        aria-hidden="true"
+    >
+        <div
+            id="observationGuideScrollbarThumb"
+            class="guide-scrollbar-thumb"
+        ></div>
+    </div>
 </div>
 
 <script>
@@ -919,6 +1441,388 @@ ${event.reason}
         </pre>
     `;
 });
+
+const observationGuidePanel =
+    document.getElementById("observationGuidePanel");
+
+const observationGuideScrollbarThumb =
+    document.getElementById("observationGuideScrollbarThumb");
+
+function updateObservationGuideScrollbar() {
+    if (
+        !observationGuidePanel ||
+        !observationGuideScrollbarThumb
+    ) {
+        return;
+    }
+
+    const visibleHeight = observationGuidePanel.clientHeight;
+    const totalHeight = observationGuidePanel.scrollHeight;
+    const scrollTop = observationGuidePanel.scrollTop;
+
+    if (totalHeight <= visibleHeight) {
+        observationGuideScrollbarThumb.style.display = "none";
+        return;
+    }
+
+    observationGuideScrollbarThumb.style.display = "block";
+
+    const minimumThumbHeight = 36;
+    const thumbHeight = Math.max(
+        minimumThumbHeight,
+        (visibleHeight / totalHeight) * visibleHeight
+    );
+
+    const availableTravel = visibleHeight - thumbHeight;
+    const maximumScroll = totalHeight - visibleHeight;
+
+    const thumbPosition =
+        maximumScroll > 0
+            ? (scrollTop / maximumScroll) * availableTravel
+            : 0;
+
+    observationGuideScrollbarThumb.style.height =
+        `${thumbHeight}px`;
+
+    observationGuideScrollbarThumb.style.transform =
+        `translateY(${thumbPosition}px)`;
+}
+
+observationGuidePanel?.addEventListener(
+    "scroll",
+    updateObservationGuideScrollbar,
+    { passive: true }
+);
+
+window.addEventListener(
+    "resize",
+    updateObservationGuideScrollbar
+);
+
+const observationGuideObserver = new MutationObserver(() => {
+    requestAnimationFrame(updateObservationGuideScrollbar);
+});
+
+const observationGuideOverlay =
+    document.getElementById("observationGuideOverlay");
+
+if (observationGuideOverlay) {
+    observationGuideObserver.observe(
+        observationGuideOverlay,
+        {
+            attributes: true,
+            attributeFilter: ["hidden"]
+        }
+    );
+}
+
+requestAnimationFrame(updateObservationGuideScrollbar);
+
+const guidePanel =
+    document.getElementById("observationGuidePanel");
+
+const guideScrollbar =
+    document.querySelector(".guide-scrollbar");
+
+const guideScrollbarThumb =
+    document.getElementById("observationGuideScrollbarThumb");
+
+function updateGuideScrollbar() {
+    if (!guidePanel || !guideScrollbar || !guideScrollbarThumb) {
+        return;
+    }
+
+    const panelRect = guidePanel.getBoundingClientRect();
+
+        guideScrollbar.style.top =
+            `${panelRect.top}px`;
+
+        guideScrollbar.style.left =
+            `${panelRect.right - 20}px`;
+
+        guideScrollbar.style.height =
+            `${panelRect.height}px`;   
+
+
+    const visibleHeight = guidePanel.clientHeight;
+    const totalHeight = guidePanel.scrollHeight;
+
+    if (totalHeight <= visibleHeight) {
+        guideScrollbar.style.display = "none";
+        return;
+    }
+
+    guideScrollbar.style.display = "block";
+
+    const trackHeight = guideScrollbar.clientHeight;
+    const minimumThumbHeight = 40;
+
+    const thumbHeight = Math.max(
+        minimumThumbHeight,
+        trackHeight * (visibleHeight / totalHeight)
+    );
+
+    const maximumScroll =
+        totalHeight - visibleHeight;
+
+    const maximumThumbTravel =
+        trackHeight - thumbHeight;
+
+    const thumbTop =
+        maximumScroll > 0
+            ? (guidePanel.scrollTop / maximumScroll) *
+              maximumThumbTravel
+            : 0;
+
+    guideScrollbarThumb.style.height =
+        `${thumbHeight}px`;
+
+    guideScrollbarThumb.style.transform =
+        `translateY(${thumbTop}px)`;
+}
+
+guidePanel?.addEventListener(
+    "scroll",
+    updateGuideScrollbar,
+    { passive: true }
+);
+
+window.addEventListener(
+    "resize",
+    updateGuideScrollbar
+);
+
+const guideOverlay =
+    document.getElementById("observationGuideOverlay");
+
+if (guideOverlay) {
+    new MutationObserver(() => {
+        requestAnimationFrame(updateGuideScrollbar);
+    }).observe(guideOverlay, {
+        attributes: true,
+        attributeFilter: ["hidden"]
+    });
+}
+
+requestAnimationFrame(updateGuideScrollbar);
+
+let isDraggingGuideThumb = false;
+
+let guideThumbDragStartY = 0;
+
+let guidePanelScrollStart = 0;
+
+function beginGuideThumbDrag(clientY) {
+
+    if (!guidePanel || !guideScrollbar || !guideScrollbarThumb) {
+
+        return;
+
+    }
+
+    isDraggingGuideThumb = true;
+
+    guideThumbDragStartY = clientY;
+
+    guidePanelScrollStart = guidePanel.scrollTop;
+
+    document.body.style.userSelect = "none";
+
+}
+
+function updateGuideThumbDrag(clientY) {
+
+    if (
+
+        !isDraggingGuideThumb ||
+
+        !guidePanel ||
+
+        !guideScrollbar ||
+
+        !guideScrollbarThumb
+
+    ) {
+
+        return;
+
+    }
+
+    const trackHeight = guideScrollbar.clientHeight;
+
+    const thumbHeight = guideScrollbarThumb.offsetHeight;
+
+    const maximumThumbTravel = trackHeight - thumbHeight;
+
+    const maximumScroll =
+
+        guidePanel.scrollHeight - guidePanel.clientHeight;
+
+    if (maximumThumbTravel <= 0 || maximumScroll <= 0) {
+
+        return;
+
+    }
+
+    const pointerDelta = clientY - guideThumbDragStartY;
+
+    const scrollDelta =
+
+        (pointerDelta / maximumThumbTravel) * maximumScroll;
+
+    guidePanel.scrollTop =
+
+        guidePanelScrollStart + scrollDelta;
+
+}
+
+let suppressGuideCloseClick = false;
+
+function endGuideThumbDrag() {
+    if (isDraggingGuideThumb) {
+        suppressGuideCloseClick = true;
+
+        window.setTimeout(() => {
+            suppressGuideCloseClick = false;
+        }, 250);
+    }
+
+    isDraggingGuideThumb = false;
+    document.body.style.userSelect = "";
+}
+
+guideScrollbarThumb?.addEventListener("mousedown", (event) => {
+    event.preventDefault();
+    beginGuideThumbDrag(event.clientY);
+});
+
+window.addEventListener("mousemove", (event) => {
+    updateGuideThumbDrag(event.clientY);
+});
+
+window.addEventListener("mouseup", endGuideThumbDrag);
+
+guideScrollbarThumb?.addEventListener(
+    "touchstart",
+    (event) => {
+        event.preventDefault();
+
+        const touch = event.touches[0];
+
+        if (touch) {
+            beginGuideThumbDrag(touch.clientY);
+        }
+    },
+    { passive: false }
+);
+
+window.addEventListener(
+    "touchmove",
+    (event) => {
+        if (!isDraggingGuideThumb) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const touch = event.touches[0];
+
+        if (touch) {
+            updateGuideThumbDrag(touch.clientY);
+        }
+    },
+    { passive: false }
+);
+
+window.addEventListener("touchend", endGuideThumbDrag);
+window.addEventListener("touchcancel", endGuideThumbDrag);
+
+window.addEventListener(
+    "click",
+    (event) => {
+        if (!suppressGuideCloseClick) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    },
+    true
+);
+
+const observationGuideDoubleTapPanel =
+    document.getElementById("observationGuidePanel");
+
+const observationGuideDoubleTapCloseButton =
+    document.getElementById("observationGuideCloseButton");
+
+let observationGuideLastTapTime = 0;
+let observationGuideTouchStartX = 0;
+let observationGuideTouchStartY = 0;
+
+observationGuideDoubleTapPanel?.addEventListener(
+    "touchstart",
+    (event) => {
+        const touch = event.touches[0];
+
+        if (!touch) {
+            return;
+        }
+
+        observationGuideTouchStartX = touch.clientX;
+        observationGuideTouchStartY = touch.clientY;
+    },
+    { passive: true }
+);
+
+observationGuideDoubleTapPanel?.addEventListener(
+    "touchend",
+    (event) => {
+        const touch = event.changedTouches[0];
+
+        if (!touch) {
+            return;
+        }
+
+        const horizontalMovement =
+            Math.abs(touch.clientX - observationGuideTouchStartX);
+
+        const verticalMovement =
+            Math.abs(touch.clientY - observationGuideTouchStartY);
+
+        /*
+         * Do not treat a scrolling gesture as a tap.
+         */
+        if (
+            horizontalMovement > 12 ||
+            verticalMovement > 12
+        ) {
+            observationGuideLastTapTime = 0;
+            return;
+        }
+
+        const currentTapTime = Date.now();
+        const timeSinceLastTap =
+            currentTapTime - observationGuideLastTapTime;
+
+        if (
+            timeSinceLastTap > 0 &&
+            timeSinceLastTap < 325
+        ) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            observationGuideLastTapTime = 0;
+            observationGuideDoubleTapCloseButton?.click();
+
+            return;
+        }
+
+        observationGuideLastTapTime = currentTapTime;
+    },
+    { passive: false }
+);
+
 </script>
 
 <script type="module">
