@@ -250,69 +250,79 @@ canvas {
     pointer-events: none;
 }
 
-#phantomArrow {
+#phantomInstruction {
+    position: absolute;
+
+    left: 50%;
+    top: -190px;
+
+    transform: translateX(-50%);
+
+    width: max-content;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: .05em;
+
+    white-space: nowrap;
+
     opacity: 0;
 
-    font-size: 52px;
-    line-height: 1;
+    pointer-events: none;
+}
+
+#phantomArrow {
+    display: block;
+
+    width: 104px;
+    height: auto;
+
+    margin: 0 auto 18px;
+
+    overflow: visible;
+
+    opacity: 0;
+
+    fill: none;
+    stroke: white;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 
     transform: translateY(8px);
 }
 
-#phantomEye {
-    position: relative;
+#phantomEyeOrientation {
+    opacity: 0;
+    transform: scale(0.92);
+    transform-origin: center;
+}
 
-    width: 74px;
-    height: 44px;
+#phantomEye {
+    display: block;
+
+    width: 92px;
+    height: auto;
 
     margin: 10px auto 0;
 
-    opacity: 0;
+    overflow: visible;
 
-    border: 3px solid white;
-    border-radius: 50% / 62%;
-
-    box-sizing: border-box;
-}
-
-#phantomEye::before {
-    content: "";
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-
-    width: 23px;
-    height: 23px;
-
-    transform: translate(-50%, -50%);
-
-    border: 3px solid white;
-    border-radius: 50%;
+    fill: none;
+    stroke: white;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 
     box-sizing: border-box;
 }
 
-#phantomEye::after {
-    content: "";
-
-    position: absolute;
-    left: 50%;
-    top: 50%;
-
-    width: 9px;
-    height: 9px;
-
-    transform: translate(-50%, -50%);
-
-    background: white;
-    border-radius: 50%;
-}
-
-#phantomGuidance.play #phantomEye {
+#phantomGuidance.play #phantomEyeOrientation {
     animation:
         phantomEyeSequence
-        4.2s
+        5.4s
         ease
         forwards;
 }
@@ -320,9 +330,53 @@ canvas {
 #phantomGuidance.play #phantomArrow {
     animation:
         phantomArrowSequence
-        4.2s
+        5.4s
+        ease
+        1.2s
+        forwards;
+}
+
+#phantomGuidance.play #phantomInstruction {
+    animation:
+        phantomInstructionSequence
+        5.4s
         ease
         forwards;
+}
+
+@keyframes phantomInstructionSequence {
+    0%,
+    20% {
+        opacity: 0;
+    }
+
+    34% {
+        opacity: 1;
+    }
+
+    78% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes phantomArrowSequence {
+
+    0% {
+        opacity:0;
+    }
+
+    15% {
+        opacity:1;
+    }
+
+    100% {
+        opacity:1;
+    }
+
 }
 
 @keyframes phantomEyeSequence {
@@ -778,10 +832,80 @@ canvas {
     
     <div id="phantomAperture"></div>
 
-    <div id="phantomGuidance">
-        <div id="phantomArrow">↑</div>
-        <div id="phantomEye"></div>
+   <div id="phantomGuidance">
+
+    <div id="phantomInstruction">
+        VIEW THROUGH THE TUBES AT 45°–75°
     </div>
+
+    <svg
+        id="phantomArrow"
+        viewBox="-40 -40 80 80"
+        role="img"
+        aria-label="Direction arrow"
+    >
+        <path
+            d="
+                M -28 10
+                L 0 -28
+                L 28 10
+                L 10 10
+                L 10 28
+                L -10 28
+                L -10 10
+                Z
+            "
+        />
+    </svg>
+
+    <div id="phantomEyeOrientation">
+    <svg
+    id="phantomEye"
+    viewBox="-40 -34 80 90"
+    role="img"
+    aria-label="Observation eye"
+    
+>
+
+<g transform="rotate(180 0 11)">
+
+        <!-- Canonical symmetrical outer frame -->
+        <path
+            d="
+                M -34.5 13
+                L 0 -30
+                L 34.5 13
+            "
+        />
+
+        <!-- Wide-open curved eyelid -->
+        <path
+            d="
+                M -29 7
+                Q 0 51
+                29 7
+            "
+        />
+
+        <!-- Outer iris -->
+        <ellipse
+            cx="0"
+            cy="20"
+            rx="14"
+            ry="8"
+        /> 
+
+        <!-- Inner pupil -->
+        <ellipse
+            cx="0"
+            cy="23"
+            rx="7"
+            ry="5"
+        />
+      </g>
+    </svg>
+</div>
+</div> 
 
     <div id="phantomControls">
         
@@ -957,10 +1081,11 @@ canvas {
         <h3>VIEWING ANGLE</h3>
 
           <div class="observation-angle-diagram">
-            <img
-                src="../assets/observation-angle.svg?v=18"
-                alt="Viewing angles of 45 degrees and 75 degrees."
-            >
+           <img
+    src="../assets/observation-angle.svg?v=39"
+    alt="Viewing angles of 45 degrees and 75 degrees."
+>
+>
         </div>
 
         <p>
@@ -2770,7 +2895,6 @@ document.addEventListener("keydown", function (event) {
         wheelOffsetY = 0;
     }
 });
-
 let lastFrameTime = null;
 
 function playPhantomGuidance() {
@@ -2783,7 +2907,7 @@ function playPhantomGuidance() {
 
     setTimeout(function () {
         phantomGuidance.classList.remove("play");
-    }, 4300);
+    }, 5500);
 }
 
 function showPhantomControls() {

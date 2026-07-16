@@ -8,88 +8,95 @@
 
     <desc id="description">
         Two matching diagrams show a device lying flat on a table,
-        observed through rectangular viewing tubes at exactly
-        forty-five degrees and seventy-five degrees. The bottom
-        edge of each device is identified on the right.
+        observed through viewing tubes at forty-five degrees and
+        seventy-five degrees. Both observers are shown at the same
+        height, and the bottom edge of each device is identified.
     </desc>
 
-    <defs>
-        <style>
-            .line {
-                fill: none;
-                stroke: #ffffff;
-                stroke-width: 2.4;
-                stroke-linecap: round;
-                stroke-linejoin: round;
-            }
+    <style>
+        .line {
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
 
-            .dashed {
-                stroke-dasharray: 8 8;
-            }
+        .dashed {
+            stroke-dasharray: 8 8;
+        }
 
-            .label {
-                fill: #ffffff;
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 20px;
-            }
+        .label {
+            fill: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 27px;
+        }
 
-            .star-label {
-                fill: #ffffff;
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 12px;
-            }
+        .star-label {
+            fill: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+        }
 
-            .edge-label {
-                fill: #ffffff;
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 15px;
-                letter-spacing: 0.06em;
-            }
-        </style>
-
-        <!-- Arrowhead used by both exact angle arcs -->
-        <marker
-            id="angle-arrow"
-            markerWidth="7"
-            markerHeight="7"
-            refX="5.4"
-            refY="3.5"
-            orient="auto"
-            markerUnits="strokeWidth"
-        >
-            <path
-                d="M0 0 L7 3.5 L0 7 Z"
-                fill="#ffffff"
-            />
-        </marker>
+        .edge-label {
+            fill: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            letter-spacing: 0.06em;
+        }
+    </style>
+<defs>
+    <!-- Canonical Observation Eye -->
+    <g id="observation-eye">
 
         <!--
-            Canonical observation eye.
-
-            The oval iris touches the outer curved line at its
-            lowest point. There is no additional interior line.
+            Symmetrical angular frame.
+            Both lower ends extend beyond the eyelid,
+            creating the small eyelash overhang.
         -->
-        <g id="observation-eye">
-            <path
-                class="line"
-                d="
-                    M -30 -18
-                    L 20 -18
-                    L 24 18
-                    Q 0 32 -24 18
-                    Z
-                "
-            />
+        <path
+    class="line"
+    d="
+        M -34.5 13
+        L 0 -30
+        L 34.5 13
+    "
+/>
 
-            <ellipse
-                class="line"
-                cx="-3"
-                cy="26"
-                rx="11"
-                ry="6"
-            />
-        </g>
-    </defs>
+        <!--
+            Wide-open curved eyelid.
+            It joins inside the frame ends,
+            leaving an equal overhang on both sides.
+        -->
+        <path
+            class="line"
+            d="
+                M -29 7
+                Q 0 51
+                29 7
+            "
+        />
+
+        <!-- Outer iris seated on the eyelid -->
+        <ellipse
+            class="line"
+            cx="0"
+            cy="20"
+            rx="14"
+            ry="8"
+        />
+
+        <!-- Inner pupil seated inside the iris -->
+        <ellipse
+            class="line"
+            cx="0"
+            cy="23"
+            rx="7"
+            ry="5"
+        />
+
+    </g>
+</defs>
 
     <!-- Black background -->
     <rect
@@ -98,18 +105,8 @@
         fill="#000000"
     />
 
-    <!-- Center divider -->
-    <line
-        class="line"
-        x1="400"
-        y1="28"
-        x2="400"
-        y2="272"
-        opacity="0.7"
-    />
-
     <!-- ===================================================== -->
-    <!-- EXACT 45-DEGREE DIAGRAM                               -->
+    <!-- 45-DEGREE DIAGRAM — LEFT                              -->
     <!-- ===================================================== -->
 
     <g transform="translate(20 10)">
@@ -127,139 +124,117 @@
         <rect
             class="line"
             x="45"
-            y="210"
+            y="222"
             width="230"
-            height="35"
+            height="23"
             rx="5"
         />
 
-        <!-- Bottom-edge vertical reference -->
+        <!-- Device controls -->
+        <rect
+            class="line"
+            x="72"
+            y="230.5"
+            width="14"
+            height="6"
+        />
+
+        <rect
+            class="line"
+            x="94"
+            y="230.5"
+            width="14"
+            height="6"
+        />
+
+        <!-- Bottom-edge reference -->
         <line
             class="line dashed"
             x1="275"
-            y1="210"
+            y1="222"
             x2="275"
             y2="145"
         />
 
-        <!-- Bottom-edge pointer -->
         <line
             class="line"
             x1="275"
-            y1="225"
+            y1="234"
             x2="300"
-            y2="207"
+            y2="216"
         />
 
         <text
             class="edge-label"
             x="306"
-            y="211"
+            y="220"
         >
             BOTTOM
         </text>
 
         <!--
-            Exact 45° sightline.
+            Exact 45-degree sightline.
 
-            Origin:
-            x = 115
-            y = 210
-
-            Direction:
-            cos(45°) = 0.70710678
-            sin(45°) = 0.70710678
+            Origin: 115, 222
+            Tube begins: 214.33, 122.67
         -->
-
-        <!-- Sightline below tube -->
         <line
             class="line dashed"
             x1="115"
-            y1="210"
-            x2="174.397"
-            y2="150.603"
+            y1="222"
+            x2="214.33"
+            y2="122.67"
         />
 
-        <!--
-            Rectangular viewing tube.
-
-            Starts 92 units along the exact 45° sightline.
-            Length = 44.
-            No curved ends.
-        -->
-        <g
-            transform="
-                translate(180.054 144.946)
-                rotate(-45)
-            "
-        >
+        <!-- Viewing tube aligned exactly to 45 degrees -->
+        <g transform="translate(214.33 122.67) rotate(-45)">
             <rect
                 class="line"
                 x="0"
-                y="-7"
-                width="44"
-                height="14"
+                y="-9"
+                width="52"
+                height="18"
             />
         </g>
 
-        <!-- Short sightline between tube and eye -->
-        <line
-            class="line dashed"
-            x1="214.702"
-            y1="110.298"
-            x2="216.823"
-            y2="108.177"
-        />
-
         <!--
-            Canonical eye.
-
-            The eye is rotated so its observational axis aligns
-            precisely with the 45° sightline.
-
-            Both diagram eyes share the same vertical center.
+            Eye center: 261, 76
+            Same vertical height as the 75-degree eye.
+            Small gap remains between tube and eye.
         -->
-        <g
-            transform="
-                translate(235.915 89.085)
-                rotate(45)
-            "
-        >
-            <use href="#observation-eye" />
-        </g>
+        <g transform="translate(279 58) rotate(45)">
+    <use href="#observation-eye" />
+</g>
 
-        <!-- Exact 45° angle arc -->
+        <!-- Exact 45-degree angle arc -->
         <path
             class="line"
-            marker-end="url(#angle-arrow)"
             d="
-                M 167 210
+                M 167 222
                 A 52 52 0 0 0
-                151.770 173.230
+                151.770 185.230
             "
         />
 
-        <!-- Degree label -->
         <text
             class="label"
             x="174"
-            y="184"
+            y="196"
         >
             45°
         </text>
 
-        <!-- Small significance star -->
         <text
             class="star-label"
-            x="211"
-            y="172"
+            x="225"
+            y="181"
         >
             ★
         </text>
     </g>
 
     <!-- ===================================================== -->
-    <!-- EXACT 75-DEGREE DIAGRAM                               -->
+    <!-- 75-DEGREE DIAGRAM — RIGHT                             -->
     <!-- ===================================================== -->
 
     <g transform="translate(410 10)">
@@ -277,122 +252,101 @@
         <rect
             class="line"
             x="45"
-            y="210"
+            y="222"
             width="230"
-            height="35"
+            height="23"
             rx="5"
         />
 
-        <!-- Bottom-edge vertical reference -->
+        <!-- Device controls -->
+        <rect
+            class="line"
+            x="72"
+            y="230.5"
+            width="14"
+            height="6"
+        />
+
+        <rect
+            class="line"
+            x="94"
+            y="230.5"
+            width="14"
+            height="6"
+        />
+
+        <!-- Bottom-edge reference -->
         <line
             class="line dashed"
             x1="275"
-            y1="210"
+            y1="222"
             x2="275"
             y2="145"
         />
 
-        <!-- Bottom-edge pointer -->
         <line
             class="line"
             x1="275"
-            y1="225"
+            y1="234"
             x2="300"
-            y2="207"
+            y2="216"
         />
 
         <text
             class="edge-label"
             x="306"
-            y="211"
+            y="220"
         >
             BOTTOM
         </text>
 
         <!--
-            Exact 75° sightline.
+            Exact 75-degree sightline.
 
-            Origin:
-            x = 115
-            y = 210
-
-            Direction:
-            cos(75°) = 0.25881905
-            sin(75°) = 0.96592583
+            Origin: 115, 222
+            Tube begins: 137.04, 139.75
         -->
-
-        <!-- Sightline below tube -->
         <line
-            class="line dashed"
-            x1="115"
-            y1="210"
-            x2="126.388"
-            y2="167.499"
-        />
+    class="line dashed"
+    x1="115"
+    y1="222"
+    x2="133.68"
+    y2="152.31"
+/>
 
-        <!--
-            Rectangular viewing tube.
-
-            Starts 48 units along the exact 75° sightline.
-            Length = 44.
-            No curved ends.
-        -->
-        <g
-            transform="
-                translate(127.423 163.636)
-                rotate(-75)
-            "
-        >
+        <!-- Viewing tube aligned exactly to 75 degrees -->
+       <g transform="translate(137.04 147.75) rotate(-75)">
             <rect
                 class="line"
                 x="0"
-                y="-7"
-                width="44"
-                height="14"
+                y="-9"
+                width="52"
+                height="18"
             />
         </g>
 
-        <!-- Short sightline between tube and eye -->
-        <line
-            class="line dashed"
-            x1="138.811"
-            y1="121.135"
-            x2="140.414"
-            y2="115.153"
-        />
-
         <!--
-            Canonical eye.
-
-            Its center is at the same vertical height as the
-            45° eye. Its rotation aligns its observational axis
-            precisely with the 75° sightline.
+            Eye center: 154.12, 76
+            Exactly the same vertical height as the 45-degree eye.
         -->
-        <g
-            transform="
-                translate(147.400 89.085)
-                rotate(15)
-            "
-        >
-            <use href="#observation-eye" />
-        </g>
+        <g transform="translate(160.4 58) rotate(15)">
+    <use href="#observation-eye" />
+</g>
 
-        <!-- Exact 75° angle arc -->
+        <!-- Exact 75-degree angle arc -->
         <path
             class="line"
-            marker-end="url(#angle-arrow)"
             d="
-                M 167 210
+                M 167 222
                 A 52 52 0 0 0
-                128.459 159.772
+                128.459 171.772
             "
         />
 
-        <!-- Degree label -->
         <text
             class="label"
             x="174"
-            y="184"
+            y="193"
         >
             75°
         </text>
