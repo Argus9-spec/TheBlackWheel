@@ -242,6 +242,7 @@ canvas {
 
     left: 50%;
     bottom: 110px;
+
     transform: translateX(-50%);
 
     color: white;
@@ -250,27 +251,37 @@ canvas {
     pointer-events: none;
 }
 
-#phantomInstruction {
-    position: absolute;
+#phantomInstruction2 {
 
-    left: 50%;
-    top: -190px;
+    position:absolute;
 
-    transform: translateX(-50%);
+    left:50%;
+    top:-70px;
 
-    width: max-content;
+    transform:translateX(-50%);
 
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: .05em;
+    width:min(620px, calc(100vw - 40px));
 
-    white-space: nowrap;
+    opacity:0;
 
-    opacity: 0;
+    color:white;
 
-    pointer-events: none;
+    font-family:Arial, Helvetica, sans-serif;
+
+    font-size:21px;
+
+    font-weight:700;
+
+    line-height:1.35;
+
+    letter-spacing:.05em;
+
+    text-align:center;
+
+    white-space:normal;
+
+    pointer-events:none;
+
 }
 
 #phantomArrow {
@@ -319,65 +330,89 @@ canvas {
     box-sizing: border-box;
 }
 
+#phantomInstruction {
+    position: absolute;
+
+    left: 50%;
+    top: -340px;
+
+    transform: translateX(-50%);
+
+    width: min(680px, calc(100vw - 40px));
+
+    opacity: 0;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: clamp(20px, 2.2vw, 28px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.05em;
+
+    text-align: center;
+    white-space: normal;
+
+    pointer-events: none;
+}
+
+#phantomInstruction2 {
+    position: absolute;
+
+    left: 50%;
+    top: -175px;
+
+    transform: translateX(-50%);
+
+    width: min(680px, calc(100vw - 40px));
+
+    opacity: 0;
+
+    color: #bbb;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: clamp(19px, 2vw, 25px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.05em;
+
+    text-align: center;
+    white-space: normal;
+
+    pointer-events: none;
+}
+
 #phantomGuidance.play #phantomEyeOrientation {
     animation:
         phantomEyeSequence
-        5.4s
-        ease
+        7.2s
+        ease-in-out
         forwards;
 }
 
 #phantomGuidance.play #phantomArrow {
     animation:
         phantomArrowSequence
-        5.4s
-        ease
-        1.2s
+        7.2s
+        ease-in-out
+        forwards;
+}
+
+#phantomGuidance.play #phantomInstruction2 {
+    animation:
+        phantomInstruction2Sequence
+        7.2s
+        ease-in-out
         forwards;
 }
 
 #phantomGuidance.play #phantomInstruction {
     animation:
         phantomInstructionSequence
-        5.4s
-        ease
+        7.2s
+        ease-in-out
         forwards;
 }
 
-@keyframes phantomInstructionSequence {
-    0%,
-    20% {
-        opacity: 0;
-    }
 
-    34% {
-        opacity: 1;
-    }
-
-    78% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-    }
-}
-
-@keyframes phantomArrowSequence {
-
-    0% {
-        opacity:0;
-    }
-
-    15% {
-        opacity:1;
-    }
-
-    100% {
-        opacity:1;
-    }
-
-}
 
 @keyframes phantomEyeSequence {
     0% {
@@ -385,47 +420,81 @@ canvas {
         transform: scale(0.92);
     }
 
-    15% {
+    11% {
         opacity: 1;
         transform: scale(1);
     }
 
-    82% {
-        opacity: 1;
-        transform: scale(1);
+   84% {
+         opacity: 1;
+         transform: scale(1);
+
     }
 
     100% {
         opacity: 0;
-        transform: scale(0.98);
+        transform: scale(1);
     }
 }
 
 @keyframes phantomArrowSequence {
     0%,
-    20% {
+    11% {
         opacity: 0;
         transform: translateY(8px);
     }
 
-    34% {
+    22% {
         opacity: 1;
         transform: translateY(0);
     }
 
-    68% {
+   84% {
         opacity: 1;
         transform: translateY(0);
-    }
-
-    82% {
-        opacity: 0;
-        transform: translateY(-5px);
     }
 
     100% {
         opacity: 0;
-        transform: translateY(-5px);
+        transform: translateY(0);
+    }
+}
+
+@keyframes phantomInstructionSequence {
+    0%,
+    22% {
+        opacity: 0;
+    }
+
+    35% {
+        opacity: 1;
+    }
+
+    84% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes phantomInstruction2Sequence {
+    0%,
+    50% {
+        opacity: 0;
+    }
+
+    61% {
+        opacity: 1;
+    }
+
+    84% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
     }
 }
 
@@ -832,11 +901,19 @@ canvas {
     
     <div id="phantomAperture"></div>
 
-   <div id="phantomGuidance">
+    <div id="phantomGuidance">
 
-    <div id="phantomInstruction">
-        VIEW THROUGH THE TUBES AT 45°–75°
-    </div>
+   <div id="phantomInstruction">
+    IN THE DARK,<br>
+    VIEW THIS REGION<br>
+    THROUGH THE TUBES<br>
+    AT 45°–75°
+</div>
+
+<div id="phantomInstruction2">
+    THEN TRY AGAIN<br>
+    WITHOUT THE TUBES.
+</div>
 
     <svg
         id="phantomArrow"
@@ -2907,7 +2984,7 @@ function playPhantomGuidance() {
 
     setTimeout(function () {
         phantomGuidance.classList.remove("play");
-    }, 5500);
+    }, 6500);
 }
 
 function showPhantomControls() {
@@ -2918,7 +2995,7 @@ function showPhantomControls() {
     phantomControlsTimer =
         setTimeout(function () {
             phantomControls.classList.remove("visible");
-        }, 4000);
+        }, 6500);
 }
 
 function hidePhantomControls() {
