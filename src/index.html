@@ -105,7 +105,8 @@ html,body{
 
 #centerStarButton,
 #observationGuideButton,
-#phantomAxisButton {
+#phantomAxisButton,
+#fieldExplorerButton {
 
     width: 100%;
 
@@ -134,7 +135,9 @@ html,body{
     border-color: #ff8a84;
 }
 
-#phantomAxisButton.active {
+
+#phantomAxisButton.active,
+#fieldExplorerButton.active {
     background: black;
     color: white;
     border-color: white;
@@ -603,31 +606,68 @@ canvas {
     margin-top: 14px;
 }
 
+#phantomCenterShield {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 0;
+
+    z-index: 16;
+
+    background: black;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.35s ease;
+}
+
+#phantomCenterShield.active {
+    opacity: 1;
+}
+
 @media (max-width: 700px) {
 
     #controls {
+    left: 12px;
 
-        left: 12px;
+    top:
+        calc(
+            env(safe-area-inset-top)
+            + 112px
+        );
 
-        bottom: 14px;
+   bottom:
+    calc(
+        env(safe-area-inset-bottom)
+        + 8px
+    );
 
-        width: 292px;
+    width:
+        calc(
+            100vw
+            - 24px
+        );
 
-        max-height: none;
+    max-height:
+    calc(
+        100dvh
+        - env(safe-area-inset-top)
+        - env(safe-area-inset-bottom)
+        + 24px
+    );
 
-        overflow-y: visible;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 
-        padding: 14px;
-
-        font-size: 14px;
-
-        letter-spacing: 0.8px;
-
-        transform: scale(0.88);
-
-        transform-origin: bottom left;
-
-    }
+    padding: 14px;
+}
 
     #phantomMask {
 
@@ -737,61 +777,6 @@ canvas {
     display: none;
 }
 
-/* Custom scrollbar */
-.guide-scrollbar {
-    position: fixed;
-
-    width: 8px;
-
-    pointer-events: auto;
-    touch-action: none;
-    z-index: 1002;
-}
-
-.guide-scrollbar::after {
-    content: "";
-
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-
-    width: 1px;
-    background: #555;
-}
-
-.guide-scrollbar-thumb {
-    position: absolute;
-    top: 0;
-    right: -4px;
-
-    width: 14px;
-    min-height: 36px;
-
-    background: transparent;
-
-    transform: translateY(0);
-    z-index: 2;
-
-    cursor: grab;
-    touch-action: none;
-    pointer-events: auto;
-}
-
-.guide-scrollbar-thumb::after {
-    content: "";
-
-    position: absolute;
-    top: 0;
-    right: 4px;
-    bottom: 0;
-
-    width: 6px;
-
-    background: #555;
-    border-radius: 999px 0 0 999px;
-}
-
 .guide-panel p,
 .guide-panel li {
     font-size: 1.15rem;
@@ -829,8 +814,8 @@ canvas {
 
 .guide-close-button {
     position: absolute;
-    top: 14px;
-    right: 16px;
+    top: 44px;
+    right: 24px;
 
     width: 36px;
     height: 36px;
@@ -887,6 +872,155 @@ canvas {
     height: auto;
 }
 
+@media (max-width: 700px) {
+
+    #controls {
+        top:
+    calc(
+        env(safe-area-inset-top)
+        + 8px
+    );
+
+bottom: auto;
+
+height:
+    calc(
+        (
+            100dvh
+            - env(safe-area-inset-top)
+            - env(safe-area-inset-bottom)
+            - 16px
+        )
+        / 0.94
+    );
+
+max-height: none;
+
+        left: 50%;
+        transform:
+        translateX(-50%)
+        scale(0.94);
+
+transform-origin: top center;
+
+width:
+    min(
+        calc(350px / 0.93),
+        calc(
+            (
+                100vw
+                - env(safe-area-inset-left)
+                - env(safe-area-inset-right)
+                - 24px
+            )
+            / 0.94
+        )
+    );
+
+       max-height: none;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        -webkit-overflow-scrolling: touch;
+
+        padding: 14px;
+    }
+}
+
+@media
+    (max-width: 700px)
+    and (max-height: 500px)
+    and (orientation: landscape) {
+
+    #controls {
+        top:
+            calc(
+                env(safe-area-inset-top)
+                + 2px
+            );
+
+        bottom: auto;
+        left: 50%;
+
+        transform:
+            translateX(-50%)
+            scale(0.93);
+
+        transform-origin: top center;
+
+        width:
+            min(
+                370px,
+                calc(
+                    100vw
+                    - env(safe-area-inset-left)
+                    - env(safe-area-inset-right)
+                    - 16px
+                )
+            );
+
+       max-height:
+    calc(
+        100dvh
+        - env(safe-area-inset-top)
+        - env(safe-area-inset-bottom)
+        - 8px
+    );
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+
+        touch-action: pan-y;
+    }
+
+    #controls button {
+        touch-action: manipulation;
+    }
+
+    #controls input[type="range"] {
+        touch-action: none;
+    }
+}
+
+html.standalone-app .guide-overlay {
+
+    align-items: flex-start;
+
+    padding-top:
+        calc(
+            env(safe-area-inset-top)
+            + 24px
+        );
+
+    padding-right: 12px;
+
+    padding-bottom:
+        calc(
+            env(safe-area-inset-bottom)
+            + 16px
+        );
+
+    padding-left: 12px;
+
+}
+
+html.standalone-app .guide-panel {
+
+    max-height:
+        calc(
+            100dvh
+            - env(safe-area-inset-top)
+            - env(safe-area-inset-bottom)
+            - 48px
+        );
+
+
+}
+
 </style>
 
 </head>
@@ -900,6 +1034,7 @@ canvas {
     <div class="maskPanel maskBottom"></div>
     
     <div id="phantomAperture"></div>
+    <div id="phantomCenterShield"></div>
 
     <div id="phantomGuidance">
 
@@ -984,21 +1119,27 @@ canvas {
 </div>
 </div> 
 
-    <div id="phantomControls">
-        
+  <div id="phantomControls">
 
-        <button
-            id="maskVisibilityButton"
-            type="button">
-            MASK OFF
-        </button>
+    <button
+        id="maskVisibilityButton"
+        type="button">
+        HIDE CENTER
+    </button>
 
-        <button
-            id="phantomReturnButton"
-            type="button">
-            RETURN
-        </button>
-    </div>
+    <button
+        id="viewingCircleButton"
+        type="button">
+        VIEWING CIRCLE
+    </button>
+
+    <button
+        id="phantomReturnButton"
+        type="button">
+        RETURN
+    </button>
+
+</div>
 </div>
 
 <div id="controls">
@@ -1099,6 +1240,12 @@ canvas {
 
 <button id="phantomAxisButton" type="button">
     PHANTOM AXIS ILLUSION
+</button>
+
+<button
+    id="fieldExplorerButton"
+    type="button">
+    FIELD EXPLORER
 </button>
 
 </div>
@@ -1581,15 +1728,6 @@ canvas {
         </p>
     </section>
 
-    <div
-        class="guide-scrollbar"
-        aria-hidden="true"
-    >
-        <div
-            id="observationGuideScrollbarThumb"
-            class="guide-scrollbar-thumb"
-        ></div>
-    </div>
 </div>
 
 <script>
@@ -1644,314 +1782,6 @@ ${event.reason}
     `;
 });
 
-const observationGuidePanel =
-    document.getElementById("observationGuidePanel");
-
-const observationGuideScrollbarThumb =
-    document.getElementById("observationGuideScrollbarThumb");
-
-function updateObservationGuideScrollbar() {
-    if (
-        !observationGuidePanel ||
-        !observationGuideScrollbarThumb
-    ) {
-        return;
-    }
-
-    const visibleHeight = observationGuidePanel.clientHeight;
-    const totalHeight = observationGuidePanel.scrollHeight;
-    const scrollTop = observationGuidePanel.scrollTop;
-
-    if (totalHeight <= visibleHeight) {
-        observationGuideScrollbarThumb.style.display = "none";
-        return;
-    }
-
-    observationGuideScrollbarThumb.style.display = "block";
-
-    const minimumThumbHeight = 36;
-    const thumbHeight = Math.max(
-        minimumThumbHeight,
-        (visibleHeight / totalHeight) * visibleHeight
-    );
-
-    const availableTravel = visibleHeight - thumbHeight;
-    const maximumScroll = totalHeight - visibleHeight;
-
-    const thumbPosition =
-        maximumScroll > 0
-            ? (scrollTop / maximumScroll) * availableTravel
-            : 0;
-
-    observationGuideScrollbarThumb.style.height =
-        `${thumbHeight}px`;
-
-    observationGuideScrollbarThumb.style.transform =
-        `translateY(${thumbPosition}px)`;
-}
-
-observationGuidePanel?.addEventListener(
-    "scroll",
-    updateObservationGuideScrollbar,
-    { passive: true }
-);
-
-window.addEventListener(
-    "resize",
-    updateObservationGuideScrollbar
-);
-
-const observationGuideObserver = new MutationObserver(() => {
-    requestAnimationFrame(updateObservationGuideScrollbar);
-});
-
-const observationGuideOverlay =
-    document.getElementById("observationGuideOverlay");
-
-if (observationGuideOverlay) {
-    observationGuideObserver.observe(
-        observationGuideOverlay,
-        {
-            attributes: true,
-            attributeFilter: ["hidden"]
-        }
-    );
-}
-
-requestAnimationFrame(updateObservationGuideScrollbar);
-
-const guidePanel =
-    document.getElementById("observationGuidePanel");
-
-const guideScrollbar =
-    document.querySelector(".guide-scrollbar");
-
-const guideScrollbarThumb =
-    document.getElementById("observationGuideScrollbarThumb");
-
-function updateGuideScrollbar() {
-    if (!guidePanel || !guideScrollbar || !guideScrollbarThumb) {
-        return;
-    }
-
-    const panelRect = guidePanel.getBoundingClientRect();
-
-        guideScrollbar.style.top =
-            `${panelRect.top}px`;
-
-        guideScrollbar.style.left =
-            `${panelRect.right - 20}px`;
-
-        guideScrollbar.style.height =
-            `${panelRect.height}px`;   
-
-
-    const visibleHeight = guidePanel.clientHeight;
-    const totalHeight = guidePanel.scrollHeight;
-
-    if (totalHeight <= visibleHeight) {
-        guideScrollbar.style.display = "none";
-        return;
-    }
-
-    guideScrollbar.style.display = "block";
-
-    const trackHeight = guideScrollbar.clientHeight;
-    const minimumThumbHeight = 40;
-
-    const thumbHeight = Math.max(
-        minimumThumbHeight,
-        trackHeight * (visibleHeight / totalHeight)
-    );
-
-    const maximumScroll =
-        totalHeight - visibleHeight;
-
-    const maximumThumbTravel =
-        trackHeight - thumbHeight;
-
-    const thumbTop =
-        maximumScroll > 0
-            ? (guidePanel.scrollTop / maximumScroll) *
-              maximumThumbTravel
-            : 0;
-
-    guideScrollbarThumb.style.height =
-        `${thumbHeight}px`;
-
-    guideScrollbarThumb.style.transform =
-        `translateY(${thumbTop}px)`;
-}
-
-guidePanel?.addEventListener(
-    "scroll",
-    updateGuideScrollbar,
-    { passive: true }
-);
-
-window.addEventListener(
-    "resize",
-    updateGuideScrollbar
-);
-
-const guideOverlay =
-    document.getElementById("observationGuideOverlay");
-
-if (guideOverlay) {
-    new MutationObserver(() => {
-        requestAnimationFrame(updateGuideScrollbar);
-    }).observe(guideOverlay, {
-        attributes: true,
-        attributeFilter: ["hidden"]
-    });
-}
-
-requestAnimationFrame(updateGuideScrollbar);
-
-let isDraggingGuideThumb = false;
-
-let guideThumbDragStartY = 0;
-
-let guidePanelScrollStart = 0;
-
-function beginGuideThumbDrag(clientY) {
-
-    if (!guidePanel || !guideScrollbar || !guideScrollbarThumb) {
-
-        return;
-
-    }
-
-    isDraggingGuideThumb = true;
-
-    guideThumbDragStartY = clientY;
-
-    guidePanelScrollStart = guidePanel.scrollTop;
-
-    document.body.style.userSelect = "none";
-
-}
-
-function updateGuideThumbDrag(clientY) {
-
-    if (
-
-        !isDraggingGuideThumb ||
-
-        !guidePanel ||
-
-        !guideScrollbar ||
-
-        !guideScrollbarThumb
-
-    ) {
-
-        return;
-
-    }
-
-    const trackHeight = guideScrollbar.clientHeight;
-
-    const thumbHeight = guideScrollbarThumb.offsetHeight;
-
-    const maximumThumbTravel = trackHeight - thumbHeight;
-
-    const maximumScroll =
-
-        guidePanel.scrollHeight - guidePanel.clientHeight;
-
-    if (maximumThumbTravel <= 0 || maximumScroll <= 0) {
-
-        return;
-
-    }
-
-    const pointerDelta = clientY - guideThumbDragStartY;
-
-    const scrollDelta =
-
-        (pointerDelta / maximumThumbTravel) * maximumScroll;
-
-    guidePanel.scrollTop =
-
-        guidePanelScrollStart + scrollDelta;
-
-}
-
-let suppressGuideCloseClick = false;
-
-function endGuideThumbDrag() {
-    if (isDraggingGuideThumb) {
-        suppressGuideCloseClick = true;
-
-        window.setTimeout(() => {
-            suppressGuideCloseClick = false;
-        }, 250);
-    }
-
-    isDraggingGuideThumb = false;
-    document.body.style.userSelect = "";
-}
-
-guideScrollbarThumb?.addEventListener("mousedown", (event) => {
-    event.preventDefault();
-    beginGuideThumbDrag(event.clientY);
-});
-
-window.addEventListener("mousemove", (event) => {
-    updateGuideThumbDrag(event.clientY);
-});
-
-window.addEventListener("mouseup", endGuideThumbDrag);
-
-guideScrollbarThumb?.addEventListener(
-    "touchstart",
-    (event) => {
-        event.preventDefault();
-
-        const touch = event.touches[0];
-
-        if (touch) {
-            beginGuideThumbDrag(touch.clientY);
-        }
-    },
-    { passive: false }
-);
-
-window.addEventListener(
-    "touchmove",
-    (event) => {
-        if (!isDraggingGuideThumb) {
-            return;
-        }
-
-        event.preventDefault();
-
-        const touch = event.touches[0];
-
-        if (touch) {
-            updateGuideThumbDrag(touch.clientY);
-        }
-    },
-    { passive: false }
-);
-
-window.addEventListener("touchend", endGuideThumbDrag);
-window.addEventListener("touchcancel", endGuideThumbDrag);
-
-window.addEventListener(
-    "click",
-    (event) => {
-        if (!suppressGuideCloseClick) {
-            return;
-        }
-
-        event.preventDefault();
-        event.stopImmediatePropagation();
-    },
-    true
-);
-
 const observationGuideDoubleTapPanel =
     document.getElementById("observationGuidePanel");
 
@@ -2003,17 +1833,16 @@ observationGuideDoubleTapPanel?.addEventListener(
             return;
         }
 
-        const currentTapTime = Date.now();
+        const currentTapTime = performance.now();
         const timeSinceLastTap =
             currentTapTime - observationGuideLastTapTime;
 
         if (
             timeSinceLastTap > 0 &&
-            timeSinceLastTap < 325
+            timeSinceLastTap < 400
         ) {
             event.preventDefault();
-            event.stopPropagation();
-
+            
             observationGuideLastTapTime = 0;
             observationGuideDoubleTapCloseButton?.click();
 
@@ -2411,6 +2240,9 @@ const centerStarButton =
 const observationGuideButton =
     document.getElementById("observationGuideButton");
 
+const fieldExplorerButton =
+    document.getElementById("fieldExplorerButton");
+
 const observationGuideOverlay =
     document.getElementById("observationGuideOverlay");
 
@@ -2419,6 +2251,9 @@ const observationGuideCloseButton =
 
 const phantomMask =
     document.getElementById("phantomMask");
+
+const phantomCenterShield =
+    document.getElementById("phantomCenterShield");
 
 const phantomGuidance =
     document.getElementById("phantomGuidance");
@@ -2429,11 +2264,24 @@ const phantomControls =
 const maskVisibilityButton =
     document.getElementById("maskVisibilityButton");
 
+const viewingCircleButton =
+    document.getElementById("viewingCircleButton");
+
 const phantomReturnButton =
     document.getElementById("phantomReturnButton");
 
+const isStandaloneApp =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+
+document.documentElement.classList.toggle(
+    "standalone-app",
+    isStandaloneApp
+);
+
 let phantomControlsTimer = null;
 let phantomMaskVisible = true;
+let centerHidden = false;
 
 centerStarButton.classList.toggle(
     "active",
@@ -2687,6 +2535,241 @@ observationGuideOverlay.addEventListener(
     }
 );
 
+    function setPhantomApertureGeometry() {
+    const viewport = window.visualViewport;
+
+    const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+
+    const viewportWidth =
+        viewport
+            ? viewport.width
+            : window.innerWidth;
+
+    const viewportHeight =
+        viewport
+            ? viewport.height
+            : window.innerHeight;
+
+    const shortestSide =
+    Math.min(
+        viewportWidth,
+        viewportHeight
+    );
+
+const isPhone =
+    shortestSide <= 500;
+
+const isLandscape =
+    viewportWidth > viewportHeight;
+
+    /*
+        Desktop and tablet retain the successful
+        860 px circular aperture whenever space permits.
+
+        Phone uses nearly the full available width.
+    */
+    const apertureSize =
+    isPhone
+        ? (
+            isLandscape
+                ? Math.min(
+                    viewportHeight * 0.82,
+                    viewportWidth * 0.72
+                )
+                : Math.min(
+                    viewportWidth * 0.94,
+                    viewportHeight * 0.72
+                )
+        )
+        : Math.min(
+            860,
+            viewportWidth * 0.90,
+            viewportHeight * 0.90
+        );
+
+const standaloneTopCorrection =
+    isStandalone && isPhone
+        ? 64
+        : 0;
+
+const isTablet =
+    !isPhone &&
+    navigator.maxTouchPoints > 1 &&
+    shortestSide <= 1024;
+
+const apertureTop =
+    isPhone
+        ? (
+            isLandscape
+                ? 8
+                : 16
+        )
+        : (
+            isTablet && isLandscape
+                ? 32
+                : 120
+        );
+        
+    phantomMask.style.setProperty(
+        "--aperture-size",
+        `${apertureSize}px`
+    );
+    
+
+    phantomMask.style.setProperty(
+        "--aperture-top",
+        `${apertureTop}px`
+    );
+}   
+
+function getPhantomTargetFromMask() {
+    const viewport = window.visualViewport;
+
+    const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+
+    const viewportLeft =
+        viewport
+            ? viewport.offsetLeft
+            : 0;
+
+    const viewportTop =
+        viewport
+            ? viewport.offsetTop
+            : 0;
+
+    const viewportWidth =
+        viewport
+            ? viewport.width
+            : viewWidth;
+
+    const viewportHeight =
+        viewport
+            ? viewport.height
+            : viewHeight;
+
+    /*
+        Read the active responsive aperture values directly
+        from #phantomMask.
+
+        This works even while the mask is display:none.
+    */
+    const maskStyles =
+        getComputedStyle(phantomMask);
+
+    const apertureSize =
+        parseFloat(
+            maskStyles.getPropertyValue("--aperture-size")
+        );
+
+    const apertureTop =
+        parseFloat(
+            maskStyles.getPropertyValue("--aperture-top")
+        );
+
+    /*
+        The circular aperture is centered horizontally.
+    */
+    const apertureCenterX =
+        viewportLeft + viewportWidth / 2;
+
+    const apertureBottom =
+        viewportTop + apertureTop + apertureSize;
+
+    /*
+        Canonical relationship between the aperture
+        and the full wheel.
+    */
+    const canonicalWheelRadius =
+    apertureSize * 1.635;
+
+    const canonicalWheelCenterX =
+        apertureCenterX;
+
+   const isTabletLandscape =
+    navigator.maxTouchPoints > 1 &&
+    viewportWidth > viewportHeight &&
+    viewportWidth > 700;
+
+const isDesktop =
+    viewportWidth > 1200 &&
+    !isTabletLandscape;
+
+const canonicalWheelCenterY =
+    apertureBottom +
+    apertureSize *
+    (
+        isDesktop
+            ? 0.090
+            : isTabletLandscape
+                ? 0.060
+                : 0.145
+    );
+
+    /*
+        Renderer baseline:
+        wheel center = viewport center + wheel offset
+    */
+    const rendererCenterX =
+        viewportLeft + viewportWidth / 2;
+
+    const rendererCenterY =
+        viewportTop + viewportHeight / 2;
+
+    const targetWheelScale =
+        canonicalWheelRadius /
+        Math.min(viewWidth, viewHeight);
+
+    const targetWheelOffsetX =
+        canonicalWheelCenterX - rendererCenterX;
+
+    const targetWheelOffsetY =
+        canonicalWheelCenterY - rendererCenterY;
+
+    return {
+        wheelScale: targetWheelScale,
+        wheelOffsetX: targetWheelOffsetX,
+        wheelOffsetY: targetWheelOffsetY
+    };
+}
+
+fieldExplorerButton.addEventListener(
+    "click",
+    function () {
+
+        const viewport =
+            window.visualViewport;
+
+        const viewportWidth =
+            viewport
+                ? viewport.width
+                : window.innerWidth;
+
+        const viewportHeight =
+            viewport
+                ? viewport.height
+                : window.innerHeight;
+
+        const isPortrait =
+            viewportHeight > viewportWidth;
+
+        if (isPortrait) {
+            console.log(
+                "FIELD EXPLORER: ROTATE DEVICE"
+            );
+
+            return;
+        }
+
+        console.log(
+            "FIELD EXPLORER: LANDSCAPE READY"
+        );
+    }
+);
+
 phantomAxisButton.addEventListener(
     "click",
     function () {
@@ -2735,22 +2818,22 @@ phantomAxisButton.addEventListener(
                   viewportWidth > 700 &&
                   viewportWidth <= 1200;
 
-        const phantomTargetState = {
-    wheelScale:
-        isPhone
-            ? 0.94
-            : isTablet
-                ? 1.08
-                : 1.45,
+                  setPhantomApertureGeometry();
 
-    wheelOffsetX: 0,
+            const phantomGeometry =
+    getPhantomTargetFromMask();
+
+  
+
+    const phantomTargetState = {
+    wheelScale:
+        phantomGeometry.wheelScale,
+
+    wheelOffsetX:
+        phantomGeometry.wheelOffsetX,
 
     wheelOffsetY:
-        isPhone
-            ? phantomViewportHeight * 0.17
-            : isTablet
-                ? phantomViewportHeight * 0.38
-                : phantomViewportHeight * 0.64,
+        phantomGeometry.wheelOffsetY,
 
     rotationSpeed: 0.0007,
 
@@ -2779,8 +2862,7 @@ animatePhantomJourney(
         phantomMaskVisible = true;
         phantomMask.classList.remove("mask-off");
 
-        maskVisibilityButton.textContent =
-            "MASK OFF";
+        maskVisibilityButton.textContent = "HIDE CENTER";
 
         /*
         Guidance begins after arrival.
@@ -2874,18 +2956,24 @@ animatePhantomJourney(
             }
 
             phantomAxisMode = false;
-            savedObservationState = null;
+savedObservationState = null;
 
-            phantomAxisButton.classList.remove("active");
-            phantomMask.classList.remove("active");
-            hidePhantomControls();
+phantomAxisButton.classList.remove("active");
 
-            phantomMaskVisible = true;
-            phantomMask.classList.remove("mask-off");
+phantomMask.classList.remove("active");
+phantomMask.classList.remove("mask-off");
 
-            maskVisibilityButton.textContent =
-                "MASK OFF";
-            controls.classList.remove("hidden");
+phantomCenterShield.classList.remove("active");
+
+phantomMaskVisible = true;
+centerHidden = false;
+
+maskVisibilityButton.textContent =
+    "HIDE CENTER";
+
+hidePhantomControls();
+
+controls.classList.remove("hidden");
 
 
         }
@@ -3021,21 +3109,135 @@ phantomControls.addEventListener(
     }
 );
 
+function updatePhantomCenterShield() {
+    const viewport =
+        window.visualViewport;
+
+    const viewportHeight =
+        viewport
+            ? viewport.height
+            : viewHeight;
+
+    /*
+        The renderer places the wheel center at:
+
+        viewport center + wheelOffsetY
+    */
+    const centerY =
+        viewportHeight / 2 +
+        wheelOffsetY;
+
+    /*
+        Begin the shield slightly above the red Center.
+    */
+    const overlap =
+        Math.max(
+            16,
+            Math.min(
+                28,
+                viewportHeight * 0.025
+            )
+        );
+
+    const shieldTop =
+        Math.max(
+            0,
+            Math.min(
+                viewportHeight,
+                centerY - overlap
+            )
+        );
+
+    phantomCenterShield.style.top =
+        `${shieldTop}px`;
+
+    phantomCenterShield.style.bottom =
+        "0";
+
+    phantomCenterShield.style.height =
+        "auto";
+}
+
 maskVisibilityButton.addEventListener(
     "click",
     function () {
-        phantomMaskVisible =
-            !phantomMaskVisible;
 
-        phantomMask.classList.toggle(
-            "mask-off",
-            !phantomMaskVisible
+        if (!centerHidden) {
+
+            /*
+                Open the circular aperture into the
+                full observation field.
+            */
+            phantomMask.classList.add(
+                "mask-off"
+            );
+
+            phantomMaskVisible = false;
+
+            /*
+                Position and reveal the lower shield.
+            */
+            updatePhantomCenterShield();
+
+            phantomCenterShield.classList.add(
+                "active"
+            );
+
+            maskVisibilityButton.textContent =
+                "SHOW CENTER";
+
+            centerHidden = true;
+
+        } else {
+
+            /*
+                Keep the full field open, but reveal
+                the Center for orientation.
+            */
+            phantomCenterShield.classList.remove(
+                "active"
+            );
+
+            maskVisibilityButton.textContent =
+                "HIDE CENTER";
+
+            centerHidden = false;
+
+        }
+
+        showPhantomControls();
+    }
+);
+
+viewingCircleButton.addEventListener(
+    "click",
+    function () {
+
+        /*
+            Restore the circular viewing aperture.
+        */
+        phantomMask.classList.remove(
+            "mask-off"
         );
 
+        phantomMaskVisible = true;
+
+        /*
+            Remove the lower Center shield.
+            The circle already excludes the Center.
+        */
+        phantomCenterShield.classList.remove(
+            "active"
+        );
+
+        centerHidden = false;
+
+        /*
+            Reset the Center button for the next
+            full-field observation.
+        */
         maskVisibilityButton.textContent =
-            phantomMaskVisible
-                ? "MASK OFF"
-                : "MASK ON";
+            "HIDE CENTER";
 
         showPhantomControls();
     }
@@ -3199,44 +3401,32 @@ const cy =
         ctx.fill();
     }
 
-    // Draw constant-size center measurement star
-    // at its true imported wheel position.
-    const centerStarSize =
+   // Draw constant-size center measurement star
+// at the exact mathematical center of the wheel.
+const centerStarSize =
     0.6 * (wheelScale / 0.46);
 
-const centerStar =
-    renderedStars[centerStarIndex];
+const centerStarX = cx;
+const centerStarY = cy;
 
-const centerRotatedX =
-    centerStar.x * cosR -
-    centerStar.y * sinR;
+ctx.fillStyle =
+    showCenterStar
+        ? "#ff3b30"
+        : "white";
 
-const centerRotatedY =
-    centerStar.x * sinR +
-    centerStar.y * cosR;
+ctx.shadowBlur = 0;
 
-    const centerStarX =
-        cx + centerRotatedX * wheelRadius;
+ctx.beginPath();
 
-    const centerStarY =
-        cy + centerRotatedY * wheelRadius;
+ctx.arc(
+    centerStarX,
+    centerStarY,
+    centerStarSize,
+    0,
+    Math.PI * 2
+);
 
-    ctx.fillStyle =
-        showCenterStar
-            ? "#ff3b30"
-            : "white";
-
-    ctx.shadowBlur = 0;
-
-    ctx.beginPath();
-    ctx.arc(
-        centerStarX,
-        centerStarY,
-        centerStarSize,
-        0,
-        Math.PI * 2
-    );
-    ctx.fill();
+ctx.fill();
 
     requestAnimationFrame(draw);
 }
