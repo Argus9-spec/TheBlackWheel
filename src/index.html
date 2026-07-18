@@ -254,6 +254,8 @@ canvas {
     pointer-events: none;
 }
 
+
+
 #phantomInstruction2 {
 
     position:absolute;
@@ -285,6 +287,67 @@ canvas {
 
     pointer-events:none;
 
+}
+
+.field-explorer-orientation-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.94);
+
+    opacity: 1;
+    transition: opacity 0.35s ease;
+}
+
+.field-explorer-orientation-overlay[hidden] {
+    display: none;
+}
+
+.field-explorer-orientation-overlay.leaving {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.field-explorer-orientation-panel {
+    color: white;
+    text-align: center;
+}
+.field-explorer-rotate-icon {
+    margin-bottom: 12px;
+
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 120px;
+    font-weight: 900;
+    line-height: 1;
+
+    -webkit-text-stroke: 3px white;
+  
+}
+
+.field-explorer-rotate-text {
+    font-family: Impact, sans-serif;
+
+    font-size: 42px;
+    font-weight: normal;
+
+    transform: scaleX(1.08);
+
+    line-height: 1.08;
+    letter-spacing: 0.02em;
+
+    text-transform: uppercase;
+
+    -webkit-text-stroke: 1.2px white;
 }
 
 #phantomArrow {
@@ -1140,6 +1203,23 @@ html.standalone-app .guide-panel {
     </button>
 
 </div>
+</div>
+
+<div
+    id="fieldExplorerOrientationOverlay"
+    class="field-explorer-orientation-overlay"
+    hidden
+>
+    <div class="field-explorer-orientation-panel">
+        <div class="field-explorer-rotate-icon">
+    ↻
+</div>
+<div class="field-explorer-rotate-text">
+    ROTATE
+    <br><br>
+    DEVICE
+</div>
+    </div>
 </div>
 
 <div id="controls">
@@ -2243,6 +2323,11 @@ const observationGuideButton =
 const fieldExplorerButton =
     document.getElementById("fieldExplorerButton");
 
+const fieldExplorerOrientationOverlay =
+    document.getElementById(
+        "fieldExplorerOrientationOverlay"
+    );  
+
 const observationGuideOverlay =
     document.getElementById("observationGuideOverlay");
 
@@ -2282,6 +2367,7 @@ document.documentElement.classList.toggle(
 let phantomControlsTimer = null;
 let phantomMaskVisible = true;
 let centerHidden = false;
+let fieldExplorerWaitingForLandscape = false;
 
 centerStarButton.classList.toggle(
     "active",
@@ -2766,6 +2852,87 @@ fieldExplorerButton.addEventListener(
 
         console.log(
             "FIELD EXPLORER: LANDSCAPE READY"
+        );
+    }
+);
+
+function isFieldExplorerPortrait() {
+    const viewport = window.visualViewport;
+
+    const viewportWidth =
+        viewport
+            ? viewport.width
+            : window.innerWidth;
+
+    const viewportHeight =
+        viewport
+            ? viewport.height
+            : window.innerHeight;
+
+    return viewportHeight > viewportWidth;
+}
+
+function finishFieldExplorerOrientationGate() {
+    fieldExplorerWaitingForLandscape = false;
+
+    fieldExplorerOrientationOverlay.classList.add(
+        "leaving"
+    );
+
+    window.setTimeout(
+        function () {
+            fieldExplorerOrientationOverlay.hidden = true;
+
+            fieldExplorerOrientationOverlay.classList.remove(
+                "leaving"
+            );
+        },
+        350
+    );
+}
+
+fieldExplorerButton?.addEventListener(
+    "click",
+    function (event) {
+        event.stopPropagation();
+
+        if (!isFieldExplorerPortrait()) {
+            return;
+        }
+
+        fieldExplorerWaitingForLandscape = true;
+        fieldExplorerOrientationOverlay.hidden = false;
+    }
+);
+
+function handleFieldExplorerOrientationGate() {
+    if (!fieldExplorerWaitingForLandscape) {
+        return;
+    }
+
+    if (isFieldExplorerPortrait()) {
+        return;
+    }
+
+    finishFieldExplorerOrientationGate();
+}
+
+window.addEventListener(
+    "resize",
+    handleFieldExplorerOrientationGate
+);
+
+window.visualViewport?.addEventListener(
+    "resize",
+    handleFieldExplorerOrientationGate
+);
+
+window.addEventListener(
+    "orientationchange",
+    function () {
+        window.setTimeout(
+            handleFieldExplorerOrientationGate,
+            150
         );
     }
 );
