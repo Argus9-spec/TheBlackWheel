@@ -283,13 +283,12 @@ canvas {
 
     text-align:center;
 
-    white-space:normal;
+   white-space: normal;
 
-    pointer-events:none;
-
+pointer-events: none;
 }
 
-.field-explorer-orientation-overlay {
+.orientation-overlay {
     position: fixed;
     inset: 0;
     z-index: 10000;
@@ -304,20 +303,15 @@ canvas {
     transition: opacity 0.35s ease;
 }
 
-.field-explorer-orientation-overlay[hidden] {
+.orientation-overlay[hidden] {
     display: none;
 }
 
-.field-explorer-orientation-overlay.leaving {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.field-explorer-orientation-panel {
+.orientation-panel {
     color: white;
     text-align: center;
 }
-.field-explorer-rotate-icon {
+.orientation-icon {
     margin-bottom: 12px;
 
 
@@ -334,7 +328,7 @@ canvas {
   
 }
 
-.field-explorer-rotate-text {
+.orientation-text {
     font-family: Impact, sans-serif;
 
     font-size: 42px;
@@ -356,7 +350,7 @@ canvas {
     width: 104px;
     height: auto;
 
-    margin: 0 auto 18px;
+    margin: 0 auto 10px;
 
     overflow: visible;
 
@@ -368,7 +362,7 @@ canvas {
     stroke-linecap: round;
     stroke-linejoin: round;
 
-    transform: translateY(8px);
+    transform: translateY(24px);
 }
 
 #phantomEyeOrientation {
@@ -383,7 +377,7 @@ canvas {
     width: 92px;
     height: auto;
 
-    margin: 10px auto 0;
+    margin: -34px auto 0;
 
     overflow: visible;
 
@@ -396,11 +390,25 @@ canvas {
     box-sizing: border-box;
 }
 
-#phantomInstruction {
+#phantomGuidance {
     position: absolute;
+    z-index: 20;
 
     left: 50%;
-    top: -340px;
+    bottom: 38px;
+
+    transform: translateX(-50%);
+
+    color: white;
+    text-align: center;
+
+    pointer-events: none;
+}
+
+#phantomInstruction {
+    position: fixed;
+    left: 50%;
+   top: -535px;
 
     transform: translateX(-50%);
 
@@ -410,9 +418,9 @@ canvas {
 
     color: white;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: clamp(20px, 2.2vw, 28px);
+    font-size: clamp(18px, 2vw, 26px);
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.18;
     letter-spacing: 0.05em;
 
     text-align: center;
@@ -422,28 +430,85 @@ canvas {
 }
 
 #phantomInstruction2 {
-    position: absolute;
+    position: fixed;
 
     left: 50%;
-    top: -175px;
+    top: 625px;
 
     transform: translateX(-50%);
 
-    width: min(680px, calc(100vw - 40px));
+    width: min(620px, calc(100vw - 40px));
 
     opacity: 0;
 
-    color: #bbb;
+    color: white;
+
     font-family: Arial, Helvetica, sans-serif;
-    font-size: clamp(19px, 2vw, 25px);
+    font-size: 21px;
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.35;
     letter-spacing: 0.05em;
 
     text-align: center;
     white-space: normal;
 
     pointer-events: none;
+}
+@media (max-width: 600px) {
+    #phantomInstruction {
+        top: -535px;
+
+        font-size: 16px;
+        line-height: 1.12;
+        letter-spacing: 0.035em;
+
+        width: calc(100vw - 24px);
+    }
+
+    #phantomInstruction2 {
+        top: 585px;
+
+        font-size: 17px;
+        line-height: 1.18;
+        letter-spacing: 0.04em;
+
+        width: calc(100vw - 28px);
+    }
+
+    #phantomControls {
+        bottom: 2px;
+        width: calc(100% - 24px);
+        gap: 8px;
+    }
+
+    #phantomControls button {
+        min-height: 28px;
+        padding: 4px 10px;
+        font-size: 12px;
+        line-height: 1;
+    }
+}
+
+/* iPad / tablet portrait */
+@media (min-width: 601px) and (max-width: 1100px) {
+    #phantomInstruction {
+        top: -1040px;
+    }
+
+    #phantomInstruction2 {
+        top: 610px;
+    }
+}
+
+/* Desktop / large browser */
+@media (min-width: 1101px) {
+    #phantomInstruction {
+        top: -760px;
+    }
+
+    #phantomInstruction2 {
+        top: 560px;
+    }
 }
 
 #phantomGuidance.play #phantomEyeOrientation {
@@ -1101,16 +1166,36 @@ html.standalone-app .guide-panel {
 
     <div id="phantomGuidance">
 
-   <div id="phantomInstruction">
-    IN THE DARK,<br>
-    VIEW THIS REGION<br>
-    THROUGH THE TUBES<br>
-    AT 45°–75°
+  <div id="phantomInstruction">
+    IN THE DARK,<br><br>
+
+    PLACE THE DEVICE<br>
+    FLAT ON A TABLE.<br><br>
+
+    SELECT<br>
+    VIEWING CIRCLE<br>
+    OR HIDE CENTER MASK.<br><br>
+
+    VIEW THE REGION<br>
+    THROUGH THE<br>
+    VIEWING TUBES<br>
+    AT 45°–75°.<br><br>
+
+    KEEP IT FLAT.<br><br>
+
+    SLOWLY TURN IT<br><br>
+
+    TO A DIFFERENT<br><br>
+
+    ORIENTATION.<br><br>
+
+    LOOK AGAIN.
 </div>
 
 <div id="phantomInstruction2">
-    THEN TRY AGAIN<br>
-    WITHOUT THE TUBES.
+    REPEAT<br><br>
+    WITHOUT THE<br>
+    VIEWING TUBES.
 </div>
 
     <svg
@@ -1206,19 +1291,26 @@ html.standalone-app .guide-panel {
 </div>
 
 <div
-    id="fieldExplorerOrientationOverlay"
-    class="field-explorer-orientation-overlay"
+    id="orientationOverlay"
+    class="orientation-overlay"
     hidden
 >
-    <div class="field-explorer-orientation-panel">
-        <div class="field-explorer-rotate-icon">
-    ↻
-</div>
-<div class="field-explorer-rotate-text">
-    ROTATE
-    <br><br>
-    DEVICE
-</div>
+    <div class="orientation-panel">
+        <div
+            id="orientationIcon"
+            class="orientation-icon"
+        >
+            ↻
+        </div>
+
+        <div
+            id="orientationText"
+            class="orientation-text"
+        >
+            ROTATE
+            <br><br>
+            DEVICE
+        </div>
     </div>
 </div>
 
@@ -2323,10 +2415,14 @@ const observationGuideButton =
 const fieldExplorerButton =
     document.getElementById("fieldExplorerButton");
 
-const fieldExplorerOrientationOverlay =
-    document.getElementById(
-        "fieldExplorerOrientationOverlay"
-    );  
+const orientationOverlay =
+    document.getElementById("orientationOverlay");
+
+const orientationIcon =
+    document.getElementById("orientationIcon");
+
+const orientationText =
+    document.getElementById("orientationText");  
 
 const observationGuideOverlay =
     document.getElementById("observationGuideOverlay");
@@ -2875,15 +2971,15 @@ function isFieldExplorerPortrait() {
 function finishFieldExplorerOrientationGate() {
     fieldExplorerWaitingForLandscape = false;
 
-    fieldExplorerOrientationOverlay.classList.add(
+    orientationOverlay.classList.add(
         "leaving"
     );
 
     window.setTimeout(
         function () {
-            fieldExplorerOrientationOverlay.hidden = true;
+            orientationOverlay.hidden = true;
 
-            fieldExplorerOrientationOverlay.classList.remove(
+            orientationOverlay.classList.remove(
                 "leaving"
             );
         },
@@ -2901,7 +2997,7 @@ fieldExplorerButton?.addEventListener(
         }
 
         fieldExplorerWaitingForLandscape = true;
-        fieldExplorerOrientationOverlay.hidden = false;
+        orientationOverlay.hidden = false;
     }
 );
 
