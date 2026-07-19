@@ -451,32 +451,33 @@ canvas {
     pointer-events: none;
 }
 @media (max-width: 600px) {
-   #phantomInstruction {
-    top: -535px;
 
-    font-size: 16px;
-    line-height: 1.12;
-    letter-spacing: 0.035em;
+    #phantomInstruction {
+        top: -585px;
 
-    width: calc(100vw - 24px);
+        font-size: 14px;
+        line-height: 1.08;
+        letter-spacing: 0.035em;
 
-    transform: translateX(-50%);
-}
+        width: calc(100vw - 24px);
+
+        transform: translateX(-50%);
+    }
 
     #phantomInstruction2 {
+        top: -35px;
 
-    font-size: 17px;
-    line-height: 1.18;
-    letter-spacing: 0.04em;
+        font-size: 17px;
+        line-height: 1.18;
+        letter-spacing: 0.04em;
 
-    width: calc(100vw - 28px);
-}
+        width: calc(100vw - 28px);
+    }
 
     #phantomControls {
         bottom: 2px;
-        width: calc(100% - 24px);
-        gap: 8px;
     }
+}
 
     #phantomControls button {
         min-height: 28px;
@@ -484,7 +485,7 @@ canvas {
         font-size: 12px;
         line-height: 1;
     }
-}
+
 
 
 
@@ -591,7 +592,7 @@ canvas {
 /* iPad — immediately follows LOOK AGAIN */
 @media (min-width: 601px) and (max-width: 1100px) {
     #phantomGuidance > #phantomInstruction2 {
-        top: -285px;
+        top: -245px;
 
         font-size: clamp(18px, 2vw, 26px);
         line-height: 1.18;
@@ -611,8 +612,16 @@ canvas {
 
 /* Desktop — same typography and paragraph rhythm */
 @media (min-width: 1101px) {
+
+    #phantomInstruction {
+        top: -735px;
+        font-size: 19px;
+        line-height: 1.06;
+        letter-spacing: 0.035em;
+    }
+
     #phantomGuidance > #phantomInstruction2 {
-        top: -142px;
+        top: -125px;
 
         font-size: 22px;
         line-height: 1.08;
@@ -1276,6 +1285,12 @@ html.standalone-app .guide-panel {
     <div id="phantomGuidance">
 
   <div id="phantomInstruction">
+    ENABLE<br><br>
+
+    PORTRAIT<br><br>
+
+    ORIENTATION LOCK.<br><br>
+
     IN THE DARK,<br><br>
 
     PLACE THE DEVICE<br>
