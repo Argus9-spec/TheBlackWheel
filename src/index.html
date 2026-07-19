@@ -257,35 +257,30 @@ canvas {
 
 
 #phantomInstruction2 {
+    position: absolute;
 
-    position:absolute;
+    left: 50%;
+    top: -190px;
 
-    left:50%;
-    top:-70px;
+    transform: translateX(-50%);
 
-    transform:translateX(-50%);
+    width: min(620px, calc(100vw - 40px));
 
-    width:min(620px, calc(100vw - 40px));
+    opacity: 0;
 
-    opacity:0;
+    color: rgba(255, 255, 255, 0.48);
 
-    color:white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.05em;
 
-    font-family:Arial, Helvetica, sans-serif;
+    text-align: center;
+    white-space: normal;
+    text-transform: uppercase;
 
-    font-size:21px;
-
-    font-weight:700;
-
-    line-height:1.35;
-
-    letter-spacing:.05em;
-
-    text-align:center;
-
-   white-space: normal;
-
-pointer-events: none;
+    pointer-events: none;
 }
 
 .orientation-overlay {
@@ -433,7 +428,7 @@ pointer-events: none;
     position: fixed;
 
     left: 50%;
-    top: 625px;
+    top: 645px;
 
     transform: translateX(-50%);
 
@@ -441,7 +436,7 @@ pointer-events: none;
 
     opacity: 0;
 
-    color: white;
+    color: rgba(255, 255, 255, 0.48);
 
     font-family: Arial, Helvetica, sans-serif;
     font-size: 21px;
@@ -451,6 +446,7 @@ pointer-events: none;
 
     text-align: center;
     white-space: normal;
+    text-transform: uppercase;
 
     pointer-events: none;
 }
@@ -468,14 +464,13 @@ pointer-events: none;
 }
 
     #phantomInstruction2 {
-        top: 610px;
 
-        font-size: 17px;
-        line-height: 1.18;
-        letter-spacing: 0.04em;
+    font-size: 17px;
+    line-height: 1.18;
+    letter-spacing: 0.04em;
 
-        width: calc(100vw - 28px);
-    }
+    width: calc(100vw - 28px);
+}
 
     #phantomControls {
         bottom: 2px;
@@ -491,11 +486,13 @@ pointer-events: none;
     }
 }
 
+
+
 /* iPad / tablet portrait */
 @media (min-width: 601px) and (max-width: 1100px) {
 
     #phantomInstruction {
-        top: -900px;
+        top: -940px;
         font-size: clamp(18px, 2vw, 26px);
         line-height: 1.18;
         letter-spacing: 0.05em;
@@ -503,19 +500,21 @@ pointer-events: none;
     }
 
     #phantomInstruction2 {
-        top: 610px;
-        font-size: 21px;
-        line-height: 1.35;
-        letter-spacing: 0.05em;
-        color: rgba(255, 255, 255, 0.48);
-    }
+    top: 555px;
+
+    font-size: 21px;
+    line-height: 1.35;
+
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.48);
+}
 
     #phantomGuidance {
-        bottom: 118px;
+        bottom: 80px;
     }
 
     #phantomControls {
-        bottom: 8px;
+        bottom: 94px;
     }
 }
 
@@ -523,14 +522,14 @@ pointer-events: none;
 @media (min-width: 1101px) {
 
     #phantomInstruction {
-        top: -725px;
+        top: -703px;
         font-size: 22px;
         line-height: 1.08;
         letter-spacing: 0.035em;
     }
 
     #phantomInstruction2 {
-        top: 635px;
+        top: 657px;
         font-size: 20px;
         line-height: 1.18;
         letter-spacing: 0.04em;
@@ -543,6 +542,81 @@ pointer-events: none;
 
     #phantomControls {
         bottom: 10px;
+    }
+
+}
+
+/* Final gray instruction — platform-specific continuation */
+#phantomGuidance > #phantomInstruction2 {
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: min(620px, calc(100vw - 40px));
+
+    opacity: 0;
+    color: rgba(255, 255, 255, 0.48);
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+
+    text-align: center;
+    white-space: normal;
+
+    pointer-events: none;
+}
+
+
+/* iPhone — same typography as white protocol */
+@media (max-width: 600px) {
+    #phantomGuidance > #phantomInstruction2 {
+        top: -120px;
+
+        font-size: 16px;
+        line-height: 1.12;
+        letter-spacing: 0.035em;
+
+        width: calc(100vw - 28px);
+    }
+
+    #phantomArrow,
+    #phantomEyeOrientation {
+        position: relative;
+        top: -14px;
+    }
+}
+
+
+/* iPad — immediately follows LOOK AGAIN */
+@media (min-width: 601px) and (max-width: 1100px) {
+    #phantomGuidance > #phantomInstruction2 {
+        top: -285px;
+
+        font-size: clamp(18px, 2vw, 26px);
+        line-height: 1.18;
+    }
+
+    #phantomGuidance {
+        bottom: 80px;
+    }
+
+    #phantomArrow,
+    #phantomEyeOrientation {
+        position: relative;
+        top: -90px;
+    }
+}
+
+
+/* Desktop — same typography and paragraph rhythm */
+@media (min-width: 1101px) {
+    #phantomGuidance > #phantomInstruction2 {
+        top: -142px;
+
+        font-size: 22px;
+        line-height: 1.08;
+        letter-spacing: 0.035em;
     }
 }
 
@@ -3370,7 +3444,7 @@ function playPhantomGuidance() {
 
     setTimeout(function () {
         phantomGuidance.classList.remove("play");
-    }, 6500);
+    }, 7200);
 }
 
 function showPhantomControls() {
