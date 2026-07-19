@@ -197,7 +197,7 @@ canvas {
     z-index: 20;
 
     left: 50%;
-    bottom: 8px;
+    bottom: 32px;
     transform: translateX(-50%);
 
     display: flex;
@@ -408,7 +408,7 @@ pointer-events: none;
 #phantomInstruction {
     position: fixed;
     left: 50%;
-   top: -700px;
+   top: -535px;
 
     transform: translateX(-50%);
 
@@ -455,20 +455,18 @@ pointer-events: none;
     pointer-events: none;
 }
 @media (max-width: 600px) {
-   #phantomInstruction {
-    top: -535px;
+    #phantomInstruction {
+        top: -535px;
 
-    font-size: 16px;
-    line-height: 1.12;
-    letter-spacing: 0.035em;
+        font-size: 16px;
+        line-height: 1.12;
+        letter-spacing: 0.035em;
 
-    width: calc(100vw - 24px);
-
-    transform: translateX(-50%);
-}
+        width: calc(100vw - 24px);
+    }
 
     #phantomInstruction2 {
-        top: 610px;
+        top: 585px;
 
         font-size: 17px;
         line-height: 1.18;
@@ -493,25 +491,17 @@ pointer-events: none;
 
 /* iPad / tablet portrait */
 @media (min-width: 601px) and (max-width: 1100px) {
+    #phantomGuidance {
+        bottom: 118px;
+    }
 
     #phantomInstruction {
-        top: -900px;
-        font-size: clamp(18px, 2vw, 26px);
-        line-height: 1.18;
-        letter-spacing: 0.05em;
-        transform: translateX(-50%);
+        top: -920px;
     }
 
     #phantomInstruction2 {
-        top: 610px;
-        font-size: 21px;
-        line-height: 1.35;
-        letter-spacing: 0.05em;
+        top: -430px;
         color: rgba(255, 255, 255, 0.48);
-    }
-
-    #phantomGuidance {
-        bottom: 118px;
     }
 
     #phantomControls {
@@ -521,28 +511,26 @@ pointer-events: none;
 
 /* Desktop / large browser */
 @media (min-width: 1101px) {
+    #phantomGuidance {
+        bottom: 96px;
+    }
 
     #phantomInstruction {
-        top: -725px;
+        top: -760px;
         font-size: 22px;
-        line-height: 1.08;
-        letter-spacing: 0.035em;
+        line-height: 1.12;
+        letter-spacing: 0.045em;
     }
 
     #phantomInstruction2 {
-        top: 635px;
-        font-size: 20px;
-        line-height: 1.18;
-        letter-spacing: 0.04em;
+        top: -165px;
         color: rgba(255, 255, 255, 0.48);
-    }
-
-    #phantomGuidance {
-        bottom: 105px;
+        font-size: 19px;
+        line-height: 1.22;
     }
 
     #phantomControls {
-        bottom: 10px;
+        bottom: 6px;
     }
 }
 
