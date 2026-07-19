@@ -452,20 +452,8 @@ canvas {
 }
 @media (max-width: 600px) {
 
-    #phantomInstruction {
-        top: -585px;
-
-        font-size: 14px;
-        line-height: 1.08;
-        letter-spacing: 0.035em;
-
-        width: calc(100vw - 24px);
-
-        transform: translateX(-50%);
-    }
-
-    #phantomInstruction2 {
-        top: -35px;
+       #phantomInstruction2 {
+        top: -5px;
 
         font-size: 17px;
         line-height: 1.18;
@@ -473,6 +461,20 @@ canvas {
 
         width: calc(100vw - 28px);
     }
+
+    #phantomControls {
+        bottom: 2px;
+    }
+
+    #phantomInstruction2 {
+        top: -5px;
+
+        font-size: 17px;
+        line-height: 1.18;
+        letter-spacing: 0.04em;
+
+        width: calc(100vw - 28px);
+    }#phantomInstruction {
 
     #phantomControls {
         bottom: 2px;
@@ -571,45 +573,46 @@ canvas {
 
 /* iPhone — same typography as white protocol */
 @media (max-width: 600px) {
-    #phantomGuidance > #phantomInstruction2 {
-        top: -120px;
 
-        font-size: 16px;
-        line-height: 1.12;
+    #phantomInstruction {
+        top: -545px;
+
+        font-size: 14px;
+        line-height: 1.08;
+        letter-spacing: 0.035em;
+
+        width: calc(100vw - 24px);
+
+        transform: translateX(-50%);
+    }
+
+    #phantomGuidance > #phantomInstruction2 {
+        top: -87px;
+
+        font-size: 14px;
+        line-height: 1.08; 
         letter-spacing: 0.035em;
 
         width: calc(100vw - 28px);
     }
 
-    #phantomArrow,
-    #phantomEyeOrientation {
-        position: relative;
-        top: -14px;
-    }
+   #phantomArrow,
+#phantomEyeOrientation {
+    position: relative;
+    top: -22px;
 }
 
-
-/* iPad — immediately follows LOOK AGAIN */
-@media (min-width: 601px) and (max-width: 1100px) {
-    #phantomGuidance > #phantomInstruction2 {
-        top: -245px;
-
-        font-size: clamp(18px, 2vw, 26px);
-        line-height: 1.18;
+    #phantomControls {
+        bottom: 2px;
     }
 
-    #phantomGuidance {
-        bottom: 80px;
-    }
-
-    #phantomArrow,
-    #phantomEyeOrientation {
-        position: relative;
-        top: -90px;
+    #phantomControls button {
+        min-height: 28px;
+        padding: 4px 10px;
+        font-size: 12px;
+        line-height: 1;
     }
 }
-
-
 /* Desktop — same typography and paragraph rhythm */
 @media (min-width: 1101px) {
 
