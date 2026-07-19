@@ -523,7 +523,7 @@ canvas {
 #phantomGuidance.play #phantomEyeOrientation {
     animation:
         phantomEyeSequence
-        7.2s
+        15s
         ease-in-out
         forwards;
 }
@@ -531,7 +531,7 @@ canvas {
 #phantomGuidance.play #phantomArrow {
     animation:
         phantomArrowSequence
-        7.2s
+        15s
         ease-in-out
         forwards;
 }
@@ -539,7 +539,7 @@ canvas {
 #phantomGuidance.play #phantomInstruction2 {
     animation:
         phantomInstruction2Sequence
-        7.2s
+        15s
         ease-in-out
         forwards;
 }
@@ -547,9 +547,38 @@ canvas {
 #phantomGuidance.play #phantomInstruction {
     animation:
         phantomInstructionSequence
-        7.2s
+        15s
         ease-in-out
         forwards;
+}
+
+#phantomControls.intro-playing {
+    visibility: visible;
+    transition: none;
+
+    animation:
+        phantomControlsSequence
+        15s
+        linear
+        forwards;
+}
+
+#phantomControls.instrument-bright {
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 0.35s ease,
+        visibility 0s;
+}
+
+#phantomControls.instrument-idle {
+    opacity: 0.10;
+    visibility: visible;
+
+    transition:
+        opacity 3s ease,
+        visibility 0s;
 }
 
 
@@ -565,10 +594,9 @@ canvas {
         transform: scale(1);
     }
 
-   84% {
-         opacity: 1;
-         transform: scale(1);
-
+    88% {
+        opacity: 1;
+        transform: scale(1);
     }
 
     100% {
@@ -589,7 +617,7 @@ canvas {
         transform: translateY(0);
     }
 
-   84% {
+    88% {
         opacity: 1;
         transform: translateY(0);
     }
@@ -610,7 +638,7 @@ canvas {
         opacity: 1;
     }
 
-    84% {
+    68% {
         opacity: 1;
     }
 
@@ -629,14 +657,28 @@ canvas {
         opacity: 1;
     }
 
-    84% {
+    78% {
         opacity: 1;
+        animation-timing-function: linear;
     }
 
     100% {
         opacity: 0;
     }
 }
+
+@keyframes phantomControlsSequence {
+    0%,
+    78% {
+        opacity: 0;
+        animation-timing-function: linear;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
 
 .maskPanel {
     position: absolute;
@@ -3144,11 +3186,6 @@ animatePhantomJourney(
         */
         playPhantomGuidance();
 
-        setTimeout(function () {
-            if (phantomAxisMode) {
-                showPhantomControls();
-            }
-        }, 4400);
     }
 );
 
@@ -3338,32 +3375,101 @@ document.addEventListener("keydown", function (event) {
 let lastFrameTime = null;
 
 function playPhantomGuidance() {
+    clearTimeout(phantomControlsTimer);
+
     phantomGuidance.classList.remove("play");
 
-    // Forces the animation to restart on every entry.
+    phantomControls.classList.remove(
+        "intro-playing",
+        "instrument-bright",
+        "instrument-idle",
+        "visible"
+    );
+
+    /*
+     * Force both animation groups to restart cleanly
+     * whenever Phantom Axis is entered.
+     */
     void phantomGuidance.offsetWidth;
+    void phantomControls.offsetWidth;
 
     phantomGuidance.classList.add("play");
+    phantomControls.classList.add("intro-playing");
 
     setTimeout(function () {
         phantomGuidance.classList.remove("play");
-    }, 7200);
+
+        /*
+         * The introduction and button entrance have finished.
+         * Hold the controls at full brightness for five seconds.
+         */
+        phantomControls.classList.remove(
+            "intro-playing"
+        );
+
+        phantomControls.classList.add(
+            "instrument-bright"
+        );
+
+        clearTimeout(phantomControlsTimer);
+
+        phantomControlsTimer =
+            setTimeout(function () {
+                phantomControls.classList.remove(
+                    "instrument-bright"
+                );
+
+                phantomControls.classList.add(
+                    "instrument-idle"
+                );
+            }, 5000);
+    }, 15200);
 }
 
 function showPhantomControls() {
-    phantomControls.classList.add("visible");
+    /*
+     * Do not interrupt the controlled button entrance
+     * while the introduction is still playing.
+     */
+    if (
+        phantomControls.classList.contains(
+            "intro-playing"
+        )
+    ) {
+        return;
+    }
 
     clearTimeout(phantomControlsTimer);
 
+    phantomControls.classList.remove(
+        "instrument-idle"
+    );
+
+    phantomControls.classList.add(
+        "instrument-bright"
+    );
+
     phantomControlsTimer =
         setTimeout(function () {
-            phantomControls.classList.remove("visible");
-        }, 6500);
+            phantomControls.classList.remove(
+                "instrument-bright"
+            );
+
+            phantomControls.classList.add(
+                "instrument-idle"
+            );
+        }, 5000);
 }
 
 function hidePhantomControls() {
     clearTimeout(phantomControlsTimer);
-    phantomControls.classList.remove("visible");
+
+    phantomControls.classList.remove(
+        "visible",
+        "intro-playing",
+        "instrument-bright",
+        "instrument-idle"
+    );
 }
 
 phantomMask.addEventListener(
