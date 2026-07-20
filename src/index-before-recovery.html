@@ -316,112 +316,6 @@ canvas {
     pointer-events: none;
 }
 
-/*
- * Pause and Skip remain quietly available
- * throughout the instructional sequence.
- */
-.phantom-intro-control {
-    opacity: 0.12;
-
-    transition:
-    opacity 1.2s ease,
-    color 1.2s ease,
-    border-color 1.2s ease;
-}
-
-/*
- * Any interaction wakes the complete control bank.
- */
-/*
- * During the guidance, waking the controls
- * brightens only Pause and Skip.
- */
-#phantomControls.intro-playing.controls-awake
-    .phantom-intro-control {
-
-    opacity: 1 !important;
-    visibility: visible;
-}
-
-/*
- * After the guidance, waking the controls
- * brightens the four permanent controls.
- */
-#phantomControls:not(.intro-playing).controls-awake
-    button:not(.phantom-intro-control) {
-
-    opacity: 1 !important;
-    visibility: visible;
-}
-
-/*
- * Before the guidance begins,
- * Pause and Skip appear alone at full brightness.
- */
-/*
- * Pause and Skip slowly emerge before
- * the Phantom guidance begins.
- */
-#phantomControls.intro-controls-ready
-    .phantom-intro-control {
-
-    visibility: visible;
-
-    animation:
-        phantomIntroControlArrival
-        2.2s
-        ease-out
-        forwards;
-}
-
-@keyframes phantomIntroControlArrival {
-    0% {
-        opacity: 0.12;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-/*
- * Before guidance begins, show only Pause and Skip.
- */
-#phantomControls.intro-controls-ready
-    button:not(.phantom-intro-control) {
-
-    opacity: 0 !important;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-/*
- * After their fade, remove them from the layout.
- */
-/*
- * Preserve the Pause and Skip layout slots after
- * they disappear so the permanent buttons never move.
- */
-
-#phantomControls.intro-controls-fading
-    .phantom-intro-control {
-
-    animation: none !important;
-    opacity: 0 !important;
-    pointer-events: none;
-
-    transition:
-        opacity 1.2s ease;
-}
-
- #phantomControls.intro-controls-removed
-    .phantom-intro-control {
-
-    visibility: hidden;
-    opacity: 0 !important;
-    pointer-events: none;
-}
-
 .orientation-overlay {
     position: fixed;
     inset: 0;
@@ -592,6 +486,7 @@ canvas {
         position: relative;
         top: -22px;
     }
+@media (max-width: 600px) {
 
     #phantomControls {
         bottom: 2px;
@@ -730,17 +625,6 @@ canvas {
         forwards;
 }
 
-/*
- * Freeze every animated part of the Phantom Axis
- * introduction at its exact current frame.
- */
-#phantomGuidance.intro-paused,
-#phantomGuidance.intro-paused *,
-#phantomControls.intro-paused,
-#phantomControls.intro-paused * {
-    animation-play-state: paused !important;
-}
-
 #phantomGuidance.play #phantomArrow {
     animation:
         phantomArrowSequence
@@ -765,64 +649,15 @@ canvas {
         forwards;
 }
 
-/*
- * Keep the control row alive throughout the introduction
- * so Pause and Skip remain immediately available.
- */
 #phantomControls.intro-playing {
-    opacity: 1;
     visibility: visible;
     transition: none;
-    animation: none;
-}
-
-/*
- * Only the four permanent observation controls wait
- * until the instructional sequence is ending.
- */
-#phantomControls.intro-playing
-    button:not(.phantom-intro-control) {
-
-    opacity: 0;
 
     animation:
         phantomControlsSequence
         15s
         linear
         forwards;
-}
-
-/*
- * Pause and Skip remain bright while the eye arrives,
- * then slowly recede to their quiet observation level.
- */
-#phantomControls.intro-playing
-    .phantom-intro-control {
-
-    animation:
-        phantomIntroControlSequence
-        15s
-        ease-in-out
-        forwards;
-}
-
-@keyframes phantomIntroControlSequence {
-    0%,
-    20% {
-        opacity: 1;
-    }
-
-    38% {
-        opacity: 0.12;
-    }
-
-    88% {
-        opacity: 0.12;
-    }
-
-    100% {
-        opacity: 0;
-    }
 }
 
 #phantomControls.instrument-bright {
@@ -843,15 +678,7 @@ canvas {
         visibility 0s;
 }
 
-#phantomControls.instrument-hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
 
-    transition:
-        opacity 1.2s ease,
-        visibility 0s linear 1.2s;
-}
 
 @keyframes phantomEyeSequence {
     0% {
@@ -859,10 +686,10 @@ canvas {
         transform: scale(0.92);
     }
 
-   20% {
-    opacity: 1;
-    transform: scale(1);
-}
+    11% {
+        opacity: 1;
+        transform: scale(1);
+    }
 
     88% {
         opacity: 1;
@@ -2418,12 +2245,10 @@ observationGuideDoubleTapPanel?.addEventListener(
 </script>
 
 <script type="module">
-
 import { blackWheelV1 } from "./data/blackWheelV1.js?v=3";
 import { skyII } from "./data/skyII.js";
 import { skyIII } from "./data/skyIII.js";
-
-const canvas = document.getElementById("wheel");  
+const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
 let viewWidth = window.innerWidth;
@@ -2833,16 +2658,6 @@ const phantomGuidance =
 const phantomControls =
     document.getElementById("phantomControls");
 
-const pauseIntroButton =
-    document.getElementById(
-        "pauseIntroButton"
-    );
-
-const skipIntroButton =
-    document.getElementById(
-        "skipIntroButton"
-    );
-
 const maskVisibilityButton =
     document.getElementById(
         "maskVisibilityButton"
@@ -2873,18 +2688,9 @@ document.documentElement.classList.toggle(
 );
 
 let phantomControlsTimer = null;
-let phantomControlsHideTimer = null;
-let phantomIntroTimer = null;
-let phantomIntroStartedAt = 0;
-let phantomIntroRemaining = 15200;
-let phantomIntroPaused = false;
 let phantomMaskVisible = true;
 let centerHidden = false;
 let fieldExplorerWaitingForLandscape = false;
-let phantomGuidanceStartTimer = null;
-let phantomIntroActive = false;
-
-
 
 centerStarButton.classList.toggle(
     "active",
@@ -2895,6 +2701,8 @@ const skyButtons =
     document.querySelectorAll(
         "#skyButtons button"
     );
+
+
 
 
 function updateSpeedDisplay() {
@@ -3622,31 +3430,14 @@ maskVisibilityButton.textContent = "HIDE CENTER";
  */
 
 /*
- * Let the Pause and Skip controls appear first.
- * They are immediately functional while fading in.
- * Begin the Phantom Axis guidance shortly afterward.
+ * Let the circular observation chamber arrive
+ * before the eye, arrow, and guidance begin.
  */
-showIntroControls();
-
-phantomGuidanceStartTimer =
-    setTimeout(function () {
-        phantomGuidanceStartTimer = null;
-
-        if (
-            phantomAxisMode &&
-            phantomIntroActive &&
-            !phantomIntroPaused
-        ) {
-            playPhantomGuidance();
-
-            /*
-             * Keep Pause and Skip bright through
-             * the opening moment. Begin dimming them
-             * as the eye presentation arrives.
-             */
-            
-        }
-    }, 600);
+setTimeout(function () {
+    if (phantomAxisMode) {
+        playPhantomGuidance();
+    }
+}, 1200);
 
     }
 );
@@ -3831,357 +3622,74 @@ document.addEventListener("keydown", function (event) {
 
     if (key === "r") {
         wheelOffsetX = 0;
+        wheelOffsetY = 0;
     }
 });
 let lastFrameTime = null;
 
-function wakePhantomControls() {
-    clearTimeout(phantomControlsTimer);
-    clearTimeout(phantomControlsHideTimer);
-
-    phantomControls.classList.remove(
-        "instrument-idle",
-        "instrument-bright",
-        "instrument-hidden"
-    );
-
-    phantomControls.classList.add(
-        "visible",
-        "controls-awake"
-    );
-
-    /*
-     * Full brightness for five seconds.
-     */
-    phantomControlsTimer =
-        setTimeout(function () {
-            phantomControls.classList.remove(
-                "controls-awake",
-                "instrument-bright"
-            );
-
-            if (!phantomIntroActive) {
-                phantomControls.classList.add(
-                    "instrument-idle"
-                );
-
-                /*
-                 * Remain dim for fifteen seconds,
-                 * then withdraw completely.
-                 */
-                phantomControlsHideTimer =
-                    setTimeout(function () {
-                        if (
-                            phantomAxisMode &&
-                            !phantomIntroActive
-                        ) {
-                            phantomControls.classList.remove(
-                                "instrument-idle"
-                            );
-
-                            phantomControls.classList.add(
-                                "instrument-hidden"
-                            );
-                        }
-                    }, 10000);
-            }
-        }, 5000);
-}
-
-
-function finishPhantomGuidance() {
-    clearTimeout(phantomIntroTimer);
-    clearTimeout(phantomGuidanceStartTimer);
-    clearTimeout(phantomControlsTimer);
-    clearTimeout(phantomControlsHideTimer);
-
-    phantomIntroTimer = null;
-    phantomGuidanceStartTimer = null;
-
-    phantomIntroActive = false;
-    phantomIntroPaused = false;
-    phantomIntroRemaining = 15200;
-
-    phantomGuidance.classList.remove(
-        "play",
-        "intro-paused"
-    );
-
-    phantomControls.classList.remove(
-        "intro-paused",
-        "controls-awake",
-        "instrument-bright",
-        "instrument-idle",
-        "instrument-hidden"
-    );
-
-    pauseIntroButton.textContent =
-        "PAUSE";
-
-    /*
-     * First fade Pause and Skip away completely.
-     * Do not wake the permanent controls yet.
-     */
-    phantomControls.classList.add(
-        "intro-controls-fading"
-    );
-
-    /*
-     * Allow the intro buttons to complete their fade.
-     * Then remove their active animation state and
-     * begin the permanent-control lifecycle.
-     */
-    setTimeout(function () {
-        if (
-            phantomAxisMode &&
-            !phantomIntroActive
-        ) {
-            phantomControls.classList.add(
-                "intro-controls-removed"
-            );
-
-            phantomControls.classList.remove(
-                "intro-controls-fading",
-                "intro-playing"
-            );
-
-            wakePhantomControls();
-        }
-    }, 1200);
-}
-
-
-function schedulePhantomIntroCompletion(
-    remainingTime
-) {
-    clearTimeout(phantomIntroTimer);
-
-    phantomIntroRemaining =
-        remainingTime;
-
-    phantomIntroStartedAt =
-        performance.now();
-
-    phantomIntroTimer =
-        setTimeout(
-            finishPhantomGuidance,
-            remainingTime
-        );
-}
-
-
-function showIntroControls() {
-    phantomIntroActive = true;
-    phantomIntroPaused = false;
-    phantomIntroRemaining = 15200;
-
-    clearTimeout(phantomControlsTimer);
-    clearTimeout(phantomGuidanceStartTimer);
-
-    phantomControls.classList.remove(
-        "instrument-idle",
-        "instrument-bright",
-        "intro-playing",
-        "intro-paused",
-        "intro-controls-fading",
-        "intro-controls-removed"
-    );
-
-    phantomControls.classList.add(
-        "visible",
-        "intro-controls-ready"
-    );
-
-    /*
-     * Keep Pause and Skip bright while
-     * the eye is arriving.
-     */
-    setTimeout(function () {
-        if (
-            phantomAxisMode &&
-            phantomIntroActive &&
-            !phantomIntroPaused
-        ) {
-            phantomControls.classList.remove(
-                "intro-controls-ready"
-            );
-        }
-    }, 3000);
-
-    pauseIntroButton.textContent =
-        "PAUSE";
-}
-
-
-
 function playPhantomGuidance() {
-    clearTimeout(phantomIntroTimer);
+    clearTimeout(phantomControlsTimer);
 
-    phantomIntroPaused = false;
-    phantomIntroRemaining = 15200;
-
-    pauseIntroButton.textContent =
-        "PAUSE";
-
-    phantomGuidance.classList.remove(
-        "play",
-        "intro-paused"
-    );
+    phantomGuidance.classList.remove("play");
 
     phantomControls.classList.remove(
         "intro-playing",
-        "intro-paused",
         "instrument-bright",
-        "instrument-idle"
+        "instrument-idle",
+        "visible"
     );
 
     /*
-     * Force the animation groups to restart
-     * cleanly whenever Phantom Axis is entered.
+ * Force both animation groups to restart cleanly
+ * whenever Phantom Axis is entered.
+ */
+void phantomGuidance.offsetWidth;
+void phantomControls.offsetWidth;
+
+phantomGuidance.classList.add(
+    "play"
+);
+
+phantomControls.classList.add(
+    "intro-playing"
+);
+
+setTimeout(function () {
+    phantomGuidance.classList.remove("play");
+
+    /*
+     * The introduction and button entrance have finished.
+     * Hold the controls at full brightness for five seconds.
      */
-    void phantomGuidance.offsetWidth;
-    void phantomControls.offsetWidth;
-
-    phantomGuidance.classList.add(
-        "play"
-    );
-
-    phantomControls.classList.add(
+    phantomControls.classList.remove(
         "intro-playing"
     );
 
-    schedulePhantomIntroCompletion(
-        phantomIntroRemaining
+    phantomControls.classList.add(
+        "instrument-bright"
     );
-}
 
+    clearTimeout(phantomControlsTimer);
 
-pauseIntroButton.addEventListener(
-    "click",
-    function (event) {
-        event.stopPropagation();
-
-        if (
-            !phantomAxisMode ||
-            !phantomIntroActive
-        ) {
-            return;
-        }
-
-        wakePhantomControls();
-
-        /*
-         * Pause before the instructional
-         * animation itself has begun.
-         */
-        if (
-            !phantomControls.classList.contains(
-                "intro-playing"
-            )
-        ) {
-            if (!phantomIntroPaused) {
-                clearTimeout(
-                    phantomGuidanceStartTimer
-                );
-
-                phantomGuidanceStartTimer = null;
-                phantomIntroPaused = true;
-
-                phantomControls.classList.add(
-                    "intro-paused"
-                );
-
-                pauseIntroButton.textContent =
-                    "RESUME";
-
-            } else {
-                phantomIntroPaused = false;
-
-                phantomControls.classList.remove(
-                    "intro-paused"
-                );
-
-                pauseIntroButton.textContent =
-                    "PAUSE";
-
-                playPhantomGuidance();
-            }
-
-            return;
-        }
-
-        /*
-         * Pause during the active guidance timeline.
-         */
-        if (!phantomIntroPaused) {
-            const elapsed =
-                performance.now() -
-                phantomIntroStartedAt;
-
-            phantomIntroRemaining =
-                Math.max(
-                    0,
-                    phantomIntroRemaining -
-                    elapsed
-                );
-
-            clearTimeout(
-                phantomIntroTimer
-            );
-
-            phantomIntroTimer = null;
-            phantomIntroPaused = true;
-
-            phantomGuidance.classList.add(
-                "intro-paused"
+    phantomControlsTimer =
+        setTimeout(function () {
+            phantomControls.classList.remove(
+                "instrument-bright"
             );
 
             phantomControls.classList.add(
-                "intro-paused"
+                "instrument-idle"
             );
+        }, 5000);
 
-            pauseIntroButton.textContent =
-                "RESUME";
-
-        } else {
-            phantomIntroPaused = false;
-
-            phantomGuidance.classList.remove(
-                "intro-paused"
-            );
-
-            phantomControls.classList.remove(
-                "intro-paused"
-            );
-
-            pauseIntroButton.textContent =
-                "PAUSE";
-
-            schedulePhantomIntroCompletion(
-                phantomIntroRemaining
-            );
-        }
-    }
-);
-
-
-skipIntroButton.addEventListener(
-    "click",
-    function (event) {
-        event.stopPropagation();
-
-        if (
-            !phantomAxisMode ||
-            !phantomIntroActive
-        ) {
-            return;
-        }
-
-        finishPhantomGuidance();
-    }
-);
+}, 15200);
+}
 
 function showPhantomControls() {
+    /*
+     * Do not interrupt the controlled button entrance
+     * while the introduction is still playing.
+     */
     if (
         phantomControls.classList.contains(
             "intro-playing"
@@ -4190,7 +3698,26 @@ function showPhantomControls() {
         return;
     }
 
-    wakePhantomControls();
+    clearTimeout(phantomControlsTimer);
+
+    phantomControls.classList.remove(
+        "instrument-idle"
+    );
+
+    phantomControls.classList.add(
+        "instrument-bright"
+    );
+
+    phantomControlsTimer =
+        setTimeout(function () {
+            phantomControls.classList.remove(
+                "instrument-bright"
+            );
+
+            phantomControls.classList.add(
+                "instrument-idle"
+            );
+        }, 5000);
 }
 
 function hidePhantomControls() {
@@ -4219,10 +3746,6 @@ phantomControls.addEventListener(
     "click",
     function (event) {
         event.stopPropagation();
-
-        if (phantomAxisMode) {
-            wakePhantomControls();
-        }
     }
 );
 
