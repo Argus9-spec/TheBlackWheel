@@ -58,7 +58,7 @@ html,body{
     box-sizing: border-box;
 
     color: white;
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0, 0, 0, 0.22);
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 10px;
 
@@ -67,6 +67,104 @@ html,body{
     letter-spacing: 1px;
 
     transition: opacity 0.25s ease;
+}
+
+/*
+ * Desktop-only keyboard shortcut message.
+ */
+#desktopHMessage {
+    position: fixed;
+    z-index: 10000;
+
+    left: 50%;
+    top: 50%;
+
+    width: auto;
+    min-width: 290px;
+    max-width: 340px;
+
+    padding:
+        24px
+        28px
+        26px;
+
+    transform:
+        translate(-50%, -50%);
+
+    color: white;
+
+    background:
+    rgba(0, 0, 0, 0.28);
+
+    border:
+    1px solid
+    rgba(255, 255, 255, 0.38);
+
+    border-radius: 10px;
+
+    box-sizing: border-box;
+    text-align: center;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+    opacity 2.8s ease,
+    visibility 0s linear 2.8s;
+}
+
+#desktopHMessage.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transition:
+    opacity 1.8s ease,
+    visibility 0s;
+}
+
+.desktop-h-key {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.desktop-h-copy {
+    font-size: 20px;
+    line-height: 1.4;
+    letter-spacing: 0.03em;
+}
+
+#desktopHMessageClose {
+    position: absolute;
+
+    top: 14px;
+    right: 16px;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    color: white;
+    background: transparent;
+    border: 0;
+
+    font-size: 24px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+/*
+ * Never show the desktop keyboard message
+ * on phones or tablets.
+ */
+@media (max-width: 1100px) {
+    #desktopHMessage {
+        display: none;
+    }
 }
 
 #controls.hidden {
@@ -420,6 +518,71 @@ canvas {
     visibility: hidden;
     opacity: 0 !important;
     pointer-events: none;
+}
+
+#phantomSpeedControls {
+    position: fixed;
+
+    top: 26px;
+    right: 24px;
+
+    z-index: 240;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+
+    color: white;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition:
+        opacity 0.8s ease;
+}
+
+#phantomSpeedControls.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.phantom-speed-title {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    margin-bottom: 2px;
+}
+
+#phantomSpeedControls button {
+    width: 26px;
+    height: 26px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    border:
+        1.5px solid
+        rgba(255,255,255,0.9);
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 12px;
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
+}
+
+#phantomSpeedControls button.active {
+    background: white;
+    color: black;
 }
 
 .orientation-overlay {
@@ -1634,6 +1797,22 @@ LOOK AGAIN.
 </div>
 </div> 
 
+<div id="phantomSpeedControls">
+
+    <div class="phantom-speed-title">
+        SPEED
+    </div>
+
+    <button id="phantomSpeedOne">
+        I
+    </button>
+
+    <button id="phantomSpeedTwo">
+        II
+    </button>
+
+</div>
+
   <div id="phantomControls">
 
     <button
@@ -2291,6 +2470,30 @@ LOOK AGAIN.
 
 </div>
 
+<div
+    id="desktopHMessage"
+    role="status"
+    aria-live="polite">
+
+    <button
+        id="desktopHMessageClose"
+        type="button"
+        aria-label="Close keyboard shortcut message">
+        ×
+    </button>
+
+    <div class="desktop-h-key">
+        Press H
+    </div>
+
+   <div class="desktop-h-copy">
+    Hide or show
+    <br>
+    the controls.
+</div>
+
+</div>
+
 <script>
 window.addEventListener("error", function (event) {
 
@@ -2863,6 +3066,21 @@ const phantomReturnButton =
         "phantomReturnButton"
     );
 
+const phantomSpeedControls =
+    document.getElementById(
+        "phantomSpeedControls"
+    );
+
+const phantomSpeedOne =
+    document.getElementById(
+        "phantomSpeedOne"
+    );
+
+const phantomSpeedTwo =
+    document.getElementById(
+        "phantomSpeedTwo"
+    );   
+
 const isStandaloneApp =
     window.matchMedia("(display-mode: standalone)").matches ||
     window.navigator.standalone === true;
@@ -2883,6 +3101,14 @@ let centerHidden = false;
 let fieldExplorerWaitingForLandscape = false;
 let phantomGuidanceStartTimer = null;
 let phantomIntroActive = false;
+let phantomSpeedMode = 1;
+
+const PHANTOM_SPEED_I =
+    0.0007;
+
+const PHANTOM_SPEED_II =
+    0.0011;
+
 
 
 
@@ -3519,6 +3745,17 @@ phantomAxisButton.addEventListener(
 
             phantomAxisMode = true;
 
+            /*
+ * Every Phantom Axis observation begins
+ * at canonical Speed I.
+ */
+phantomSpeedMode = 1;
+updatePhantomSpeedButtons();
+
+phantomSpeedControls.classList.add(
+    "visible"
+);
+
            /*
  * Every Phantom Axis entry begins with the true
  * wheel Center visible and no lower Center shield.
@@ -3762,17 +3999,68 @@ sizeSlider.addEventListener("input", function () {
         `${Math.round(wheelScale * 100)}%`;
 });
 
-const controls = document.getElementById("controls");
+const controls =
+    document.getElementById("controls");
 
-const closeControlsButton =
-    document.getElementById("closeControlsButton");
+const desktopHMessage =
+    document.getElementById(
+        "desktopHMessage"
+    );
 
-closeControlsButton.addEventListener(
+const desktopHMessageClose =
+    document.getElementById(
+        "desktopHMessageClose"
+    );
+
+let desktopHMessageTimer = null;
+
+const hasDesktopPointer =
+    window.matchMedia(
+        "(hover: hover) and (pointer: fine)"
+    ).matches;
+
+function dismissDesktopHMessage() {
+    clearTimeout(desktopHMessageTimer);
+
+    desktopHMessage.classList.remove(
+        "visible"
+    );
+}
+
+if (hasDesktopPointer) {
+    desktopHMessageTimer =
+    setTimeout(function () {
+
+        requestAnimationFrame(function () {
+
+            desktopHMessage.classList.add(
+                "visible"
+            );
+
+        });
+
+        desktopHMessageTimer =
+            setTimeout(
+                dismissDesktopHMessage,
+                6000
+            );
+
+    }, 900);
+
+}
+
+desktopHMessageClose.addEventListener(
     "click",
-    function () {
-        controls.classList.add("hidden");
+    function (event) {
+        event.stopPropagation();
+        dismissDesktopHMessage();
     }
 );
+
+const closeControlsButton =
+    document.getElementById(
+        "closeControlsButton"
+    );
 
 let phantomAxisMode = false;
 
@@ -4180,6 +4468,24 @@ skipIntroButton.addEventListener(
         finishPhantomGuidance();
     }
 );
+
+function updatePhantomSpeedButtons() {
+
+    phantomSpeedOne.classList.toggle(
+        "active",
+        phantomSpeedMode === 1
+    );
+
+    phantomSpeedTwo.classList.toggle(
+        "active",
+        phantomSpeedMode === 2
+    );
+
+    rotationSpeed =
+        phantomSpeedMode === 1
+            ? PHANTOM_SPEED_I
+            : PHANTOM_SPEED_II;
+}
 
 function showPhantomControls() {
     if (
