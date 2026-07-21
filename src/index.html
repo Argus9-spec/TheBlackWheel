@@ -304,7 +304,7 @@ canvas {
 
     gap: 18px;
 
-    z-index: 25;
+    z-index: 250;
 
     opacity: 0;
     visibility: hidden;
@@ -370,6 +370,7 @@ canvas {
 #phantomControls.visible {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 #phantomGuidance {
@@ -545,6 +546,42 @@ canvas {
 #phantomSpeedControls.visible {
     opacity: 1;
     pointer-events: auto;
+}
+
+/*
+ * SPEED participates in the same bright,
+ * dim, and hidden lifecycle as the
+ * permanent Phantom controls.
+ */
+#phantomSpeedControls.controls-awake,
+#phantomSpeedControls.instrument-bright {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transition:
+        opacity 0.35s ease,
+        visibility 0s;
+}
+
+#phantomSpeedControls.instrument-idle {
+    opacity: 0.10;
+    visibility: visible;
+    pointer-events: auto;
+
+    transition:
+        opacity 3s ease,
+        visibility 0s;
+}
+
+#phantomSpeedControls.instrument-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+        opacity 1.2s ease,
+        visibility 0s linear 1.2s;
 }
 
 .phantom-speed-title {
@@ -1350,6 +1387,10 @@ canvas {
     height: 22px;
 }
 
+.viewing-tubes-diagram {
+    margin: -8px auto 6px;
+}
+
    #skyButtons button,
 #centerStarButton {
     min-height: 36px;
@@ -1528,52 +1569,72 @@ canvas {
     height: auto;
 }
 
+.viewing-tubes-diagram {
+    max-width: 360px;
+    margin: -30px auto -12px;
+}
+
+.viewing-tubes-diagram img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.construction-intro {
+    margin-top: 0;
+}
+
+.tube-platforms {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 8px;
+}
+
 @media (max-width: 700px) {
 
     #controls {
         top:
-    calc(
-        env(safe-area-inset-top)
-        + 8px
-    );
+            calc(
+                env(safe-area-inset-top)
+                + 8px
+            );
 
-bottom: auto;
+        bottom: auto;
 
-height:
-    calc(
-        (
-            100dvh
-            - env(safe-area-inset-top)
-            - env(safe-area-inset-bottom)
-            - 16px
-        )
-        / 0.94
-    );
+        height:
+            calc(
+                (
+                    100dvh
+                    - env(safe-area-inset-top)
+                    - env(safe-area-inset-bottom)
+                    - 16px
+                )
+                / 0.94
+            );
 
-max-height: none;
+        max-height: none;
 
         left: 50%;
+
         transform:
-        translateX(-50%)
-        scale(0.94);
+            translateX(-50%)
+            scale(0.94);
 
-transform-origin: top center;
+        transform-origin: top center;
 
-width:
-    min(
-        calc(350px / 0.93),
-        calc(
-            (
-                100vw
-                - env(safe-area-inset-left)
-                - env(safe-area-inset-right)
-                - 24px
-            )
-            / 0.94
-        )
-    );
-
-       max-height: none;
+        width:
+            min(
+                calc(350px / 0.93),
+                calc(
+                    (
+                        100vw
+                        - env(safe-area-inset-left)
+                        - env(safe-area-inset-right)
+                        - 24px
+                    )
+                    / 0.94
+                )
+            );
 
         overflow-y: auto;
         overflow-x: hidden;
@@ -1582,6 +1643,20 @@ width:
 
         padding: 14px;
     }
+}
+
+
+/*
+ * Phone-only placement for the
+ * viewing-tube construction figure.
+ */
+@media (max-width: 500px) {
+
+    .viewing-tubes-diagram {
+        max-width: 330px;
+        margin: 4px auto -8px;
+    }
+
 }
 
 @media
@@ -1616,13 +1691,13 @@ width:
                 )
             );
 
-       max-height:
-    calc(
-        100dvh
-        - env(safe-area-inset-top)
-        - env(safe-area-inset-bottom)
-        - 8px
-    );
+        max-height:
+            calc(
+                100dvh
+                - env(safe-area-inset-top)
+                - env(safe-area-inset-bottom)
+                - 8px
+            );
 
         overflow-y: auto;
         overflow-x: hidden;
@@ -2011,9 +2086,70 @@ LOOK AGAIN.
             ×
         </button>
 
-        <h2 id="observationGuideTitle">
+                <h2 id="observationGuideTitle">
             OBSERVATION GUIDE
         </h2>
+
+        <h3>BEFORE YOU BEGIN</h3>
+
+        <ul>
+            <li>
+                Add the Black Wheel Instrument to your Home Screen for the
+                best experience.
+            </li>
+
+            <li>
+                Lock the screen to Portrait mode.
+            </li>
+
+            <li>
+                Use in a very dark room.
+            </li>
+        </ul>
+
+        <div class="guide-divider"></div>
+
+        <div class="observation-angle-diagram">
+            <img
+                src="../assets/observation-angle.svg?v=39"
+                alt="Observation angles of 45 degrees and 75 degrees."
+            >
+        </div>
+
+        <p>
+            The Phantom Axis Illusion is strongest between approximately
+            <strong>45° and 75°</strong>. As the observation angle moves
+            away from this range, the effect gradually weakens and the
+            original rotation returns.
+        </p>
+
+        <ul>
+            <li>
+                Place the device flat on a table with its bottom edge
+                facing you.
+            </li>
+
+            <li>
+                Cover the top and bottom edges of the device with black
+                electrical tape, without covering any app controls.
+            </li>
+
+            <li>
+                Observation angle: approximately
+                <strong>45°–75°</strong>.
+            </li>
+        </ul>
+
+        <p>
+            If using a laptop, tilt the display fully backward.
+        </p>
+
+        <p>
+            If using a fixed desktop display, position yourself so the
+            display is observed at approximately the same angle.
+        </p>
+
+        <div class="guide-divider"></div>
 
         <h3>VIEWING TUBES</h3>
 
@@ -2023,13 +2159,13 @@ LOOK AGAIN.
         </p>
 
         <p>
-            The viewing tubes isolate a small region of the rotating field
-            and make the organization easier to perceive.
+            The viewing tubes isolate a small region of the rotating field,
+            making the organization easier to perceive.
         </p>
 
         <p>
             The <strong>Phantom Axis Illusion</strong> button guides you
-            directly to this observational region.
+            directly to the canonical observation region.
         </p>
 
         <p>
@@ -2042,80 +2178,37 @@ LOOK AGAIN.
 
         <div class="guide-divider"></div>
 
-        <h3>VIEWING ANGLE</h3>
+        <h3>CONSTRUCTING VIEWING TUBES</h3>
 
-          <div class="observation-angle-diagram">
-           <img
-    src="../assets/observation-angle.svg?v=39"
-    alt="Viewing angles of 45 degrees and 75 degrees."
->
->
-        </div>
+       <h4 class="tube-platforms">
+           Laptop • Desktop • iPad
+       </h4>
 
-        <p>
-            Observe the display at approximately
-            <strong>45°–75°</strong>
-            for the strongest experience.
-        </p>
+       <div class="observation-angle-diagram viewing-tubes-diagram">
+       <img
+        src="../assets/viewing-tubes.png?v=3"
+        alt="Two standard toilet paper rolls lightly glued together at one end. The glued end faces the device, and the open ends face the observer’s eyes."
+    >
+      </div>
 
-        <p>
-            Different viewing angles reveal different aspects of the
-            organization while remaining within the same observational
-            region.
-        </p>
-
+       <p class="construction-intro">
+          Use two standard cardboard toilet paper rolls lightly glued
+          together with a small dot of glue at one end.
+      </p>
       
-        <p>
-            This viewing angle is essential for the intended observation.
+
+         <p>
+            Align the tubes carefully and allow the glue to dry with the
+            glued end standing downward on a flat surface. This keeps the
+            tubes evenly aligned.
         </p>
 
         <p>
-            If using a laptop, tilt the display fully backward.
+            Once dry, the opposite ends can be gently spread apart to fit
+            the face comfortably.
         </p>
 
-        <p>
-            Observe above the Center and below the upper edge of the wheel
-            through the viewing tubes.
-        </p>
-
-        <p>
-            If using a fixed desktop display, position yourself so you
-            observe the display at approximately the same viewing angle.
-        </p>
-
-        <p>
-            This viewing angle optimizes the southern orientation used by
-            the Black Wheel Instrument.
-        </p>
-
-        <p>
-            The Phantom Axis Illusion occurs only within this southern
-            observational region.
-        </p>
-
-        <div class="guide-divider"></div>
-
-        <h3>LAPTOP • DESKTOP • iPAD</h3>
-
-        <p>
-            Use two standard cardboard toilet paper rolls lightly glued
-            together with a small dab of glue at the rim of one end.
-        </p>
-
-        <p>
-            Align the tubes carefully and allow the glue to dry standing
-            upright on a flat surface with the glued rims downward. This
-            keeps the tubes evenly aligned.
-        </p>
-
-        <p>
-            Once dry, the binocular viewing tubes can be gently spread at
-            the unglued end, allowing them to fit the face comfortably.
-        </p>
-
-        <p>
-            To construct the viewing tubes, you will need:
-        </p>
+        <h4>Materials</h4>
 
         <ul>
             <li>Two cardboard toilet paper rolls</li>
@@ -2142,7 +2235,7 @@ LOOK AGAIN.
         <h4>Recommended</h4>
 
         <p>
-            A rolled construction-paper tube approximately:
+            Use a rolled construction-paper tube approximately:
         </p>
 
         <ul>
@@ -2151,8 +2244,8 @@ LOOK AGAIN.
         </ul>
 
         <p>
-            This provides the greatest comfort and the widest range of
-            observation.
+            These approximate dimensions provide the greatest comfort and
+            the widest range of observation.
         </p>
 
         <p>
@@ -2163,21 +2256,26 @@ LOOK AGAIN.
         <p>
             Two equally sized tubes lightly glued together at one end,
             like the toilet-paper-roll binoculars, can also work
-            wonderfully. Tube length may require slight adjustment from
-            person to person.
+            wonderfully.
+        </p>
+
+        <p>
+            Tube length may require slight adjustment from person to
+            person.
         </p>
 
         <h4>Also Works Very Well</h4>
 
         <ul>
             <li>One standard cardboard paper towel roll</li>
+
             <li>
                 Two standard cardboard toilet paper rolls taped together
                 end-to-end
             </li>
+
             <li>
-                One standard cardboard toilet paper roll also works
-                surprisingly well
+                One standard cardboard toilet paper roll
             </li>
         </ul>
 
@@ -2194,9 +2292,13 @@ LOOK AGAIN.
 
         <p>
             Tape is recommended when rolling your own tubes because both
-            the tube length and diameter can be adjusted easily while
-            experimenting. Tube length is easily modified with scissors.
-            Tape is fast, secure, and easy to modify.
+            tube length and diameter can be adjusted easily while
+            experimenting.
+        </p>
+
+        <p>
+            Tube length can be modified easily with scissors. Tape is fast,
+            secure, and easy to adjust.
         </p>
 
         <div class="guide-divider"></div>
@@ -2207,33 +2309,26 @@ LOOK AGAIN.
             ILLUSION
         </h3>
 
-        <p>
-            Use in a very dark room.
-        </p>
+        <ul>
+            <li>
+                Clean the display.
+            </li>
 
-        <p>
-            Clean the display.
-        </p>
+            <li>
+                Look directly above the Center of the Black Wheel while
+                keeping the Center below the circular viewing aperture.
+            </li>
 
-        <p>
-            Place the device flat with its bottom edge facing you.
-        </p>
+            <li>
+                Keep the upper edge of the Black Wheel above the circular
+                viewing aperture.
+            </li>
 
-        <p>
-            To observe the Phantom Axis Illusion, look directly above the
-            Center while keeping the Center outside the circular viewing
-            aperture.
-        </p>
-
-        <p>
-            Also keep the upper edge of the wheel outside the circular
-            viewing aperture.
-        </p>
-
-        <p>
-            For your first observation, use the Phantom Axis Illusion
-            button to locate the region, then turn off the mask.
-        </p>
+            <li>
+                For your first observation, use the Phantom Axis Illusion
+                button to locate the region, then turn off the mask.
+            </li>
+        </ul>
 
         <p>
             The organization remains present at every level of screen zoom
@@ -2276,28 +2371,29 @@ LOOK AGAIN.
 
         <div class="guide-divider"></div>
 
-       <h3>CONTROL OBSERVATION</h3>
+        <h3>CONTROL OBSERVATION</h3>
 
-<p>
-    To observe only the original turning of the wheel, simply observe any
-    other location on the wheel through the viewing tubes while maintaining
-    the same viewing orientation.
-</p>
+        <p>
+            To observe only the original turning of the wheel, observe any
+            other location on the wheel through the viewing tubes while
+            maintaining the same viewing orientation.
+        </p>
 
-<p>
-    If viewing the wheel on a laptop, first locate the Phantom Axis
-    Illusion region. Without changing your position, slowly tilt the
-    display toward you. The original rotation immediately returns.
-</p>
+        <p>
+            If viewing the wheel on a laptop, first locate the Phantom Axis
+            Illusion region. Without changing your position, slowly tilt
+            the display toward you. The original rotation immediately
+            returns.
+        </p>
 
-<p>
-    The Phantom Axis Illusion is directional and polarized within the
-    rotating field.
-</p>
+        <p>
+            The Phantom Axis Illusion is directional and polarized within
+            the rotating field.
+        </p>
 
         <div class="guide-divider"></div>
 
-        <h3>WHERE YOU'VE SEEN THIS BEFORE</h3>
+        <h3>WHERE YOU’VE SEEN THIS BEFORE</h3>
 
         <p>
             The Phantom Axis Illusion is not unique to the Black Wheel.
@@ -2387,7 +2483,7 @@ LOOK AGAIN.
         </p>
 
         <p>
-            The Phantom Axis Illusion is the observer's recognition of it.
+            The Phantom Axis Illusion is the observer’s recognition of it.
         </p>
 
         <div class="guide-divider"></div>
@@ -3066,6 +3162,22 @@ const phantomReturnButton =
         "phantomReturnButton"
     );
 
+    document.addEventListener(
+    "pointerdown",
+    function (event) {
+
+        console.log(
+            "TOP ELEMENT:",
+            document.elementFromPoint(
+                event.clientX,
+                event.clientY
+            )
+        );
+
+    },
+    true
+);
+
 const phantomSpeedControls =
     document.getElementById(
         "phantomSpeedControls"
@@ -3093,6 +3205,8 @@ document.documentElement.classList.toggle(
 let phantomControlsTimer = null;
 let phantomControlsHideTimer = null;
 let phantomIntroTimer = null;
+let phantomFinishTimer = null;
+let phantomIntroControlsReadyTimer = null;
 let phantomIntroStartedAt = 0;
 let phantomIntroRemaining = 15200;
 let phantomIntroPaused = false;
@@ -3752,9 +3866,17 @@ phantomAxisButton.addEventListener(
 phantomSpeedMode = 1;
 updatePhantomSpeedButtons();
 
+phantomSpeedControls.classList.remove(
+    "instrument-bright",
+    "instrument-idle",
+    "instrument-hidden",
+    "controls-awake"
+);
+
 phantomSpeedControls.classList.add(
     "visible"
 );
+
 
            /*
  * Every Phantom Axis entry begins with the true
@@ -4123,11 +4245,22 @@ document.addEventListener("keydown", function (event) {
 });
 let lastFrameTime = null;
 
-function wakePhantomControls() {
+function wakePhantomControls(
+    brightDuration = 2500
+) {
     clearTimeout(phantomControlsTimer);
     clearTimeout(phantomControlsHideTimer);
 
+    /*
+     * Wake both Phantom control groups.
+     */
     phantomControls.classList.remove(
+        "instrument-idle",
+        "instrument-bright",
+        "instrument-hidden"
+    );
+
+    phantomSpeedControls.classList.remove(
         "instrument-idle",
         "instrument-bright",
         "instrument-hidden"
@@ -4138,53 +4271,92 @@ function wakePhantomControls() {
         "controls-awake"
     );
 
+    phantomSpeedControls.classList.add(
+        "visible",
+        "controls-awake"
+    );
+
     /*
-     * Full brightness for five seconds.
+     * Hold the controls brightly for the
+     * requested amount of time.
      */
     phantomControlsTimer =
         setTimeout(function () {
+
             phantomControls.classList.remove(
                 "controls-awake",
                 "instrument-bright"
             );
 
+            phantomSpeedControls.classList.remove(
+                "controls-awake",
+                "instrument-bright"
+            );
+
             if (!phantomIntroActive) {
+
                 phantomControls.classList.add(
                     "instrument-idle"
                 );
 
+                phantomSpeedControls.classList.add(
+                    "instrument-idle"
+                );
+
                 /*
-                 * Remain dim for fifteen seconds,
-                 * then withdraw completely.
+                 * Stay quietly available before
+                 * disappearing completely.
                  */
                 phantomControlsHideTimer =
                     setTimeout(function () {
+
                         if (
                             phantomAxisMode &&
                             !phantomIntroActive
                         ) {
+
                             phantomControls.classList.remove(
+                                "instrument-idle"
+                            );
+
+                            phantomSpeedControls.classList.remove(
                                 "instrument-idle"
                             );
 
                             phantomControls.classList.add(
                                 "instrument-hidden"
                             );
+
+                            phantomSpeedControls.classList.add(
+                                "instrument-hidden"
+                            );
                         }
+
                     }, 10000);
             }
-        }, 5000);
+
+        }, brightDuration);
 }
 
 
-function finishPhantomGuidance() {
+function finishPhantomGuidance(
+    skipImmediately = false
+) {
     clearTimeout(phantomIntroTimer);
     clearTimeout(phantomGuidanceStartTimer);
     clearTimeout(phantomControlsTimer);
     clearTimeout(phantomControlsHideTimer);
+    clearTimeout(phantomFinishTimer);
+    clearTimeout(
+        phantomIntroControlsReadyTimer
+    );
 
     phantomIntroTimer = null;
     phantomGuidanceStartTimer = null;
+    phantomControlsTimer = null;
+    phantomControlsHideTimer = null;
+    phantomFinishTimer = null;
+    phantomIntroControlsReadyTimer = null;
 
     phantomIntroActive = false;
     phantomIntroPaused = false;
@@ -4195,8 +4367,13 @@ function finishPhantomGuidance() {
         "intro-paused"
     );
 
+    /*
+     * Remove every state that can keep the
+     * permanent controls hidden or disabled.
+     */
     phantomControls.classList.remove(
         "intro-paused",
+        "intro-controls-ready",
         "controls-awake",
         "instrument-bright",
         "instrument-idle",
@@ -4207,35 +4384,54 @@ function finishPhantomGuidance() {
         "PAUSE";
 
     /*
-     * First fade Pause and Skip away completely.
-     * Do not wake the permanent controls yet.
+     * Skip removes every introduction-only
+     * transition immediately.
+     */
+    if (skipImmediately) {
+        phantomControls.classList.remove(
+            "intro-playing",
+            "intro-controls-fading"
+        );
+
+        phantomControls.classList.add(
+            "intro-controls-removed"
+        );
+
+        wakePhantomControls(5000);
+
+        return;
+    }
+
+    /*
+     * Natural completion preserves the
+     * graceful Pause and Skip fade.
      */
     phantomControls.classList.add(
         "intro-controls-fading"
     );
 
-    /*
-     * Allow the intro buttons to complete their fade.
-     * Then remove their active animation state and
-     * begin the permanent-control lifecycle.
-     */
-    setTimeout(function () {
-        if (
-            phantomAxisMode &&
-            !phantomIntroActive
-        ) {
-            phantomControls.classList.add(
-                "intro-controls-removed"
-            );
+    phantomFinishTimer =
+        setTimeout(function () {
 
-            phantomControls.classList.remove(
-                "intro-controls-fading",
-                "intro-playing"
-            );
+            phantomFinishTimer = null;
 
-            wakePhantomControls();
-        }
-    }, 1200);
+            if (
+                phantomAxisMode &&
+                !phantomIntroActive
+            ) {
+                phantomControls.classList.add(
+                    "intro-controls-removed"
+                );
+
+                phantomControls.classList.remove(
+                    "intro-controls-fading",
+                    "intro-playing"
+                );
+
+                wakePhantomControls(5000);
+            }
+
+        }, 1200);
 }
 
 
@@ -4284,7 +4480,16 @@ function showIntroControls() {
      * Keep Pause and Skip bright while
      * the eye is arriving.
      */
+    clearTimeout(
+    phantomIntroControlsReadyTimer
+);
+
+phantomIntroControlsReadyTimer =
     setTimeout(function () {
+
+        phantomIntroControlsReadyTimer =
+            null;
+
         if (
             phantomAxisMode &&
             phantomIntroActive &&
@@ -4294,6 +4499,7 @@ function showIntroControls() {
                 "intro-controls-ready"
             );
         }
+
     }, 3000);
 
     pauseIntroButton.textContent =
@@ -4465,7 +4671,7 @@ skipIntroButton.addEventListener(
             return;
         }
 
-        finishPhantomGuidance();
+        finishPhantomGuidance(true);
     }
 );
 
@@ -4487,6 +4693,42 @@ function updatePhantomSpeedButtons() {
             : PHANTOM_SPEED_II;
 }
 
+phantomSpeedOne.addEventListener(
+    "click",
+    function (event) {
+
+        event.stopPropagation();
+
+        if (!phantomAxisMode) {
+            return;
+        }
+
+        phantomSpeedMode = 1;
+
+        updatePhantomSpeedButtons();
+
+        wakePhantomControls();
+    }
+);
+
+phantomSpeedTwo.addEventListener(
+    "click",
+    function (event) {
+
+        event.stopPropagation();
+
+        if (!phantomAxisMode) {
+            return;
+        }
+
+        phantomSpeedMode = 2;
+
+        updatePhantomSpeedButtons();
+
+        wakePhantomControls();
+    }
+);
+
 function showPhantomControls() {
     if (
         phantomControls.classList.contains(
@@ -4501,12 +4743,23 @@ function showPhantomControls() {
 
 function hidePhantomControls() {
     clearTimeout(phantomControlsTimer);
+    clearTimeout(phantomControlsHideTimer);
 
     phantomControls.classList.remove(
         "visible",
         "intro-playing",
         "instrument-bright",
-        "instrument-idle"
+        "instrument-idle",
+        "instrument-hidden",
+        "controls-awake"
+    );
+
+    phantomSpeedControls.classList.remove(
+        "visible",
+        "instrument-bright",
+        "instrument-idle",
+        "instrument-hidden",
+        "controls-awake"
     );
 }
 
