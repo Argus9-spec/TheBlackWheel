@@ -292,6 +292,11 @@ canvas {
 
 }
 
+body.cursor-hidden,
+body.cursor-hidden * {
+    cursor: none !important;
+}
+
 #phantomMask {
     position: fixed;
     inset: 0;
@@ -3246,10 +3251,7 @@ const PHANTOM_SPEED_I =
     0.0007;
 
 const PHANTOM_SPEED_II =
-    0.0011;
-
-
-
+    0.0013;
 
 centerStarButton.classList.toggle(
     "active",
@@ -4221,34 +4223,78 @@ const closeControlsButton =
         "closeControlsButton"
     );
 
+/*
+ * The X always hides the ordinary
+ * control panel.
+ */
+closeControlsButton.addEventListener(
+    "click",
+    function (event) {
+        event.stopPropagation();
+
+        controls.classList.add(
+            "hidden"
+        );
+    }
+);
+
 let phantomAxisMode = false;
 
 let savedObservationState = null;
 
-let lastCanvasTapTime = 0;
+let canvasPressStartX = 0;
+let canvasPressStartY = 0;
+let canvasPressMoved = false;
 
-canvas.addEventListener("pointerup", function (event) {
-    if (event.pointerType !== "touch") return;
-
-   if (
-    isPinching ||
-    Date.now() < suppressTapUntil
-) {
-    lastCanvasTapTime = 0;
-    return;
-}
-
-    const now = Date.now();
-    const timeSinceLastTap =
-        now - lastCanvasTapTime;
-
-    if (timeSinceLastTap < 350) {
-        controls.classList.toggle("hidden");
-        lastCanvasTapTime = 0;
-    } else {
-        lastCanvasTapTime = now;
+/*
+ * Remember where the press began so dragging
+ * the wheel is not mistaken for a tap.
+ */
+canvas.addEventListener(
+    "pointerdown",
+    function (event) {
+        canvasPressStartX = event.clientX;
+        canvasPressStartY = event.clientY;
+        canvasPressMoved = false;
     }
-});
+);
+
+canvas.addEventListener(
+    "pointermove",
+    function (event) {
+        const movement =
+            Math.hypot(
+                event.clientX - canvasPressStartX,
+                event.clientY - canvasPressStartY
+            );
+
+        if (movement > 10) {
+            canvasPressMoved = true;
+        }
+    }
+);
+
+/*
+ * A clean click or single tap on the wheel
+ * hides or shows the ordinary controls.
+ */
+canvas.addEventListener(
+    "pointerup",
+    function () {
+
+        if (
+            isPinching ||
+            canvasPressMoved ||
+            Date.now() < suppressTapUntil
+        ) {
+            return;
+        }
+
+        controls.classList.toggle(
+            "hidden"
+        );
+    }
+);
 
 document.addEventListener("keydown", function (event) {
     const key = event.key.toLowerCase();
@@ -4280,6 +4326,73 @@ document.addEventListener("keydown", function (event) {
         wheelOffsetX = 0;
     }
 });
+
+let cursorSleepTimer = null;
+
+function wakeCursor() {
+    clearTimeout(cursorSleepTimer);
+
+    document.body.classList.remove(
+        "cursor-hidden"
+    );
+
+    cursorSleepTimer =
+    setTimeout(function () {
+
+        if (cursorOverControls) {
+            return;
+        }
+
+        document.body.classList.add(
+            "cursor-hidden"
+        );
+
+    }, 4000);
+}
+
+document.addEventListener(
+    "mousemove",
+    wakeCursor
+);
+
+document.addEventListener(
+    "pointerdown",
+    wakeCursor
+);
+
+document.addEventListener(
+    "wheel",
+    wakeCursor,
+    { passive: true }
+);
+
+wakeCursor();
+
+let cursorOverControls = false;
+
+controls.addEventListener(
+    "pointerenter",
+    function () {
+        cursorOverControls = true;
+
+        clearTimeout(
+            cursorSleepTimer
+        );
+
+        document.body.classList.remove(
+            "cursor-hidden"
+        );
+    }
+);
+
+controls.addEventListener(
+    "pointerleave",
+    function () {
+        cursorOverControls = false;
+        wakeCursor();
+    }
+);
+
 let lastFrameTime = null;
 
 function wakePhantomControls(
