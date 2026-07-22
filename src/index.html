@@ -94,11 +94,11 @@ html,body{
     color: white;
 
     background:
-    rgba(0, 0, 0, 0.28);
+        rgba(0, 0, 0, 0.28);
 
     border:
-    1px solid
-    rgba(255, 255, 255, 0.38);
+        1px solid
+        rgba(255, 255, 255, 0.38);
 
     border-radius: 10px;
 
@@ -109,19 +109,40 @@ html,body{
     visibility: hidden;
     pointer-events: none;
 
+    /*
+     * Slow automatic fade-out.
+     */
     transition:
-    opacity 2.8s ease,
-    visibility 0s linear 2.8s;
+        opacity 2.8s ease,
+        visibility 0s linear 2.8s;
 }
+
 
 #desktopHMessage.visible {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
 
+    /*
+     * Slow fade-in.
+     */
     transition:
-    opacity 1.8s ease,
-    visibility 0s;
+        opacity 1.8s ease,
+        visibility 0s;
+}
+
+
+/*
+ * Fast exit only when X is clicked.
+ */
+#desktopHMessage.dismissed {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+        opacity 0.3s ease,
+        visibility 0s linear 0.3s;
 }
 
 .desktop-h-key {
@@ -2578,16 +2599,20 @@ LOOK AGAIN.
         ×
     </button>
 
-    <div class="desktop-h-key">
-        Press H
-    </div>
-
-   <div class="desktop-h-copy">
-    Hide or show
-    <br>
-    the controls.
+   <div class="desktop-h-key">
+    Press H
 </div>
 
+<div class="desktop-h-copy">
+    to hide or show
+    the controls.
+    <br><br>
+    Press H twice
+    for full-screen mode.
+    <br><br>
+    Press H twice again
+    to exit full-screen mode.
+</div>
 </div>
 
 <script>
@@ -4141,8 +4166,16 @@ const hasDesktopPointer =
         "(hover: hover) and (pointer: fine)"
     ).matches;
 
-function dismissDesktopHMessage() {
+function dismissDesktopHMessage(
+    fast = false
+) {
     clearTimeout(desktopHMessageTimer);
+
+    if (fast) {
+        desktopHMessage.classList.add(
+            "dismissed"
+        );
+    }
 
     desktopHMessage.classList.remove(
         "visible"
@@ -4154,6 +4187,10 @@ if (hasDesktopPointer) {
     setTimeout(function () {
 
         requestAnimationFrame(function () {
+
+            desktopHMessage.classList.remove(
+            "dismissed"
+            );
 
             desktopHMessage.classList.add(
                 "visible"
@@ -4175,7 +4212,7 @@ desktopHMessageClose.addEventListener(
     "click",
     function (event) {
         event.stopPropagation();
-        dismissDesktopHMessage();
+        dismissDesktopHMessage(true);
     }
 );
 
@@ -4736,7 +4773,7 @@ function showPhantomControls() {
         )
     ) {
         return;
-    }
+    } 
 
     wakePhantomControls();
 }
