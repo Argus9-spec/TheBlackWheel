@@ -70,6 +70,189 @@ html,body{
 }
 
 /*
+ * Field Explorer visual identity.
+ * The mode changes the instrument panel,
+ * not the current observation state.
+ */
+#fieldExplorerTitle {
+    display: none;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    margin:
+        0
+        0
+        14px;
+
+    padding:
+    0
+    38px
+    10px;
+
+    color: #e4002b;
+
+    border-bottom:
+        1px solid
+        #e4002b;
+
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.035em;
+
+    text-align: center;
+    white-space: nowrap;
+}
+
+#desktopMessageClose,
+#controlsCloseButton {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    z-index: 2;
+}
+
+@media (max-width: 600px) {
+
+    #fieldExplorerTitle {
+        font-size: 23px;
+
+        padding-left: 34px;
+        padding-right: 34px;
+    }
+
+}
+
+@media (min-width: 601px) {
+
+    #fieldExplorerTitle {
+        position: relative;
+        left: -16px;
+    }
+
+}
+
+#controls.field-explorer-mode {
+    border-color: #e4002b;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.72
+        );
+}
+
+#controls.field-explorer-mode
+    #fieldExplorerTitle {
+
+    display: block;
+}
+
+/*
+ * The title supplies the first divider,
+ * so Rotation Speed does not need another.
+ */
+#controls.field-explorer-mode
+    > label:first-of-type {
+
+    border-top: 0;
+
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/*
+ * Explorer section dividers.
+ */
+#controls.field-explorer-mode
+    label:not(:first-of-type) {
+
+    border-top-color: #e4002b;
+}
+
+/*
+ * Native desktop and mobile range controls
+ * adopt the Explorer red accent.
+ */
+#controls.field-explorer-mode
+    input[type="range"] {
+
+    accent-color: #e4002b;
+}
+
+/*
+ * Phantom Axis Illusion and Field Explorer
+ * are sibling destinations.
+ */
+#controls.field-explorer-mode
+    #phantomAxisButton {
+
+    display: none;
+}
+
+/*
+ * Exit button remains white.
+ */
+#controls.field-explorer-mode
+    #fieldExplorerButton {
+
+    background: white;
+    color: black;
+    border-color: #999;
+}
+
+/*
+ * Negative Wheel presentation.
+ * The field becomes white while the
+ * Explorer interface remains readable.
+ */
+#controls.field-explorer-mode.negative-mode {
+    color: black;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.72
+        );
+}
+
+#controls.field-explorer-mode.negative-mode
+    #closeControlsButton {
+
+    color: black;
+}
+
+#controls.field-explorer-mode.negative-mode
+    .controlHint {
+
+    color: black;
+}
+
+/*
+ * Preserve the red Explorer identity
+ * against either field polarity.
+ */
+#controls.field-explorer-mode.negative-mode
+    #fieldExplorerTitle {
+
+    color: #e4002b;
+}
+
+/*
+ * Active Negative button.
+ */
+#negativeButton.active {
+    background: black;
+    color: white;
+    border-color: black;
+}
+
+/*
  * Desktop-only keyboard shortcut message.
  */
 #desktopHMessage {
@@ -225,6 +408,7 @@ html,body{
 #centerStarButton,
 #observationGuideButton,
 #phantomAxisButton,
+#negativeButton,
 #fieldExplorerButton {
 
     width: 100%;
@@ -1985,6 +2169,10 @@ LOOK AGAIN.
 
 <div id="controls">
 
+    <div id="fieldExplorerTitle">
+        FIELD EXPLORER
+    </div>
+
     <button
 
         id="closeControlsButton"
@@ -2017,7 +2205,7 @@ LOOK AGAIN.
     id="sizeSlider"
     type="range"
     min="0.20"
-    max="1.10"
+    max="1.40"
     step="0.01"
     value="0.46"
 >
@@ -2081,6 +2269,13 @@ LOOK AGAIN.
 
 <button id="phantomAxisButton" type="button">
     PHANTOM AXIS ILLUSION
+</button>
+
+<button
+    id="negativeButton"
+    type="button"
+    hidden>
+    NEGATIVE
 </button>
 
 <button
@@ -2842,7 +3037,7 @@ canvas.addEventListener(
 
         wheelScale += zoomDirection * zoomStep;
 
-       wheelScale = Math.max(0.20, Math.min(1.10, wheelScale));
+       wheelScale = Math.max(0.20, Math.min(1.40, wheelScale));
 
         sizeSlider.value = wheelScale.toFixed(2);
         sizeReadout.textContent =
@@ -2910,7 +3105,7 @@ canvas.addEventListener(
         wheelScale =
             Math.max(
                 0.20,
-                Math.min(1.10, wheelScale)
+                Math.min(1.40, wheelScale)
             );
 
         sizeSlider.value =
@@ -3133,7 +3328,19 @@ const observationGuideButton =
     document.getElementById("observationGuideButton");
 
 const fieldExplorerButton =
-    document.getElementById("fieldExplorerButton");
+    document.getElementById(
+        "fieldExplorerButton"
+    );
+
+const phantomAxisButton =
+    document.getElementById(
+        "phantomAxisButton"
+    );
+
+const negativeButton =
+    document.getElementById(
+        "negativeButton"
+    );
 
 const orientationOverlay =
     document.getElementById("orientationOverlay");
@@ -3242,6 +3449,9 @@ let phantomIntroRemaining = 15200;
 let phantomIntroPaused = false;
 let phantomMaskVisible = true;
 let centerHidden = false;
+
+let fieldExplorerMode = false;
+let negativeMode = false;
 let fieldExplorerWaitingForLandscape = false;
 let phantomGuidanceStartTimer = null;
 let phantomIntroActive = false;
@@ -3740,118 +3950,108 @@ const canonicalWheelCenterY =
     };
 }
 
-fieldExplorerButton.addEventListener(
-    "click",
-    function () {
+function setFieldExplorerMode(active) {
 
-        const viewport =
-            window.visualViewport;
+    fieldExplorerMode = active;
 
-        const viewportWidth =
-            viewport
-                ? viewport.width
-                : window.innerWidth;
+    if (active) {
 
-        const viewportHeight =
-            viewport
-                ? viewport.height
-                : window.innerHeight;
+    speedSlider.min = -0.020;
+    speedSlider.max = 0.020;
+    speedSlider.step = 0.0001;
 
-        const isPortrait =
-            viewportHeight > viewportWidth;
+} else {
 
-        if (isPortrait) {
-            console.log(
-                "FIELD EXPLORER: ROTATE DEVICE"
-            );
+    speedSlider.min = -0.003;
+    speedSlider.max = 0.003;
+    speedSlider.step = 0.0001;
 
-            return;
-        }
-
-        console.log(
-            "FIELD EXPLORER: LANDSCAPE READY"
-        );
+    if (rotationSpeed > 0.003) {
+        rotationSpeed = 0.003;
     }
-);
 
-function isFieldExplorerPortrait() {
-    const viewport = window.visualViewport;
+    if (rotationSpeed < -0.003) {
+        rotationSpeed = -0.003;
+    }
 
-    const viewportWidth =
-        viewport
-            ? viewport.width
-            : window.innerWidth;
-
-    const viewportHeight =
-        viewport
-            ? viewport.height
-            : window.innerHeight;
-
-    return viewportHeight > viewportWidth;
+    speedSlider.value = rotationSpeed;
 }
 
-function finishFieldExplorerOrientationGate() {
-    fieldExplorerWaitingForLandscape = false;
+updateSpeedDisplay();
 
-    orientationOverlay.classList.add(
-        "leaving"
+    controls.classList.toggle(
+        "field-explorer-mode",
+        active
     );
 
-    window.setTimeout(
-        function () {
-            orientationOverlay.hidden = true;
+    fieldExplorerButton.textContent =
+        active
+            ? "EXIT FIELD EXPLORER"
+            : "FIELD EXPLORER";
 
-            orientationOverlay.classList.remove(
-                "leaving"
-            );
-        },
-        350
+    /*
+     * Phantom Axis Illusion remains a sibling
+     * destination available from the main panel.
+     */
+    phantomAxisButton.hidden = active;
+
+    negativeButton.hidden = !active;
+
+    if (!active) {
+
+    negativeMode = false;
+
+    negativeButton.classList.remove(
+        "active"
     );
+    controls.classList.remove(
+    "negative-mode"
+    );
+
+}
 }
 
-fieldExplorerButton?.addEventListener(
+negativeButton.addEventListener(
     "click",
     function (event) {
+
         event.stopPropagation();
 
-        if (!isFieldExplorerPortrait()) {
+        negativeMode =
+            !negativeMode;
+
+        negativeButton.classList.toggle(
+            "active",
+            negativeMode
+        );
+
+        controls.classList.toggle(
+            "negative-mode",
+            negativeMode
+        );
+    }
+);
+
+fieldExplorerButton.addEventListener(
+    "click",
+    function (event) {
+
+        event.stopPropagation();
+
+        /*
+         * Exit Explorer.
+         */
+        if (fieldExplorerMode) {
+
+            setFieldExplorerMode(false);
             return;
         }
 
-        fieldExplorerWaitingForLandscape = true;
-        orientationOverlay.hidden = false;
-    }
-);
-
-function handleFieldExplorerOrientationGate() {
-    if (!fieldExplorerWaitingForLandscape) {
-        return;
-    }
-
-    if (isFieldExplorerPortrait()) {
-        return;
-    }
-
-    finishFieldExplorerOrientationGate();
-}
-
-window.addEventListener(
-    "resize",
-    handleFieldExplorerOrientationGate
-);
-
-window.visualViewport?.addEventListener(
-    "resize",
-    handleFieldExplorerOrientationGate
-);
-
-window.addEventListener(
-    "orientationchange",
-    function () {
-        window.setTimeout(
-            handleFieldExplorerOrientationGate,
-            150
-        );
+        /*
+         * Phones and tablets still
+         * require landscape.
+         */
+        setFieldExplorerMode(true);
     }
 );
 
@@ -5258,8 +5458,17 @@ rotation +=
     apparentSpeedScale *
     (deltaTime / 16.6667);
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, viewWidth, viewHeight);
+    ctx.fillStyle =
+    negativeMode
+        ? "white"
+        : "black";
+
+ctx.fillRect(
+    0,
+    0,
+    viewWidth,
+    viewHeight
+);
 
     const viewport = window.visualViewport;
 
@@ -5326,7 +5535,11 @@ const cy =
             baseScaledDotSize *
             magnitudeMultiplier;
 
-        ctx.fillStyle = "white";
+        ctx.fillStyle =
+    negativeMode
+        ? "black"
+        : "white";
+
         ctx.shadowBlur = 0;
 
         ctx.beginPath();
@@ -5351,7 +5564,9 @@ const centerStarY = cy;
 ctx.fillStyle =
     showCenterStar
         ? "#ff3b30"
-        : "white";
+        : negativeMode
+            ? "black"
+            : "white";
 
 ctx.shadowBlur = 0;
 
