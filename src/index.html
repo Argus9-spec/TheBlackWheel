@@ -438,6 +438,48 @@ html,body{
     border-color: #ff8a84;
 }
 
+/*
+ * CENTER section heading.
+ *
+ * The divider separates Center navigation
+ * from the Field selector without increasing
+ * the mobile panel unnecessarily.
+ */
+#centerReturnHint {
+    margin:
+        0
+        0
+        -4px;
+
+    padding-top: 5px;
+
+    border-top:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.18
+        );
+
+    color: white;
+
+    text-align: center;
+
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1;
+
+    letter-spacing: 0.08em;
+
+    opacity: 0.85;
+}
+
+#centerReturnHint +
+#centerStarButton {
+    margin-top: 8px;
+}
+
 
 #phantomAxisButton.active,
 #fieldExplorerButton.active {
@@ -446,13 +488,13 @@ html,body{
     border-color: white;
 }
 
-#skyButtons {
+#fieldButtons {
     display: flex;
     gap: 6px;
     margin-bottom: 10px;
 }
 
-#skyButtons button {
+#fieldButtons button {
     flex: 1;
     padding: 6px;
 
@@ -464,6 +506,39 @@ html,body{
 
     cursor: pointer;
     font-weight: bold;
+}
+
+/*
+ * Persistent field-state indicator.
+ *
+ * Exactly one selected field remains negative
+ * at all times.
+ */
+#fieldButtons button.active {
+    background: black;
+    color: white;
+    border-color: white;
+}
+
+/*
+ * Infinity is visually distinct.
+ * Larger—not bolder.
+ */
+#fieldButtons button[data-field="4"] {
+
+    font-size: 1.65em;
+
+    font-weight: 400;
+
+    line-height: 1;
+
+    padding-top: 2px;
+
+    font-family:
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
 }
 
 canvas {
@@ -1601,7 +1676,7 @@ body.cursor-hidden * {
     margin: -8px auto 6px;
 }
 
-   #skyButtons button,
+   #fieldButtons button,
 #centerStarButton {
     min-height: 36px;
     font-size: 13px;
@@ -2236,7 +2311,7 @@ LOOK AGAIN.
     value="1"
 >
 
-<div id="densityReadout">ORIGINAL · 428 STARS</div>
+<div id="densityReadout">ORIGINAL · 428 POINTS</div>
 
 <label for="magnitudeSlider">MAGNITUDE VARIATION</label>
 
@@ -2253,10 +2328,15 @@ LOOK AGAIN.
 
 <label>FIELD</label>
 
-<div id="skyButtons">
-    <button type="button" data-sky="1" class="active">I</button>
-<button type="button" data-sky="2">II</button>
-<button type="button" data-sky="3">III</button>
+<div id="fieldButtons">
+    <button type="button" data-field="1" class="active">I</button>
+    <button type="button" data-field="2">II</button>
+    <button type="button" data-field="3">III</button>
+    <button type="button" data-field="4">∞</button>
+</div>
+
+<div id="centerReturnHint">
+    DOUBLE-TAP TO RECENTER
 </div>
 
 <button id="centerStarButton">
@@ -2943,9 +3023,164 @@ observationGuideDoubleTapPanel?.addEventListener(
 
 <script type="module">
 
-import { blackWheelV1 } from "./data/blackWheelV1.js?v=3";
-import { skyII } from "./data/skyII.js";
-import { skyIII } from "./data/skyIII.js";
+import { field01 } from "./data/field01.js?v=4";
+import { field02 } from "./data/field02.js?v=4";
+import { field03 } from "./data/field03.js?v=4";
+/*
+ * Procedural Infinite Field
+ *
+ * No bitmap.
+ * No binary catalog.
+ * No stored boundary.
+ *
+ * Every point is derived deterministically
+ * from its mathematical location.
+ */
+const fieldInfinite = {
+    name: "Infinite Field",
+    procedural: true,
+    stars: []
+};
+
+/*
+ * Fixed identity of the Infinite Field button.
+ */
+const infiniteFieldNumber = 4;
+
+/*
+ * Master seed for the complete generated field.
+ *
+ * Keeping this number fixed guarantees that every
+ * coordinate produces the same point forever.
+ */
+const infiniteMasterSeed =
+    1732050807;
+
+/*
+ * Size of one invisible generator cell measured
+ * in canonical wheel-space units.
+ *
+ * This is intentionally a starting value.
+ * We will tune the visible population by observation.
+ */
+const infiniteCellSize =
+    0.105;
+
+/*
+ * Produce one stable value between 0 and 1 from:
+ *
+ * cell X
+ * cell Y
+ * density layer
+ * requested value channel
+ */
+function infiniteHash(
+    cellX,
+    cellY,
+    layer,
+    channel
+) {
+    let value =
+        Math.imul(
+            cellX,
+            374761393
+        ) ^
+        Math.imul(
+            cellY,
+            668265263
+        ) ^
+        Math.imul(
+            layer + 1,
+            2246822519
+        ) ^
+        Math.imul(
+            channel +
+                infiniteMasterSeed,
+            3266489917
+        );
+
+    value =
+        Math.imul(
+            value ^
+                (value >>> 13),
+            1274126177
+        );
+
+    value =
+        value ^
+        (value >>> 16);
+
+    return (
+        value >>> 0
+    ) / 4294967296;
+}
+
+/*
+ * Generate the permanent point belonging to one
+ * mathematical cell and one density layer.
+ */
+function getInfinitePoint(
+    cellX,
+    cellY,
+    layer
+) {
+    /*
+     * The point remains inside its cell but moves
+     * far enough from center to conceal the grid.
+     */
+    const jitterAmount =
+        0.72;
+
+    const jitterX =
+        (
+            infiniteHash(
+                cellX,
+                cellY,
+                layer,
+                1
+            ) -
+            0.5
+        ) *
+        jitterAmount;
+
+    const jitterY =
+        (
+            infiniteHash(
+                cellX,
+                cellY,
+                layer,
+                2
+            ) -
+            0.5
+        ) *
+        jitterAmount;
+
+    return {
+        x:
+            (
+                cellX +
+                0.5 +
+                jitterX
+            ) *
+            infiniteCellSize,
+
+        y:
+            (
+                cellY +
+                0.5 +
+                jitterY
+            ) *
+            infiniteCellSize,
+
+        magnitudeSeed:
+            infiniteHash(
+                cellX,
+                cellY,
+                layer,
+                3
+            )
+    };
+}
 
 const canvas = document.getElementById("wheel");  
 const ctx = canvas.getContext("2d");
@@ -3139,14 +3374,15 @@ canvas.addEventListener(
     { passive: false }
 );
 
-const skies = {
-    1: blackWheelV1,
-    2: skyII,
-    3: skyIII
+const fields = {
+    1: field01,
+    2: field02,
+    3: field03,
+    4: fieldInfinite
 };
 
-let currentSky = skies[1];
-let stars = currentSky.stars;
+let currentField = fields[1];
+let stars = currentField.stars;
 
 function findCenterStarIndex(starList) {
     return starList.reduce(
@@ -3268,6 +3504,250 @@ function buildDensityStars(level) {
 
 let renderedStars;
 
+/*
+ * Infinite Field rendering cache.
+ *
+ * The canonical points are drawn once to an
+ * offscreen canvas. The completed field is then
+ * rotated as a single image every frame.
+ */
+
+const infiniteCacheCanvas =
+    document.createElement("canvas");
+
+const infiniteCacheContext =
+    infiniteCacheCanvas.getContext("2d");
+
+let infiniteCacheDirty = true;
+let infiniteCacheReady = false;
+let infiniteCacheBuilding = false;
+
+let infiniteCacheCssSize = 0;
+let infiniteCacheReferenceRadius = 1;
+
+let infiniteCacheBuildIndex = 0;
+let infiniteCacheBuildToken = 0;
+
+function invalidateInfiniteCache() {
+    /*
+     * Incrementing the token cancels any old,
+     * partially completed cache build.
+     */
+    infiniteCacheBuildToken++;
+
+    infiniteCacheDirty = true;
+    infiniteCacheReady = false;
+    infiniteCacheBuilding = false;
+    infiniteCacheBuildIndex = 0;
+}
+
+function beginInfiniteCacheBuild() {
+    if (
+        infiniteCacheBuilding ||
+        !infiniteCacheDirty
+    ) {
+        return;
+    }
+
+    infiniteCacheBuilding = true;
+    infiniteCacheReady = false;
+    infiniteCacheBuildIndex = 0;
+
+    const buildToken =
+        ++infiniteCacheBuildToken;
+
+    const minimumViewportDimension =
+        Math.max(
+            1,
+            Math.min(viewWidth, viewHeight)
+        );
+
+    /*
+     * Point sizes are defined canonically at
+     * the ordinary 46% startup wheel scale.
+     */
+    infiniteCacheReferenceRadius =
+        minimumViewportDimension * 0.46;
+
+    /*
+     * Leave enough transparent room for the
+     * square field's corners during rotation.
+     */
+    const cacheHalfSize =
+        Math.ceil(
+            infiniteCacheReferenceRadius *
+            Math.SQRT2 +
+            16
+        );
+
+    infiniteCacheCssSize =
+        cacheHalfSize * 2;
+
+    /*
+     * Keep the cache manageable on Safari.
+     * One device pixel per CSS pixel is enough
+     * for this extremely fine point field.
+     */
+    const cachePixelRatio = 1;
+
+    infiniteCacheCanvas.width =
+        Math.ceil(
+            infiniteCacheCssSize *
+            cachePixelRatio
+        );
+
+    infiniteCacheCanvas.height =
+        Math.ceil(
+            infiniteCacheCssSize *
+            cachePixelRatio
+        );
+
+    infiniteCacheContext.setTransform(
+        cachePixelRatio,
+        0,
+        0,
+        cachePixelRatio,
+        0,
+        0
+    );
+
+    infiniteCacheContext.clearRect(
+        0,
+        0,
+        infiniteCacheCssSize,
+        infiniteCacheCssSize
+    );
+
+    infiniteCacheContext.fillStyle =
+        negativeMode
+            ? "black"
+            : "white";
+
+    infiniteCacheContext.shadowBlur = 0;
+
+    const cacheCenter =
+        infiniteCacheCssSize / 2;
+
+    /*
+     * Small enough to keep Safari responsive,
+     * large enough to finish reasonably quickly.
+     */
+    const pointsPerFrame = 2000;
+
+    function buildChunk() {
+        /*
+         * A newer invalidation superseded
+         * this partially completed build.
+         */
+        if (
+            buildToken !==
+            infiniteCacheBuildToken
+        ) {
+            return;
+        }
+
+        const chunkEnd =
+            Math.min(
+                infiniteCacheBuildIndex +
+                    pointsPerFrame,
+                renderedStars.length
+            );
+
+        for (
+            ;
+            infiniteCacheBuildIndex < chunkEnd;
+            infiniteCacheBuildIndex++
+        ) {
+            const pointIndex =
+                infiniteCacheBuildIndex;
+
+            if (
+                pointIndex ===
+                centerStarIndex
+            ) {
+                continue;
+            }
+
+            const point =
+                renderedStars[pointIndex];
+
+            const magnitudeSeed =
+                deterministicValue(
+                    pointIndex * 7919 +
+                    104729
+                );
+
+            const magnitudeRank =
+                Math.pow(
+                    magnitudeSeed,
+                    4
+                );
+
+            const magnitudeMultiplier =
+                1 +
+                magnitudeVariation *
+                magnitudeRank *
+                2;
+
+            const cachedPointSize =
+                dotSize *
+                magnitudeMultiplier;
+
+            const x =
+                cacheCenter +
+                point.x *
+                infiniteCacheReferenceRadius;
+
+            const y =
+                cacheCenter +
+                point.y *
+                infiniteCacheReferenceRadius;
+
+            /*
+             * Tiny points are faster and visually
+             * equivalent as single-pixel stamps.
+             */
+            if (cachedPointSize <= 1) {
+                infiniteCacheContext.fillRect(
+                    Math.round(x),
+                    Math.round(y),
+                    1,
+                    1
+                );
+            } else {
+                infiniteCacheContext.beginPath();
+
+                infiniteCacheContext.arc(
+                    x,
+                    y,
+                    cachedPointSize,
+                    0,
+                    Math.PI * 2
+                );
+
+                infiniteCacheContext.fill();
+            }
+        }
+
+        if (
+            infiniteCacheBuildIndex <
+            renderedStars.length
+        ) {
+            requestAnimationFrame(
+                buildChunk
+            );
+
+            return;
+        }
+
+        infiniteCacheDirty = false;
+        infiniteCacheReady = true;
+        infiniteCacheBuilding = false;
+    }
+
+    requestAnimationFrame(buildChunk);
+}
+
 let rotation = 0;
 let rotationSpeed = 0.0010;
 let wheelScale = 0.46;
@@ -3313,7 +3793,7 @@ const densityReadout =
     document.getElementById("densityReadout");
 
     densityReadout.textContent =
-    `${currentSky.name.toUpperCase()} · ${renderedStars.length} STARS`;  
+    `${currentField.name.toUpperCase()} · ${renderedStars.length} POINTS`;  
 
 const magnitudeSlider =
     document.getElementById("magnitudeSlider");
@@ -3468,9 +3948,9 @@ centerStarButton.classList.toggle(
     showCenterStar
 );
 
-const skyButtons =
+const fieldButtons =
     document.querySelectorAll(
-        "#skyButtons button"
+        "#fieldButtons button"
     );
 
 
@@ -3518,66 +3998,294 @@ sizeSlider.addEventListener("input", function () {
 
 dotSlider.addEventListener("input", function () {
     dotSize = Number(dotSlider.value);
-    dotReadout.textContent = `${dotSize.toFixed(1)} px`;
+
+    dotReadout.textContent =
+        `${dotSize.toFixed(1)} px`;
+
+    invalidateInfiniteCache();
 });
 
-densitySlider.addEventListener("input", function () {
-    densityLevel = Number(densitySlider.value);
-    renderedStars = buildDensityStars(densityLevel);
+densitySlider.addEventListener(
+    "input",
+    function () {
 
-    const starCount = renderedStars.length;
+        densityLevel =
+            Number(
+                densitySlider.value
+            );
 
-    if (densityLevel === 1) {
-        densityReadout.textContent =
-            `ORIGINAL · ${starCount} STARS`;
-    } else {
-        densityReadout.textContent =
-            `${densityLevel}× · ${starCount} STARS`;
+        /*
+         * The procedural Infinite Field adds
+         * deterministic point layers.
+         */
+        if (
+            currentField ===
+            fieldInfinite
+        ) {
+
+            densityReadout.textContent =
+                densityLevel === 1
+                    ? "INFINITE FIELD · ∞ POINTS"
+                    : `INFINITE FIELD · ${densityLevel}× · ∞ POINTS`;
+
+            return;
+        }
+
+        renderedStars =
+            buildDensityStars(
+                densityLevel
+            );
+
+        const pointCount =
+            renderedStars.length;
+
+        if (
+            densityLevel === 1
+        ) {
+
+            densityReadout.textContent =
+                `ORIGINAL · ${pointCount} POINTS`;
+
+        } else {
+
+            densityReadout.textContent =
+                `${densityLevel}× · ${pointCount} POINTS`;
+        }
     }
-});
+);
 
-magnitudeSlider.addEventListener("input", function () {
+    magnitudeSlider.addEventListener("input", function () {
     magnitudeVariation =
         Number(magnitudeSlider.value);
 
     magnitudeReadout.textContent =
         `${Math.round(magnitudeVariation * 100)}%`;
+
+    invalidateInfiniteCache();
 });
 
-skyButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-        const skyNumber =
-            Number(button.dataset.sky);
+fieldButtons.forEach(function (button) {
+    button.addEventListener(
+        "click",
+        function () {
+            const fieldNumber =
+                Number(
+                    button.dataset.field
+                );
 
-        currentSky = skies[skyNumber];
-        stars = currentSky.stars;
+            if (
+                fieldNumber ===
+                infiniteFieldNumber
+            ) {
+                /*
+                 * Infinite Field is generated,
+                 * not loaded or stored.
+                 */
+                currentField =
+                    fieldInfinite;
 
-        centerStarIndex =
-            findCenterStarIndex(stars);
+                stars = [];
+                renderedStars = [];
+                centerStarIndex = -1;
 
-        renderedStars =
-            buildDensityStars(densityLevel);
+                /*
+                 * Enter Infinity at its canonical
+                 * original density.
+                 */
+                densityLevel = 1;
+                densitySlider.value = "1";
 
-        densityReadout.textContent =
-            `${currentSky.name.toUpperCase()} · ` +
-            `${renderedStars.length} STARS`;
+                densityReadout.textContent =
+                    "INFINITE FIELD · ∞ POINTS";
 
-        skyButtons.forEach(function (otherButton) {
-            otherButton.classList.remove("active");
-        });
+            } else {
+                currentField =
+                    fields[fieldNumber];
 
-        button.classList.add("active");
-    });
-});
+                stars =
+                    currentField.stars;
 
-centerStarButton.addEventListener("click", function () {
-    showCenterStar = !showCenterStar;
+                renderedStars =
+                    buildDensityStars(
+                        densityLevel
+                    );
 
-    centerStarButton.classList.toggle(
-        "active",
-        showCenterStar
+                centerStarIndex =
+                    findCenterStarIndex(
+                        stars
+                    );
+
+                densityReadout.textContent =
+                    `${currentField.name.toUpperCase()} · ` +
+                    `${renderedStars.length} POINTS`;
+            }
+
+            fieldButtons.forEach(
+                function (otherButton) {
+                    otherButton.classList.remove(
+                        "active"
+                    );
+                }
+            );
+
+            button.classList.add(
+                "active"
+            );
+        }
     );
 });
+
+/*
+ * CENTER interaction:
+ *
+ * Single tap:
+ * Toggle the visible Center marker.
+ *
+ * Double tap:
+ * Smoothly return the mathematical Center
+ * to its canonical screen position.
+ */
+let centerTapTimer = null;
+let centerReturnFrame = null;
+
+const centerDoubleTapDelay = 280;
+
+function getCanonicalCenterOffsetY() {
+    return window.innerWidth <= 700
+        ? -70
+        : 0;
+}
+
+function returnToCanonicalCenter() {
+
+    if (centerReturnFrame !== null) {
+        cancelAnimationFrame(
+            centerReturnFrame
+        );
+    }
+
+    const startOffsetX =
+        wheelOffsetX;
+
+    const startOffsetY =
+        wheelOffsetY;
+
+    const targetOffsetX = 0;
+
+    const targetOffsetY =
+        getCanonicalCenterOffsetY();
+
+    const startTime =
+        performance.now();
+
+    const duration = 500;
+
+    function animateCenterReturn(
+        timestamp
+    ) {
+        const progress =
+            Math.min(
+                1,
+                (
+                    timestamp -
+                    startTime
+                ) /
+                duration
+            );
+
+        const easedProgress =
+            progress < 0.5
+                ? 4 *
+                  progress *
+                  progress *
+                  progress
+                : 1 -
+                  Math.pow(
+                      -2 * progress + 2,
+                      3
+                  ) /
+                  2;
+
+        wheelOffsetX =
+            startOffsetX +
+            (
+                targetOffsetX -
+                startOffsetX
+            ) *
+            easedProgress;
+
+        wheelOffsetY =
+            startOffsetY +
+            (
+                targetOffsetY -
+                startOffsetY
+            ) *
+            easedProgress;
+
+        if (progress < 1) {
+            centerReturnFrame =
+                requestAnimationFrame(
+                    animateCenterReturn
+                );
+
+        } else {
+            wheelOffsetX =
+                targetOffsetX;
+
+            wheelOffsetY =
+                targetOffsetY;
+
+            centerReturnFrame = null;
+        }
+    }
+
+    centerReturnFrame =
+        requestAnimationFrame(
+            animateCenterReturn
+        );
+}
+
+centerStarButton.addEventListener(
+    "click",
+    function () {
+
+        /*
+         * A second tap arrives before the delayed
+         * single-tap action has fired.
+         */
+        if (centerTapTimer !== null) {
+            clearTimeout(
+                centerTapTimer
+            );
+
+            centerTapTimer = null;
+
+            returnToCanonicalCenter();
+
+            return;
+        }
+
+        /*
+         * Delay the single-tap action briefly so
+         * it can be distinguished from a double tap.
+         */
+        centerTapTimer =
+            setTimeout(
+                function () {
+                    centerTapTimer = null;
+
+                    showCenterStar =
+                        !showCenterStar;
+
+                    centerStarButton.classList.toggle(
+                        "active",
+                        showCenterStar
+                    );
+                },
+                centerDoubleTapDelay
+            );
+    }
+);
 
 let phantomJourneyFrame = null;
 
@@ -4062,14 +4770,14 @@ phantomAxisButton.addEventListener(
         if (!phantomAxisMode) {
 
             // Save exact observation state
-            const currentSkyNumber =
+            const currentFieldNumber =
                 Number(
-                    [...skyButtons]
+                    [...fieldButtons]
                         .find(
                             button =>
                                 button.classList.contains("active")
                         )
-                        ?.dataset.sky || 1
+                        ?.dataset.field || 1
                 );
 
             savedObservationState = {
@@ -4081,7 +4789,7 @@ phantomAxisButton.addEventListener(
                 densityLevel,
                 magnitudeVariation,
                 showCenterStar,
-                skyNumber: currentSkyNumber
+                fieldNumber: currentFieldNumber
             };
 
             phantomAxisMode = true;
@@ -4265,10 +4973,10 @@ phantomGuidanceStartTimer =
                 showCenterStar =
                     savedObservationState.showCenterStar;
 
-                currentSky =
-                    skies[savedObservationState.skyNumber];
+                currentField =
+                    fields[savedObservationState.fieldNumber];
 
-                stars = currentSky.stars;
+                stars = currentField.stars;
 
                 centerStarIndex =
                     findCenterStarIndex(stars);
@@ -4293,8 +5001,8 @@ phantomGuidanceStartTimer =
                     `${dotSize.toFixed(1)} px`;
 
                 densityReadout.textContent =
-                    `${currentSky.name.toUpperCase()} · ` +
-                    `${renderedStars.length} STARS`;
+                    `${currentField.name.toUpperCase()} · ` +
+                    `${renderedStars.length} POINTS`;
 
                 magnitudeReadout.textContent = 
                     `${Math.round(
@@ -4306,11 +5014,11 @@ phantomGuidanceStartTimer =
                     showCenterStar
                 );
 
-                skyButtons.forEach(function (button) {
+                fieldButtons.forEach(function (button) {
                     button.classList.toggle(
                         "active",
-                        Number(button.dataset.sky) ===
-                            savedObservationState.skyNumber
+                        Number(button.dataset.field) ===
+                            savedObservationState.fieldNumber
                     );
                 });
             }
@@ -5441,6 +6149,248 @@ phantomReturnButton.addEventListener(
 );
 
 function draw(timestamp) {
+    /*
+ * Draw only the portion of the procedural
+ * Infinite Field that can appear in the viewport.
+ *
+ * No outer boundary exists.
+ */
+function drawInfiniteField(
+    centerX,
+    centerY,
+    wheelRadius,
+    cosineRotation,
+    sineRotation
+) {
+    /*
+     * Convert each screen corner back into
+     * unrotated Infinite Field coordinates.
+     */
+    const viewportCorners = [
+        [0, 0],
+        [viewWidth, 0],
+        [0, viewHeight],
+        [viewWidth, viewHeight]
+    ];
+
+    let minimumWorldX = Infinity;
+    let maximumWorldX = -Infinity;
+    let minimumWorldY = Infinity;
+    let maximumWorldY = -Infinity;
+
+    for (
+        let cornerIndex = 0;
+        cornerIndex < viewportCorners.length;
+        cornerIndex++
+    ) {
+        const corner =
+            viewportCorners[cornerIndex];
+
+        const screenDeltaX =
+            corner[0] -
+            centerX;
+
+        const screenDeltaY =
+            corner[1] -
+            centerY;
+
+        /*
+         * Reverse the wheel rotation to determine
+         * which mathematical field locations are
+         * currently visible.
+         */
+        const worldX =
+            (
+                screenDeltaX *
+                    cosineRotation +
+                screenDeltaY *
+                    sineRotation
+            ) /
+            wheelRadius;
+
+        const worldY =
+            (
+                -screenDeltaX *
+                    sineRotation +
+                screenDeltaY *
+                    cosineRotation
+            ) /
+            wheelRadius;
+
+        minimumWorldX =
+            Math.min(
+                minimumWorldX,
+                worldX
+            );
+
+        maximumWorldX =
+            Math.max(
+                maximumWorldX,
+                worldX
+            );
+
+        minimumWorldY =
+            Math.min(
+                minimumWorldY,
+                worldY
+            );
+
+        maximumWorldY =
+            Math.max(
+                maximumWorldY,
+                worldY
+            );
+    }
+
+    /*
+     * Convert the visible mathematical region
+     * into invisible generator-cell coordinates.
+     *
+     * One-cell padding prevents points from
+     * appearing suddenly at the screen edges.
+     */
+    const minimumCellX =
+        Math.floor(
+            minimumWorldX /
+            infiniteCellSize
+        ) -
+        1;
+
+    const maximumCellX =
+        Math.ceil(
+            maximumWorldX /
+            infiniteCellSize
+        ) +
+        1;
+
+    const minimumCellY =
+        Math.floor(
+            minimumWorldY /
+            infiniteCellSize
+        ) -
+        1;
+
+    const maximumCellY =
+        Math.ceil(
+            maximumWorldY /
+            infiniteCellSize
+        ) +
+        1;
+
+    const basePointSize =
+        dotSize *
+        (
+            wheelScale /
+            0.46
+        );
+
+    ctx.fillStyle =
+        negativeMode
+            ? "black"
+            : "white";
+
+    ctx.shadowBlur = 0;
+
+    /*
+     * Each density setting adds another permanent,
+     * deterministic point layer.
+     */
+    for (
+        let layer = 0;
+        layer < densityLevel;
+        layer++
+    ) {
+        for (
+            let cellY = minimumCellY;
+            cellY <= maximumCellY;
+            cellY++
+        ) {
+            for (
+                let cellX = minimumCellX;
+                cellX <= maximumCellX;
+                cellX++
+            ) {
+                const point =
+                    getInfinitePoint(
+                        cellX,
+                        cellY,
+                        layer
+                    );
+
+                const rotatedX =
+                    point.x *
+                        cosineRotation -
+                    point.y *
+                        sineRotation;
+
+                const rotatedY =
+                    point.x *
+                        sineRotation +
+                    point.y *
+                        cosineRotation;
+
+                const screenX =
+                    centerX +
+                    rotatedX *
+                        wheelRadius;
+
+                const screenY =
+                    centerY +
+                    rotatedY *
+                        wheelRadius;
+
+                /*
+                 * Ignore padded points that remain
+                 * outside the actual viewport.
+                 */
+                if (
+                    screenX < -8 ||
+                    screenX >
+                        viewWidth + 8 ||
+                    screenY < -8 ||
+                    screenY >
+                        viewHeight + 8
+                ) {
+                    continue;
+                }
+
+                const magnitudeRank =
+                    Math.pow(
+                        point.magnitudeSeed,
+                        4
+                    );
+
+                const magnitudeMultiplier =
+                    1 +
+                    magnitudeVariation *
+                    magnitudeRank *
+                    2;
+
+                const renderedPointSize =
+                    basePointSize *
+                    magnitudeMultiplier;
+
+                /*
+                 * Real circles only.
+                 *
+                 * No square stamps.
+                 * No artificial trails.
+                 */
+                ctx.beginPath();
+
+                ctx.arc(
+                    screenX,
+                    screenY,
+                    renderedPointSize,
+                    0,
+                    Math.PI * 2
+                );
+
+                ctx.fill();
+            }
+        }
+    }
+}
     if (lastFrameTime === null) {
         lastFrameTime = timestamp;
     }
@@ -5490,6 +6440,22 @@ const cy =
     const cosR = Math.cos(rotation);
     const sinR = Math.sin(rotation);
 
+    
+        
+if (
+    currentField ===
+    fieldInfinite
+) {
+    drawInfiniteField(
+        cx,
+        cy,
+        wheelRadius,
+        cosR,
+        sinR
+    );
+
+} else {
+
     for (
         let starIndex = 0;
         starIndex < renderedStars.length;
@@ -5499,7 +6465,8 @@ const cy =
             continue;
         }
 
-        const star = renderedStars[starIndex];
+        const star =
+            renderedStars[starIndex];
 
         const rotatedX =
             star.x * cosR -
@@ -5509,11 +6476,19 @@ const cy =
             star.x * sinR +
             star.y * cosR;
 
-        const x = cx + rotatedX * wheelRadius;
-        const y = cy + rotatedY * wheelRadius;
+        const x =
+            cx +
+            rotatedX *
+            wheelRadius;
+
+        const y =
+            cy +
+            rotatedY *
+            wheelRadius;
 
         const baseScaledDotSize =
-            dotSize * (wheelScale / 0.46);
+            dotSize *
+            (wheelScale / 0.46);
 
         const magnitudeSeed =
             deterministicValue(
@@ -5521,7 +6496,10 @@ const cy =
             );
 
         const magnitudeRank =
-            Math.pow(magnitudeSeed, 4);
+            Math.pow(
+                magnitudeSeed,
+                4
+            );
 
         const maximumExtraScale = 2;
 
@@ -5536,13 +6514,14 @@ const cy =
             magnitudeMultiplier;
 
         ctx.fillStyle =
-    negativeMode
-        ? "black"
-        : "white";
+            negativeMode
+                ? "black"
+                : "white";
 
         ctx.shadowBlur = 0;
 
         ctx.beginPath();
+
         ctx.arc(
             x,
             y,
@@ -5550,8 +6529,10 @@ const cy =
             0,
             Math.PI * 2
         );
+
         ctx.fill();
     }
+}
 
    // Draw constant-size center measurement star
 // at the exact mathematical center of the wheel.
