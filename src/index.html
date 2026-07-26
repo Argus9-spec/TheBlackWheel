@@ -3378,6 +3378,15 @@ const infiniteCellSize =
     0.105;
 
 /*
+ * Active Black Wheel Lab distribution.
+ *
+ * Random remains the canonical procedural
+ * Infinite Field.
+ */
+let currentLabDistribution =
+    "random";   
+
+/*
  * Produce one stable value between 0 and 1 from:
  *
  * cell X
@@ -4340,6 +4349,30 @@ densitySlider.addEventListener(
                 densitySlider.value
             );
 
+        if (
+    currentLabDistribution ===
+    "concentric"
+    
+) {
+    densityLevel =
+        Math.min(
+            densityLevel,
+            2
+        );
+
+    densitySlider.value =
+        String(
+            densityLevel
+        );
+}
+
+   densitySlider.max =
+    currentLabDistribution ===
+        "concentric"
+        ? "2"
+        : "4";     
+        
+
         /*
          * The procedural Infinite Field adds
          * deterministic point layers.
@@ -4407,6 +4440,37 @@ fieldButtons.forEach(function (button) {
                  * Infinite Field is generated,
                  * not loaded or stored.
                  */
+
+                /*
+ * Pressing the canonical Infinity button always
+ * restores the Random Infinite Distribution.
+ */
+currentLabDistribution =
+    "random";
+
+labDistributionButtons.forEach(
+    function (distributionButton) {
+        const isRandom =
+            distributionButton.dataset.distribution ===
+            "random";
+
+        distributionButton.classList.toggle(
+            "active",
+            isRandom
+        );
+
+        const radio =
+            distributionButton.querySelector(
+                ".lab-radio"
+            );
+
+        radio.textContent =
+            isRandom
+                ? "●"
+                : "○";
+    }
+);
+
                 currentField =
                     fieldInfinite;
 
@@ -5128,6 +5192,123 @@ labOverlay.addEventListener(
         ) {
             closeLab();
         }
+    }
+);
+
+const labDistributionButtons =
+    document.querySelectorAll(
+        ".lab-distribution-button"
+    );
+
+densitySlider.max =
+    currentLabDistribution ===
+        "concentric"
+        ? "2"
+        : "4";
+
+if (
+    densityLevel >
+    Number(
+        densitySlider.max
+    )
+) {
+    densityLevel =
+        Number(
+            densitySlider.max
+        );
+
+    densitySlider.value =
+        String(
+            densityLevel
+        );
+}
+
+labDistributionButtons.forEach(
+    function (distributionButton) {
+        distributionButton.addEventListener(
+            "click",
+            function () {
+                const selectedDistribution =
+                    distributionButton
+                        .dataset
+                        .distribution;
+
+                /*
+                 * Radial and Spiral remain visible
+                 * placeholders until their generators
+                 * are implemented.
+                 */
+                if (
+                    selectedDistribution !==
+                        "random" &&
+                    selectedDistribution !==
+                        "concentric"
+                ) {
+                    return;
+                }
+
+                currentLabDistribution =
+                    selectedDistribution;
+
+                labDistributionButtons.forEach(
+                    function (otherButton) {
+                        const isSelected =
+                            otherButton ===
+                            distributionButton;
+
+                        otherButton.classList.toggle(
+                            "active",
+                            isSelected
+                        );
+
+                        const radio =
+                            otherButton.querySelector(
+                                ".lab-radio"
+                            );
+
+                        radio.textContent =
+                            isSelected
+                                ? "●"
+                                : "○";
+                    }
+                );
+
+                /*
+                 * Lab distributions live in the
+                 * procedural Infinite Field.
+                 */
+                /*
+ * Lab distributions use Infinite mathematical
+ * space without invoking the canonical Infinity
+ * button, which would restore Random.
+ */
+currentField =
+    fieldInfinite;
+
+stars = [];
+renderedStars = [];
+centerStarIndex = -1;
+
+densityReadout.textContent =
+    densityLevel === 1
+        ? "INFINITE FIELD · ∞ POINTS"
+        : `INFINITE FIELD · ${densityLevel}× · ∞ POINTS`;
+
+fieldButtons.forEach(
+    function (fieldButton) {
+        fieldButton.classList.toggle(
+            "active",
+            Number(
+                fieldButton.dataset.field
+            ) ===
+                infiniteFieldNumber
+        );
+    }
+);
+
+closeLab();
+            }
+        );
     }
 );
 
@@ -6759,6 +6940,311 @@ function drawInfiniteField(
         }
     }
 }
+
+/*
+ * Concentric Distribution
+ *
+ * No circles are drawn.
+ * Only mathematically spaced point lights.
+ */
+function drawConcentricField(
+    centerX,
+    centerY,
+    wheelRadius,
+    cosineRotation,
+    sineRotation
+) {
+    /*
+     * Draw beyond the visible display so points
+     * already exist before rotating into view.
+     */
+    const renderMargin =
+        140;
+
+    /*
+     * Canonical spacing at 1× density.
+     */
+    const ringSpacing =
+        0.18;
+
+    const pointSpacing =
+        infiniteCellSize;
+
+    /*
+     * Point Density fills the field by adding
+     * mathematically intermediate rings.
+     *
+     * It does not crowd extra points onto the
+     * original rings.
+     *
+     * It does not stack separately offset copies
+     * of the original distribution.
+     */
+    const effectiveRingSpacing =
+        ringSpacing /
+        densityLevel;
+
+    /*
+     * Determine the radial interval intersecting
+     * the enlarged visible area.
+     *
+     * This permits travel far from Center without
+     * generating every ring between Center and
+     * the current location.
+     */
+    const nearestScreenX =
+        centerX < -renderMargin
+            ? -renderMargin -
+                centerX
+            : centerX >
+                viewWidth +
+                    renderMargin
+                ? centerX -
+                    (
+                        viewWidth +
+                        renderMargin
+                    )
+                : 0;
+
+    const nearestScreenY =
+        centerY < -renderMargin
+            ? -renderMargin -
+                centerY
+            : centerY >
+                viewHeight +
+                    renderMargin
+                ? centerY -
+                    (
+                        viewHeight +
+                        renderMargin
+                    )
+                : 0;
+
+    const minimumVisibleRadius =
+        Math.hypot(
+            nearestScreenX,
+            nearestScreenY
+        ) /
+        wheelRadius;
+
+    const cornerDistances = [
+        Math.hypot(
+            -renderMargin -
+                centerX,
+            -renderMargin -
+                centerY
+        ),
+
+        Math.hypot(
+            viewWidth +
+                renderMargin -
+                centerX,
+            -renderMargin -
+                centerY
+        ),
+
+        Math.hypot(
+            -renderMargin -
+                centerX,
+            viewHeight +
+                renderMargin -
+                centerY
+        ),
+
+        Math.hypot(
+            viewWidth +
+                renderMargin -
+                centerX,
+            viewHeight +
+                renderMargin -
+                centerY
+        )
+    ];
+
+    const maximumVisibleRadius =
+        Math.max(
+            ...cornerDistances
+        ) /
+        wheelRadius;
+
+    /*
+     * Ring bounds must use the current effective
+     * spacing so every density level completely
+     * fills the visible field.
+     */
+    const firstRing =
+        Math.max(
+            1,
+            Math.floor(
+                minimumVisibleRadius /
+                effectiveRingSpacing
+            ) -
+            1
+        );
+
+    const finalRing =
+        Math.ceil(
+            maximumVisibleRadius /
+            effectiveRingSpacing
+        ) +
+        1;
+
+    const basePointSize =
+        dotSize *
+        (
+            wheelScale /
+            0.46
+        );
+
+    ctx.fillStyle =
+        negativeMode
+            ? "black"
+            : "white";
+
+    ctx.shadowBlur = 0;
+
+    /*
+     * Generate one continuous mathematical family
+     * of perfect concentric rings.
+     */
+    for (
+        let ringIndex = firstRing;
+        ringIndex <= finalRing;
+        ringIndex++
+    ) {
+        const radius =
+            ringIndex *
+            effectiveRingSpacing;
+
+        const circumference =
+            Math.PI *
+            2 *
+            radius;
+
+        /*
+         * Preserve approximately equal spacing
+         * between neighboring points around every
+         * circumference.
+         */
+        const pointCount =
+            Math.max(
+                6,
+                Math.round(
+                    circumference /
+                    pointSpacing
+                )
+            );
+
+        /*
+         * The irrational angular progression keeps
+         * neighboring rings from forming repeated
+         * radial spokes.
+         *
+         * Every radius remains perfectly circular.
+         */
+        const ringPhase =
+            ringIndex *
+            2.399963229728653;
+
+        for (
+            let pointIndex = 0;
+            pointIndex < pointCount;
+            pointIndex++
+        ) {
+            const angle =
+                ringPhase +
+                (
+                    pointIndex /
+                    pointCount
+                ) *
+                Math.PI *
+                2;
+
+            const worldX =
+                Math.cos(angle) *
+                radius;
+
+            const worldY =
+                Math.sin(angle) *
+                radius;
+
+            const rotatedX =
+                worldX *
+                    cosineRotation -
+                worldY *
+                    sineRotation;
+
+            const rotatedY =
+                worldX *
+                    sineRotation +
+                worldY *
+                    cosineRotation;
+
+            const screenX =
+                centerX +
+                rotatedX *
+                    wheelRadius;
+
+            const screenY =
+                centerY +
+                rotatedY *
+                    wheelRadius;
+
+            if (
+                screenX <
+                    -renderMargin ||
+                screenX >
+                    viewWidth +
+                        renderMargin ||
+                screenY <
+                    -renderMargin ||
+                screenY >
+                    viewHeight +
+                        renderMargin
+            ) {
+                continue;
+            }
+
+            const magnitudeSeed =
+                infiniteHash(
+                    ringIndex,
+                    pointIndex,
+                    0,
+                    7
+                );
+
+            const magnitudeRank =
+                Math.pow(
+                    magnitudeSeed,
+                    4
+                );
+
+            const magnitudeMultiplier =
+                1 +
+                magnitudeVariation *
+                magnitudeRank *
+                2;
+
+            const renderedPointSize =
+                basePointSize *
+                magnitudeMultiplier;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                screenX,
+                screenY,
+                renderedPointSize,
+                0,
+                Math.PI *
+                    2
+            );
+
+            ctx.fill();
+        }
+    }
+}
+
     if (lastFrameTime === null) {
         lastFrameTime = timestamp;
     }
@@ -6814,13 +7300,27 @@ if (
     currentField ===
     fieldInfinite
 ) {
-    drawInfiniteField(
-        cx,
-        cy,
-        wheelRadius,
-        cosR,
-        sinR
-    );
+    if (
+        currentLabDistribution ===
+        "concentric"
+    ) {
+        drawConcentricField(
+            cx,
+            cy,
+            wheelRadius,
+            cosR,
+            sinR
+        );
+
+    } else {
+        drawInfiniteField(
+            cx,
+            cy,
+            wheelRadius,
+            cosR,
+            sinR
+        );
+    }
 
 } else {
 
