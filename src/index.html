@@ -2639,41 +2639,59 @@ LOOK AGAIN.
 
         <div class="lab-divider"></div>
 
-        <button
-            class="lab-distribution-button active"
-            type="button"
-            data-distribution="random"
-        >
-            <span class="lab-radio">●</span>
-            Random
-        </button>
+       <button
+    class="lab-distribution-button active"
+    type="button"
+    data-distribution="random"
+>
+    <span class="lab-radio">●</span>
+    Random
+</button>
 
-        <button
-            class="lab-distribution-button"
-            type="button"
-            data-distribution="concentric"
-        >
-            <span class="lab-radio">○</span>
-            Concentric
-        </button>
+<button
+    class="lab-distribution-button"
+    type="button"
+    data-distribution="concentric"
+>
+    <span class="lab-radio">○</span>
+    Concentric
+</button>
 
-        <button
-            class="lab-distribution-button"
-            type="button"
-            data-distribution="radial"
-        >
-            <span class="lab-radio">○</span>
-            Radial
-        </button>
+<button
+    class="lab-distribution-button"
+    data-distribution="equidistant"
+>
+    <span class="lab-radio">○</span>
+    Equidistant
+</button>
 
-        <button
-            class="lab-distribution-button"
-            type="button"
-            data-distribution="spiral"
-        >
-            <span class="lab-radio">○</span>
-            Spiral
-        </button>
+<button
+    class="lab-distribution-button"
+    type="button"
+    data-distribution="radial"
+>
+    <span class="lab-radio">○</span>
+    Radial
+</button>
+
+<button
+    class="lab-distribution-button"
+    type="button"
+    data-distribution="spiral"
+>
+    <span class="lab-radio">○</span>
+    Spiral
+</button>
+
+<button
+    class="lab-distribution-button"
+    type="button"
+    data-distribution="square"
+>
+    <span class="lab-radio">○</span>
+    Square
+</button>
+
     </section>
 </div>
 
@@ -5233,22 +5251,29 @@ labDistributionButtons.forEach(
                         .dataset
                         .distribution;
 
-                /*
-                 * Radial and Spiral remain visible
-                 * placeholders until their generators
-                 * are implemented.
-                 */
-                if (
-                    selectedDistribution !==
-                        "random" &&
-                    selectedDistribution !==
-                        "concentric"
-                ) {
-                    return;
-                }
+               /*
+ * Only implemented canonical distributions
+ * may be selected.
+ */
+if (
+    selectedDistribution !==
+        "random" &&
+    selectedDistribution !==
+        "concentric" &&
+    selectedDistribution !==
+        "equidistant" &&
+    selectedDistribution !==
+        "radial" &&
+    selectedDistribution !==
+    "spiral" &&
+    selectedDistribution !==
+    "square"
+) {
+    return;
+}
 
                 currentLabDistribution =
-                    selectedDistribution;
+                    selectedDistribution;  
 
                 labDistributionButtons.forEach(
                     function (otherButton) {
@@ -7245,6 +7270,1274 @@ function drawConcentricField(
     }
 }
 
+/*
+ * Equidistant Distribution
+ *
+ * A perfectly mathematical triangular lattice.
+ *
+ * Every point has six equally distant
+ * nearest neighbors.
+ *
+ * No randomness.
+ * No curvature.
+ * No radial organization.
+ * No organic deformation.
+ */
+function drawEquidistantField(
+    centerX,
+    centerY,
+    wheelRadius,
+    cosineRotation,
+    sineRotation
+) {
+    /*
+     * Canonical nearest-neighbor spacing at 1×.
+     */
+    const baseSpacing =
+        infiniteCellSize;
+
+    /*
+     * Density represents true points-per-area.
+     *
+     * Dividing spacing by sqrt(densityLevel)
+     * produces:
+     *
+     * 1× the point population at Density 1
+     * 2× the point population at Density 2
+     * 3× the point population at Density 3
+     * 4× the point population at Density 4
+     */
+    const effectiveSpacing =
+        baseSpacing /
+        Math.sqrt(
+            densityLevel
+        );
+
+    /*
+     * Vertical separation between rows in a
+     * triangular lattice.
+     */
+    const rowSpacing =
+        effectiveSpacing *
+        Math.sqrt(3) /
+        2;
+
+    /*
+     * Generation apron.
+     *
+     * The lattice is generated far beyond the
+     * visible device frame so its generation
+     * boundary never becomes visible.
+     *
+     * The apron is both device-relative and
+     * lattice-relative.
+     */
+    const screenPointSpacing =
+        effectiveSpacing *
+        wheelRadius;
+
+    const renderMargin =
+    Math.max(
+        Math.max(
+            viewWidth,
+            viewHeight
+        ) * 4.0,
+
+        screenPointSpacing *
+            64
+    );
+
+    /*
+     * Convert the four corners of the enlarged
+     * screen rectangle back into the unrotated
+     * mathematical field.
+     *
+     * This gives exact lattice-index bounds even
+     * while the field is rotated, zoomed, dragged,
+     * or observed far from Center.
+     */
+    const expandedCorners = [
+        [
+            -renderMargin,
+            -renderMargin
+        ],
+
+        [
+            viewWidth +
+                renderMargin,
+            -renderMargin
+        ],
+
+        [
+            -renderMargin,
+            viewHeight +
+                renderMargin
+        ],
+
+        [
+            viewWidth +
+                renderMargin,
+            viewHeight +
+                renderMargin
+        ]
+    ];
+
+    let minimumWorldX =
+        Infinity;
+
+    let maximumWorldX =
+        -Infinity;
+
+    let minimumWorldY =
+        Infinity;
+
+    let maximumWorldY =
+        -Infinity;
+
+    expandedCorners.forEach(
+        function (corner) {
+            const translatedX =
+                corner[0] -
+                centerX;
+
+            const translatedY =
+                corner[1] -
+                centerY;
+
+            /*
+             * Inverse rotation.
+             */
+            const worldX =
+                (
+                    translatedX *
+                        cosineRotation +
+                    translatedY *
+                        sineRotation
+                ) /
+                wheelRadius;
+
+            const worldY =
+                (
+                    -translatedX *
+                        sineRotation +
+                    translatedY *
+                        cosineRotation
+                ) /
+                wheelRadius;
+
+            minimumWorldX =
+                Math.min(
+                    minimumWorldX,
+                    worldX
+                );
+
+            maximumWorldX =
+                Math.max(
+                    maximumWorldX,
+                    worldX
+                );
+
+            minimumWorldY =
+                Math.min(
+                    minimumWorldY,
+                    worldY
+                );
+
+            maximumWorldY =
+                Math.max(
+                    maximumWorldY,
+                    worldY
+                );
+        }
+    );
+
+    /*
+     * Add two complete lattice intervals beyond
+     * the calculated bounds as a numerical safety
+     * margin.
+     */
+    const firstRow =
+        Math.floor(
+            minimumWorldY /
+            rowSpacing
+        ) -
+        2;
+
+    const finalRow =
+        Math.ceil(
+            maximumWorldY /
+            rowSpacing
+        ) +
+        2;
+
+    const firstColumn =
+        Math.floor(
+            minimumWorldX /
+            effectiveSpacing
+        ) -
+        2;
+
+    const finalColumn =
+        Math.ceil(
+            maximumWorldX /
+            effectiveSpacing
+        ) +
+        2;
+
+    const basePointSize =
+        dotSize *
+        (
+            wheelScale /
+            0.46
+        );
+
+    ctx.fillStyle =
+        negativeMode
+            ? "black"
+            : "white";
+
+    ctx.shadowBlur = 0;
+
+    for (
+        let rowIndex = firstRow;
+        rowIndex <= finalRow;
+        rowIndex++
+    ) {
+        /*
+         * Every alternate row is shifted by exactly
+         * half one horizontal interval.
+         *
+         * Together with rowSpacing, this forms
+         * equilateral triangles throughout the
+         * infinite plane.
+         */
+        const rowOffset =
+            Math.abs(
+                rowIndex % 2
+            ) === 1
+                ? effectiveSpacing /
+                    2
+                : 0;
+
+        const worldY =
+            rowIndex *
+            rowSpacing;
+
+        for (
+            let columnIndex = firstColumn;
+            columnIndex <= finalColumn;
+            columnIndex++
+        ) {
+            const worldX =
+                columnIndex *
+                    effectiveSpacing +
+                rowOffset;
+
+            const rotatedX =
+                worldX *
+                    cosineRotation -
+                worldY *
+                    sineRotation;
+
+            const rotatedY =
+                worldX *
+                    sineRotation +
+                worldY *
+                    cosineRotation;
+
+            const screenX =
+                centerX +
+                rotatedX *
+                    wheelRadius;
+
+            const screenY =
+                centerY +
+                rotatedY *
+                    wheelRadius;
+
+            if (
+                screenX <
+                    -renderMargin ||
+                screenX >
+                    viewWidth +
+                        renderMargin ||
+                screenY <
+                    -renderMargin ||
+                screenY >
+                    viewHeight +
+                        renderMargin
+            ) {
+                continue;
+            }
+
+            /*
+             * Magnitude remains deterministic.
+             *
+             * Point position never changes.
+             */
+            const magnitudeSeed =
+                infiniteHash(
+                    columnIndex,
+                    rowIndex,
+                    0,
+                    17
+                );
+
+            const magnitudeRank =
+                Math.pow(
+                    magnitudeSeed,
+                    4
+                );
+
+            const magnitudeMultiplier =
+                1 +
+                magnitudeVariation *
+                magnitudeRank *
+                2;
+
+            const renderedPointSize =
+                basePointSize *
+                magnitudeMultiplier;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                screenX,
+                screenY,
+                renderedPointSize,
+                0,
+                Math.PI *
+                    2
+            );
+
+            ctx.fill();
+        }
+    }
+}
+
+/*
+ * Radial Distribution
+ *
+ * A recursive hierarchy of straight meridians.
+ *
+ * Every point belongs to one meridian.
+ * Every meridian points toward one Center.
+ * Nothing crosses.
+ * Nothing curves.
+ * No randomness organizes position.
+ *
+ * New meridians enter from the outside exactly
+ * when the arc spacing between neighboring active
+ * meridians would otherwise exceed the target
+ * point spacing.
+ */
+function drawRadialField(
+    centerX,
+    centerY,
+    wheelRadius,
+    cosineRotation,
+    sineRotation
+) {
+    /*
+     * One spacing law governs both neighboring
+     * points along a meridian and the subdivision
+     * threshold between neighboring meridians.
+     *
+     * Density remains a true area-density control:
+     * linear spacing changes by sqrt(density).
+     */
+    const targetSpacing =
+        infiniteCellSize /
+        Math.sqrt(
+            densityLevel
+        );
+
+    const screenPointSpacing =
+        targetSpacing *
+        wheelRadius;
+
+    /*
+     * Generation apron inherited from Equidistant.
+     * The mathematical hierarchy is sampled well
+     * beyond the device screen so its generation
+     * boundary cannot become visible while turning.
+     */
+    const renderMargin =
+    Math.max(
+        Math.max(
+            viewWidth,
+            viewHeight
+        ) * 1.5,
+
+        screenPointSpacing * 24
+    );
+
+    const expandedCorners = [
+        [-renderMargin, -renderMargin],
+        [viewWidth + renderMargin, -renderMargin],
+        [-renderMargin, viewHeight + renderMargin],
+        [viewWidth + renderMargin, viewHeight + renderMargin]
+    ];
+
+    let maximumVisibleRadius = 0;
+
+    for (
+        let cornerIndex = 0;
+        cornerIndex < expandedCorners.length;
+        cornerIndex++
+    ) {
+        const translatedX =
+            expandedCorners[cornerIndex][0] -
+            centerX;
+
+        const translatedY =
+            expandedCorners[cornerIndex][1] -
+            centerY;
+
+        maximumVisibleRadius =
+            Math.max(
+                maximumVisibleRadius,
+                Math.hypot(
+                    translatedX,
+                    translatedY
+                ) /
+                wheelRadius
+            );
+    }
+
+    /*
+     * Eight Primary Meridians establish the first
+     * complete directional organization.
+     *
+     * Every later level bisects only the angular
+     * gaps created by the preceding level.
+     */
+    const primaryMeridianCount = 8;
+
+    const primaryAngularGap =
+        Math.PI * 2 /
+        primaryMeridianCount;
+
+    /*
+     * Add only as many recursive levels as the
+     * enlarged observation region mathematically
+     * requires.
+     */
+    let hierarchyLevelCount = 1;
+
+    let activeAngularGap =
+        primaryAngularGap;
+
+    while (
+        maximumVisibleRadius *
+            activeAngularGap >
+        targetSpacing
+    ) {
+        hierarchyLevelCount++;
+        activeAngularGap /= 2;
+    }
+
+    const basePointSize =
+        dotSize *
+        (
+            wheelScale /
+            0.46
+        );
+
+    ctx.fillStyle =
+        negativeMode
+            ? "black"
+            : "white";
+
+    ctx.shadowBlur = 0;
+
+    for (
+        let hierarchyLevel = 0;
+        hierarchyLevel < hierarchyLevelCount;
+        hierarchyLevel++
+    ) {
+        const subdivisionFactor =
+            2 ** hierarchyLevel;
+
+        const meridianCount =
+            primaryMeridianCount *
+            subdivisionFactor;
+
+        const angularGap =
+            primaryAngularGap /
+            subdivisionFactor;
+
+        /*
+         * Primary meridians begin nearest Center.
+         *
+         * Every later hierarchy begins at the exact
+         * radius where the preceding angular gap
+         * reaches the target spacing.
+         */
+        const startingRadius =
+            hierarchyLevel === 0
+                ? targetSpacing
+                : targetSpacing /
+                    (
+                        primaryAngularGap /
+                        (
+                            2 **
+                            (hierarchyLevel - 1)
+                        )
+                    );
+
+        /*
+         * Level zero contains every Primary Meridian.
+         *
+         * Later levels contain only the odd indexes:
+         * the new meridians entering the angular gaps.
+         */
+        const firstMeridianIndex =
+            hierarchyLevel === 0
+                ? 0
+                : 1;
+
+        const meridianIndexStep =
+            hierarchyLevel === 0
+                ? 1
+                : 2;
+
+        for (
+            let meridianIndex = firstMeridianIndex;
+            meridianIndex < meridianCount;
+            meridianIndex += meridianIndexStep
+        ) {
+            const angle =
+                meridianIndex *
+                angularGap;
+
+            const directionX =
+                Math.cos(angle);
+
+            const directionY =
+                Math.sin(angle);
+
+            const firstPointIndex =
+                Math.max(
+                    0,
+                    Math.ceil(
+                        startingRadius /
+                        targetSpacing
+                    )
+                );
+
+            const finalPointIndex =
+                Math.ceil(
+                    maximumVisibleRadius /
+                    targetSpacing
+                ) + 1;
+
+            for (
+                let pointIndex = firstPointIndex;
+                pointIndex <= finalPointIndex;
+                pointIndex++
+            ) {
+                const radius =
+                    pointIndex *
+                    targetSpacing;
+
+                if (
+                    radius +
+                        targetSpacing * 0.001 <
+                    startingRadius
+                ) {
+                    continue;
+                }
+
+                const worldX =
+                    directionX *
+                    radius;
+
+                const worldY =
+                    directionY *
+                    radius;
+
+                const rotatedX =
+                    worldX *
+                        cosineRotation -
+                    worldY *
+                        sineRotation;
+
+                const rotatedY =
+                    worldX *
+                        sineRotation +
+                    worldY *
+                        cosineRotation;
+
+                const screenX =
+                    centerX +
+                    rotatedX *
+                        wheelRadius;
+
+                const screenY =
+                    centerY +
+                    rotatedY *
+                        wheelRadius;
+
+                if (
+                    screenX < -renderMargin ||
+                    screenX >
+                        viewWidth +
+                            renderMargin ||
+                    screenY < -renderMargin ||
+                    screenY >
+                        viewHeight +
+                            renderMargin
+                ) {
+                    continue;
+                }
+
+                /*
+                 * Magnitude Variation remains an
+                 * observation control.
+                 *
+                 * It changes point appearance only.
+                 * It never changes point position.
+                 */
+                const magnitudeSeed =
+                    infiniteHash(
+                        meridianIndex,
+                        pointIndex,
+                        hierarchyLevel,
+                        29
+                    );
+
+                const magnitudeRank =
+                    Math.pow(
+                        magnitudeSeed,
+                        4
+                    );
+
+                const magnitudeMultiplier =
+                    1 +
+                    magnitudeVariation *
+                    magnitudeRank *
+                    2;
+
+                const renderedPointSize =
+                    basePointSize *
+                    magnitudeMultiplier;
+
+                ctx.beginPath();
+
+                ctx.arc(
+                    screenX,
+                    screenY,
+                    renderedPointSize,
+                    0,
+                    Math.PI * 2
+                );
+
+                ctx.fill();
+            }
+        }
+    }
+}
+
+/*
+ * Spiral Distribution
+ *
+ * One continuous Archimedean spiral organization.
+ *
+ * Every point belongs to the same governing curve.
+ * Locality is organized through continuous turning
+ * around one Center.
+ *
+ * Successive turns remain a constant distance apart.
+ * Points remain equally spaced along the curve.
+ *
+ * No rings.
+ * No spokes.
+ * No randomness organizes position.
+ *
+ * The mathematical phase is permanently anchored.
+ * Moving the field never rotates or reorganizes
+ * the spiral independently.
+ */
+function drawSpiralField(
+    centerX,
+    centerY,
+    wheelRadius,
+    cosineRotation,
+    sineRotation
+) {
+    /*
+     * Slightly denser canonical Spiral field.
+     *
+     * Point Density changes the spacing law of the
+     * same single spiral. It never adds another curve.
+     */
+    const targetSpacing =
+        infiniteCellSize *
+        0.82 /
+        Math.sqrt(
+            densityLevel
+        );
+
+    /*
+     * Canonical Archimedean spiral:
+     *
+     * radius = radialGrowth * angle
+     *
+     * One complete revolution increases the radius by:
+     *
+     * 2π * radialGrowth
+     *
+     * Therefore setting radialGrowth to
+     * targetSpacing / 2π keeps successive turns
+     * exactly targetSpacing apart.
+     */
+    const radialGrowth =
+        targetSpacing /
+        (
+            Math.PI *
+            2
+        );
+
+    const screenPointSpacing =
+        targetSpacing *
+        wheelRadius;
+
+    /*
+     * Large Generation Apron.
+     *
+     * The same rigid mathematical spiral extends far
+     * beyond the device screen before being observed.
+     */
+    const renderMargin =
+        Math.max(
+            Math.max(
+                viewWidth,
+                viewHeight
+            ) * 1.5,
+
+            screenPointSpacing *
+                24
+        );
+
+    const expandedCorners = [
+        [-renderMargin, -renderMargin],
+        [viewWidth + renderMargin, -renderMargin],
+        [-renderMargin, viewHeight + renderMargin],
+        [viewWidth + renderMargin, viewHeight + renderMargin]
+    ];
+
+    let maximumVisibleRadius =
+        0;
+
+    for (
+        let cornerIndex = 0;
+        cornerIndex < expandedCorners.length;
+        cornerIndex++
+    ) {
+        const translatedX =
+            expandedCorners[cornerIndex][0] -
+            centerX;
+
+        const translatedY =
+            expandedCorners[cornerIndex][1] -
+            centerY;
+
+        maximumVisibleRadius =
+            Math.max(
+                maximumVisibleRadius,
+                Math.hypot(
+                    translatedX,
+                    translatedY
+                ) /
+                wheelRadius
+            );
+    }
+
+    /*
+     * The beginning of the spiral is permanently
+     * anchored at mathematical angle zero.
+     *
+     * It does not depend upon screen position,
+     * dragging, zoom, or Generation Apron size.
+     */
+    const minimumAngle =
+        0;
+
+    const maximumAngle =
+        maximumVisibleRadius /
+        radialGrowth;
+
+    const basePointSize =
+        dotSize *
+        (
+            wheelScale /
+            0.46
+        );
+
+    ctx.fillStyle =
+        negativeMode
+            ? "black"
+            : "white";
+
+    ctx.shadowBlur =
+        0;
+
+    let angle =
+        minimumAngle;
+
+    let pointIndex =
+        0;
+
+    while (
+        angle <= maximumAngle
+    ) {
+        const radius =
+            radialGrowth *
+            angle;
+
+        const worldX =
+            radius *
+            Math.cos(
+                angle
+            );
+
+        const worldY =
+            radius *
+            Math.sin(
+                angle
+            );
+
+        const rotatedX =
+            worldX *
+                cosineRotation -
+            worldY *
+                sineRotation;
+
+        const rotatedY =
+            worldX *
+                sineRotation +
+            worldY *
+                cosineRotation;
+
+        const screenX =
+            centerX +
+            rotatedX *
+                wheelRadius;
+
+        const screenY =
+            centerY +
+            rotatedY *
+                wheelRadius;
+
+        if (
+            screenX >= -renderMargin &&
+            screenX <=
+                viewWidth +
+                    renderMargin &&
+            screenY >= -renderMargin &&
+            screenY <=
+                viewHeight +
+                    renderMargin
+        ) {
+            /*
+             * Magnitude Variation changes point
+             * appearance only.
+             *
+             * Point position remains mathematically
+             * exact and deterministic.
+             */
+            const magnitudeSeed =
+                infiniteHash(
+                    pointIndex,
+                    0,
+                    0,
+                    43
+                );
+
+            const magnitudeRank =
+                Math.pow(
+                    magnitudeSeed,
+                    4
+                );
+
+            const magnitudeMultiplier =
+                1 +
+                magnitudeVariation *
+                magnitudeRank *
+                2;
+
+            const renderedPointSize =
+                basePointSize *
+                magnitudeMultiplier;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                screenX,
+                screenY,
+                renderedPointSize,
+                0,
+                Math.PI *
+                    2
+            );
+
+            ctx.fill();
+        }
+
+        /*
+         * Archimedean spiral arc-length derivative:
+         *
+         * ds/dθ = sqrt(radius² + radialGrowth²)
+         *
+         * The changing angular step preserves equal
+         * distance between successive points along
+         * the single continuous spiral.
+         */
+        const arcLengthFactor =
+            Math.sqrt(
+                radius *
+                    radius +
+                radialGrowth *
+                    radialGrowth
+            );
+
+        const angularStep =
+            targetSpacing /
+            Math.max(
+                arcLengthFactor,
+                targetSpacing *
+                    0.25
+            );
+
+        angle +=
+            Math.min(
+                angularStep,
+                0.28
+            );
+
+        pointIndex++;
+    }
+}
+
+/*
+ * Square Distribution
+ *
+ * A hierarchy of concentric square perimeters.
+ *
+ * Every point belongs to one square.
+ * Every square shares one Center.
+ *
+ * No circles.
+ * No spokes.
+ * No curvature.
+ * No randomness organizes position.
+ */
+function drawSquareField(
+    centerX,
+    centerY,
+    wheelRadius,
+    cosineRotation,
+    sineRotation
+) {
+    /*
+     * Canonical spacing.
+     *
+     * Point Density changes both the distance
+     * between neighboring square perimeters and
+     * the point spacing along every perimeter.
+     */
+    const targetSpacing =
+        infiniteCellSize /
+        Math.sqrt(
+            densityLevel
+        );
+
+    const screenPointSpacing =
+        targetSpacing *
+        wheelRadius;
+
+    /*
+     * Large Generation Apron.
+     *
+     * The square universe is sampled far beyond
+     * the observation window so its generation
+     * boundary never becomes visible.
+     */
+    const renderMargin =
+        Math.max(
+            Math.max(
+                viewWidth,
+                viewHeight
+            ) * 2.5,
+
+            screenPointSpacing *
+                40
+        );
+
+    const expandedCorners = [
+        [-renderMargin, -renderMargin],
+        [viewWidth + renderMargin, -renderMargin],
+        [-renderMargin, viewHeight + renderMargin],
+        [viewWidth + renderMargin, viewHeight + renderMargin]
+    ];
+
+    let maximumVisibleRadius =
+        0;
+
+    for (
+        let cornerIndex = 0;
+        cornerIndex < expandedCorners.length;
+        cornerIndex++
+    ) {
+        const translatedX =
+            expandedCorners[cornerIndex][0] -
+            centerX;
+
+        const translatedY =
+            expandedCorners[cornerIndex][1] -
+            centerY;
+
+        maximumVisibleRadius =
+            Math.max(
+                maximumVisibleRadius,
+                Math.hypot(
+                    translatedX,
+                    translatedY
+                ) /
+                wheelRadius
+            );
+    }
+
+    /*
+     * Square radius is measured by the Chebyshev norm:
+     *
+     * max(abs(x), abs(y))
+     *
+     * Every constant value produces one exact
+     * axis-aligned square centered on Center.
+     */
+    const maximumSquareIndex =
+        Math.ceil(
+            maximumVisibleRadius /
+            targetSpacing
+        ) + 1;
+
+    const basePointSize =
+        dotSize *
+        (
+            wheelScale /
+            0.46
+        );
+
+    ctx.fillStyle =
+        negativeMode
+            ? "black"
+            : "white";
+
+    ctx.shadowBlur =
+        0;
+
+    let pointIndex =
+        0;
+
+    for (
+        let squareIndex = 1;
+        squareIndex <= maximumSquareIndex;
+        squareIndex++
+    ) {
+        const squareRadius =
+            squareIndex *
+            targetSpacing;
+
+        /*
+         * Each side has length 2 * squareRadius.
+         *
+         * The point count is chosen so the spacing
+         * along every side remains as close as
+         * possible to targetSpacing.
+         */
+        const pointsPerSide =
+            Math.max(
+                1,
+                Math.round(
+                    (
+                        squareRadius *
+                        2
+                    ) /
+                    targetSpacing
+                )
+            );
+
+        const sideStep =
+            (
+                squareRadius *
+                2
+            ) /
+            pointsPerSide;
+
+        /*
+         * Top edge:
+         * left to right.
+         */
+        for (
+            let stepIndex = 0;
+            stepIndex < pointsPerSide;
+            stepIndex++
+        ) {
+            drawSquarePoint(
+                -squareRadius +
+                    stepIndex *
+                    sideStep,
+                -squareRadius,
+                pointIndex++
+            );
+        }
+
+        /*
+         * Right edge:
+         * top to bottom.
+         */
+        for (
+            let stepIndex = 0;
+            stepIndex < pointsPerSide;
+            stepIndex++
+        ) {
+            drawSquarePoint(
+                squareRadius,
+                -squareRadius +
+                    stepIndex *
+                    sideStep,
+                pointIndex++
+            );
+        }
+
+        /*
+         * Bottom edge:
+         * right to left.
+         */
+        for (
+            let stepIndex = 0;
+            stepIndex < pointsPerSide;
+            stepIndex++
+        ) {
+            drawSquarePoint(
+                squareRadius -
+                    stepIndex *
+                    sideStep,
+                squareRadius,
+                pointIndex++
+            );
+        }
+
+        /*
+         * Left edge:
+         * bottom to top.
+         */
+        for (
+            let stepIndex = 0;
+            stepIndex < pointsPerSide;
+            stepIndex++
+        ) {
+            drawSquarePoint(
+                -squareRadius,
+                squareRadius -
+                    stepIndex *
+                    sideStep,
+                pointIndex++
+            );
+        }
+    }
+
+    /*
+     * Draw one mathematically exact point.
+     *
+     * This nested helper inherits the renderer state
+     * without introducing any second organizing law.
+     */
+    function drawSquarePoint(
+        worldX,
+        worldY,
+        deterministicIndex
+    ) {
+        const rotatedX =
+            worldX *
+                cosineRotation -
+            worldY *
+                sineRotation;
+
+        const rotatedY =
+            worldX *
+                sineRotation +
+            worldY *
+                cosineRotation;
+
+        const screenX =
+            centerX +
+            rotatedX *
+                wheelRadius;
+
+        const screenY =
+            centerY +
+            rotatedY *
+                wheelRadius;
+
+        if (
+            screenX < -renderMargin ||
+            screenX >
+                viewWidth +
+                    renderMargin ||
+            screenY < -renderMargin ||
+            screenY >
+                viewHeight +
+                    renderMargin
+        ) {
+            return;
+        }
+
+        /*
+         * Magnitude Variation changes appearance only.
+         * Point position remains exact.
+         */
+        const magnitudeSeed =
+            infiniteHash(
+                deterministicIndex,
+                0,
+                0,
+                59
+            );
+
+        const magnitudeRank =
+            Math.pow(
+                magnitudeSeed,
+                4
+            );
+
+        const magnitudeMultiplier =
+            1 +
+            magnitudeVariation *
+            magnitudeRank *
+            2;
+
+        const renderedPointSize =
+            basePointSize *
+            magnitudeMultiplier;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            screenX,
+            screenY,
+            renderedPointSize,
+            0,
+            Math.PI *
+                2
+        );
+
+        ctx.fill();
+    }
+}
+
     if (lastFrameTime === null) {
         lastFrameTime = timestamp;
     }
@@ -7300,10 +8593,12 @@ if (
     currentField ===
     fieldInfinite
 ) {
+
     if (
         currentLabDistribution ===
         "concentric"
     ) {
+
         drawConcentricField(
             cx,
             cy,
@@ -7312,15 +8607,68 @@ if (
             sinR
         );
 
-    } else {
-        drawInfiniteField(
-            cx,
-            cy,
-            wheelRadius,
-            cosR,
-            sinR
-        );
-    }
+   } else if (
+    currentLabDistribution ===
+    "equidistant"
+) {
+
+    drawEquidistantField(
+        cx,
+        cy,
+        wheelRadius,
+        cosR,
+        sinR
+    );
+
+} else if (
+    currentLabDistribution ===
+    "radial"
+) {
+
+    drawRadialField(
+        cx,
+        cy,
+        wheelRadius,
+        cosR,
+        sinR
+    );
+
+} else if (
+    currentLabDistribution ===
+    "spiral"
+) {
+
+    drawSpiralField(
+        cx,
+        cy,
+        wheelRadius,
+        cosR,
+        sinR
+    );
+
+} else if (
+    currentLabDistribution ===
+    "square"
+) {
+
+    drawSquareField(
+        cx,
+        cy,
+        wheelRadius,
+        cosR,
+        sinR
+    );
+
+} else {
+
+    drawInfiniteField(
+        cx,
+        cy,
+        wheelRadius,
+        cosR,
+        sinR
+    );
+}
 
 } else {
 
