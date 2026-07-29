@@ -1171,15 +1171,96 @@ body.cursor-hidden * {
         width: calc(100vw - 24px);
     }
 
+    /*
+ * iPhone Phantom speed rail.
+ *
+ * Presets and manual speed control run
+ * vertically along the right edge.
+ */
+#phantomSpeedControls {
+    top:
+        calc(
+            env(safe-area-inset-top)
+            + 92px
+        );
+
+    right:
+        calc(
+            env(safe-area-inset-right)
+            + 10px
+        );
+
+    gap: 8px;
+}
+
+/*
+ * Stack Speed I, II, and III vertically.
+ */
+#phantomSpeedPresets {
+    flex-direction: column;
+    gap: 7px;
+}
+
+/*
+ * Vertical manual-speed control.
+ *
+ * The slider remains hidden in regular
+ * Phantom Axis and appears only during
+ * Field Explorer Investigation.
+ */
+/*
+ * iPhone:
+ * use Safari's native vertical range control
+ * so touch movement follows the visible slider.
+ */
+#phantomSpeedSlider {
+    width: 28px;
+    height: 150px;
+
+    margin-top: 4px;
+
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+
+    writing-mode: initial;
+    direction: initial;
+
+    touch-action: none;
+    pointer-events: auto;
+}
+
+/*
+ * Keep the value directly beneath
+ * the vertical slider.
+ */
+#phantomSpeedReadout {
+    width: 52px;
+    margin-top: 0;
+
+    font-size: 10px;
+    text-align: center;
+}
+
+  /*
+ * iPhone Investigation closing instruction:
+ * normal paragraph spacing beneath
+ * TO RETURN TO ORIGIN,
+ * with clear room for the arrow.
+ */
+#phantomMask.investigation-mode
     #phantomGuidance > #phantomInstruction2 {
-        top: -102px;
 
-        font-size: 14px;
-        line-height: 1.08;
-        letter-spacing: 0.035em;
+    top: -38px;
 
-        width: calc(100vw - 28px);
-    }
+    width: auto;
+    max-width: none;
+
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0.035em;
+
+    white-space: nowrap;
+}
 
     #phantomArrow,
     #phantomEyeOrientation {
@@ -1227,9 +1308,46 @@ body.cursor-hidden * {
         grid-area: square;
     }
 
+    /*
+ * iPhone:
+ * Canonical Region becomes a pill-shaped
+ * navigation control directly above RETURN.
+ */
+/*
+ * iPhone:
+ * Canonical Region is the centered,
+ * pill-shaped origin control.
+ */
+#canonicalRegionButton {
+    grid-area: auto;
+
+    position: absolute;
+
+    left: 50%;
+    right: auto;
+    bottom: 54px;
+
+    transform: translateX(-50%);
+
+    width: 190px;
+    height: 44px;
+    min-height: 44px;
+
+    padding: 0 20px;
+
+    padding: 0 22px;
+
+    border-radius: 999px;
+
+    line-height: 1.05;
+    white-space: normal;
+}
+
     #phantomReturnButton {
         grid-area: return;
     }
+
+    
 
     /*
      * Cancel the larger center gap used
@@ -1254,6 +1372,36 @@ body.cursor-hidden * {
         white-space: normal;
     }
 
+   /*
+ * iPhone Canonical Region:
+ * compact centered navigation pill.
+ *
+ * This must remain after the generic
+ * iPhone Phantom button rule.
+ */
+#phantomControls #canonicalRegionButton {
+    position: absolute;
+
+    left: 50%;
+    right: auto;
+    bottom: 58px;
+
+    transform: translateX(-50%);
+
+    width: 190px;
+    min-width: 190px;
+
+    height: 40px;
+    min-height: 40px;
+
+    padding: 0 18px;
+
+    border-radius: 999px;
+
+    line-height: 1;
+    white-space: nowrap;
+}
+
     #pauseIntroButton,
     #skipIntroButton {
         height: 58px;
@@ -1275,6 +1423,23 @@ body.cursor-hidden * {
         line-height: 1.18;
         letter-spacing: 0.05em;
     }
+    
+    /*
+ * iPad Field Explorer Investigation:
+ * place the closing instruction beneath
+ * TO RETURN TO ORIGIN,
+ * with clear room for the arrow.
+ */
+#phantomMask.investigation-mode
+    #phantomGuidance > #phantomInstruction2 {
+
+    top: -190px;
+
+    width: auto;
+    max-width: none;
+
+    white-space: nowrap;
+}
 
     #phantomGuidance {
         bottom: 80px;
@@ -1380,6 +1545,10 @@ body.cursor-hidden * {
  * Only the four permanent observation controls wait
  * until the instructional sequence is ending.
  */
+/*
+ * All permanent Phantom controls use
+ * the shared arrival by default.
+ */
 #phantomControls.intro-playing
     button:not(.phantom-intro-control) {
 
@@ -1390,6 +1559,42 @@ body.cursor-hidden * {
         15s
         linear
         forwards;
+}
+
+/*
+ * Canonical Region waits until the
+ * instructional eye and arrow disappear.
+ */
+/*
+ * iPhone only:
+ * Canonical Region receives its own delayed
+ * arrival after the eye and arrow disappear.
+ */
+@media (max-width: 600px) {
+
+    #phantomControls.intro-playing
+        #canonicalRegionButton {
+
+        opacity: 0;
+
+        animation:
+            canonicalRegionArrival
+            15s
+            linear
+            forwards;
+    }
+}
+
+@keyframes canonicalRegionArrival {
+
+    0%,
+    94.5% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 /*
@@ -1459,16 +1664,17 @@ body.cursor-hidden * {
         transform: scale(0.92);
     }
 
-   20% {
-    opacity: 1;
-    transform: scale(1);
-}
-
-    88% {
+    20% {
         opacity: 1;
         transform: scale(1);
     }
 
+    84% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    90%,
     100% {
         opacity: 0;
         transform: scale(1);
@@ -1487,11 +1693,12 @@ body.cursor-hidden * {
         transform: translateY(0);
     }
 
-    88% {
+    84% {
         opacity: 1;
         transform: translateY(0);
     }
 
+    90%,
     100% {
         opacity: 0;
         transform: translateY(0);
@@ -4415,8 +4622,7 @@ TO ORIGIN.
 `;
 
 phantomInstruction2.innerHTML = `
-USE<br>
-VIEWING TUBES.
+USE&nbsp;VIEWING&nbsp;TUBES.
 `;
 
     } else {
@@ -7187,6 +7393,14 @@ canonicalRegionButton.addEventListener(
             return;
         }
 
+        /*
+         * Wake the complete instrument bank.
+         *
+         * The existing lifecycle then returns it
+         * to idle and eventually hides it again.
+         */
+        wakePhantomControls();
+
         const target =
             getPhantomTargetFromMask();
 
@@ -7200,7 +7414,6 @@ canonicalRegionButton.addEventListener(
             },
             1200
         );
-
     }
 );
 
