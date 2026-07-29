@@ -1138,6 +1138,17 @@ body.cursor-hidden * {
     pointer-events: none;
 }
 
+/*
+ * iPhone Regular Phantom Axis:
+ * lower the closing gray instruction
+ * away from LOOK AGAIN.
+ */
+#phantomMask:not(.investigation-mode)
+    #phantomGuidance > #phantomInstruction2 {
+
+    top: -150px;
+}
+
 /* Final gray instruction — platform-specific continuation */
 #phantomGuidance > #phantomInstruction2 {
     position: absolute;
@@ -1161,6 +1172,7 @@ body.cursor-hidden * {
 
 /* iPhone — LOCKED */
 @media (max-width: 600px) {
+
     #phantomInstruction {
         top: -505px;
 
@@ -1172,12 +1184,34 @@ body.cursor-hidden * {
     }
 
     /*
- * iPhone Phantom speed rail.
- *
- * Presets and manual speed control run
- * vertically along the right edge.
+     * iPhone Regular Phantom Axis:
+     * lower the closing gray instruction
+     * away from LOOK AGAIN.
+     */
+   /*
+ * iPhone Regular Phantom Axis:
+ * compact closing instruction beneath
+ * LOOK AGAIN, clear of the arrow.
  */
-#phantomSpeedControls {
+#phantomMask:not(.investigation-mode)
+    #phantomGuidance > #phantomInstruction2 {
+
+    top: -115px;
+
+    font-size: 14px;
+    line-height: inherit;
+    letter-spacing: inherit;
+
+    width: calc(100vw - 24px);
+}
+
+    /*
+     * iPhone Phantom speed rail.
+     *
+     * Presets and manual speed control run
+     * vertically along the right edge.
+     */
+    #phantomSpeedControls {
     top:
         calc(
             env(safe-area-inset-top)
