@@ -184,15 +184,7 @@ html,body{
     accent-color: #e4002b;
 }
 
-/*
- * Phantom Axis Illusion and Field Explorer
- * are sibling destinations.
- */
-#controls.field-explorer-mode
-    #phantomAxisButton {
 
-    display: none;
-}
 
 /*
  * Exit button remains white.
@@ -413,7 +405,6 @@ html,body{
 }
 
 :fullscreen body {
-    background: black;
 }
 
 #centerStarButton,
@@ -602,6 +593,43 @@ body.cursor-hidden * {
     display: block;
 }
 
+/*
+ * PHANTOM AXIS INVESTIGATION
+ *
+ * The mask remains visually present,
+ * but the observation field receives
+ * north-south dragging.
+ */
+#phantomMask.investigation-mode
+    #phantomInstruction2 {
+    top: -90px;
+}
+
+/*
+ * Investigation Mode passes drag,
+ * wheel, and pinch input through
+ * the mask to the canvas.
+ */
+#phantomMask.investigation-mode {
+    pointer-events: none;
+}
+
+/*
+ * The instrument controls remain
+ * directly operable above the canvas.
+ */
+#phantomMask.investigation-mode
+    #phantomControls,
+#phantomMask.investigation-mode
+    #phantomControls *,
+#phantomMask.investigation-mode
+    #phantomSpeedControls,
+#phantomMask.investigation-mode
+    #phantomSpeedControls * {
+
+    pointer-events: auto;
+}
+
 #phantomControls {
 
     position: absolute;
@@ -627,6 +655,13 @@ body.cursor-hidden * {
 }
 
 #phantomControls button {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
     flex: 1 1 0;
     min-width: 0;
 
@@ -635,16 +670,29 @@ body.cursor-hidden * {
 
     padding: 10px 12px;
 
-    background: black;
+    background: transparent;
     color: white;
 
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255,255,255,.65);
     border-radius: 5px;
 
     font-weight: bold;
     letter-spacing: 1px;
 
     cursor: pointer;
+}
+
+/*
+ * Canonical Region exists only in
+ * Phantom Axis Investigation Mode.
+ */
+#phantomControls #canonicalRegionButton {
+    display: none;
+}
+
+#phantomMask.investigation-mode
+#phantomControls #canonicalRegionButton {
+    display: flex;
 }
 
 /*
@@ -934,6 +982,40 @@ body.cursor-hidden * {
     color: black;
 }
 
+#phantomSpeedPresets {
+    display: flex;
+    gap: 6px;
+}
+
+#phantomSpeedSlider {
+    display: none;
+
+    width: 170px;
+    margin-top: 8px;
+
+    accent-color: white;
+}
+
+#phantomSpeedReadout {
+    display: none;
+}
+
+#phantomSpeedControls.investigation-mode
+    #phantomSpeedSlider,
+#phantomSpeedControls.investigation-mode
+    #phantomSpeedReadout {
+
+    display: block;
+}
+
+#phantomSpeedReadout {
+    margin-top: 2px;
+
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+}
+
 .orientation-overlay {
     position: fixed;
     inset: 0;
@@ -1089,15 +1171,96 @@ body.cursor-hidden * {
         width: calc(100vw - 24px);
     }
 
+    /*
+ * iPhone Phantom speed rail.
+ *
+ * Presets and manual speed control run
+ * vertically along the right edge.
+ */
+#phantomSpeedControls {
+    top:
+        calc(
+            env(safe-area-inset-top)
+            + 92px
+        );
+
+    right:
+        calc(
+            env(safe-area-inset-right)
+            + 10px
+        );
+
+    gap: 8px;
+}
+
+/*
+ * Stack Speed I, II, and III vertically.
+ */
+#phantomSpeedPresets {
+    flex-direction: column;
+    gap: 7px;
+}
+
+/*
+ * Vertical manual-speed control.
+ *
+ * The slider remains hidden in regular
+ * Phantom Axis and appears only during
+ * Field Explorer Investigation.
+ */
+/*
+ * iPhone:
+ * use Safari's native vertical range control
+ * so touch movement follows the visible slider.
+ */
+#phantomSpeedSlider {
+    width: 28px;
+    height: 150px;
+
+    margin-top: 4px;
+
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+
+    writing-mode: initial;
+    direction: initial;
+
+    touch-action: none;
+    pointer-events: auto;
+}
+
+/*
+ * Keep the value directly beneath
+ * the vertical slider.
+ */
+#phantomSpeedReadout {
+    width: 52px;
+    margin-top: 0;
+
+    font-size: 10px;
+    text-align: center;
+}
+
+  /*
+ * iPhone Investigation closing instruction:
+ * normal paragraph spacing beneath
+ * TO RETURN TO ORIGIN,
+ * with clear room for the arrow.
+ */
+#phantomMask.investigation-mode
     #phantomGuidance > #phantomInstruction2 {
-        top: -102px;
 
-        font-size: 14px;
-        line-height: 1.08;
-        letter-spacing: 0.035em;
+    top: -38px;
 
-        width: calc(100vw - 28px);
-    }
+    width: auto;
+    max-width: none;
+
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0.035em;
+
+    white-space: nowrap;
+}
 
     #phantomArrow,
     #phantomEyeOrientation {
@@ -1145,9 +1308,46 @@ body.cursor-hidden * {
         grid-area: square;
     }
 
+    /*
+ * iPhone:
+ * Canonical Region becomes a pill-shaped
+ * navigation control directly above RETURN.
+ */
+/*
+ * iPhone:
+ * Canonical Region is the centered,
+ * pill-shaped origin control.
+ */
+#canonicalRegionButton {
+    grid-area: auto;
+
+    position: absolute;
+
+    left: 50%;
+    right: auto;
+    bottom: 54px;
+
+    transform: translateX(-50%);
+
+    width: 190px;
+    height: 44px;
+    min-height: 44px;
+
+    padding: 0 20px;
+
+    padding: 0 22px;
+
+    border-radius: 999px;
+
+    line-height: 1.05;
+    white-space: normal;
+}
+
     #phantomReturnButton {
         grid-area: return;
     }
+
+    
 
     /*
      * Cancel the larger center gap used
@@ -1172,6 +1372,36 @@ body.cursor-hidden * {
         white-space: normal;
     }
 
+   /*
+ * iPhone Canonical Region:
+ * compact centered navigation pill.
+ *
+ * This must remain after the generic
+ * iPhone Phantom button rule.
+ */
+#phantomControls #canonicalRegionButton {
+    position: absolute;
+
+    left: 50%;
+    right: auto;
+    bottom: 58px;
+
+    transform: translateX(-50%);
+
+    width: 190px;
+    min-width: 190px;
+
+    height: 40px;
+    min-height: 40px;
+
+    padding: 0 18px;
+
+    border-radius: 999px;
+
+    line-height: 1;
+    white-space: nowrap;
+}
+
     #pauseIntroButton,
     #skipIntroButton {
         height: 58px;
@@ -1193,6 +1423,23 @@ body.cursor-hidden * {
         line-height: 1.18;
         letter-spacing: 0.05em;
     }
+    
+    /*
+ * iPad Field Explorer Investigation:
+ * place the closing instruction beneath
+ * TO RETURN TO ORIGIN,
+ * with clear room for the arrow.
+ */
+#phantomMask.investigation-mode
+    #phantomGuidance > #phantomInstruction2 {
+
+    top: -190px;
+
+    width: auto;
+    max-width: none;
+
+    white-space: nowrap;
+}
 
     #phantomGuidance {
         bottom: 80px;
@@ -1211,11 +1458,17 @@ body.cursor-hidden * {
 
 /* Desktop / large browser */
 @media (min-width: 1101px) {
+
     #phantomInstruction {
         top: -700px;
         font-size: 19px;
         line-height: 1.06;
         letter-spacing: 0.035em;
+    }
+
+    #phantomMask.investigation-mode
+    #phantomInstruction {
+    top: -720px;
     }
 
     #phantomGuidance > #phantomInstruction2 {
@@ -1292,6 +1545,10 @@ body.cursor-hidden * {
  * Only the four permanent observation controls wait
  * until the instructional sequence is ending.
  */
+/*
+ * All permanent Phantom controls use
+ * the shared arrival by default.
+ */
 #phantomControls.intro-playing
     button:not(.phantom-intro-control) {
 
@@ -1302,6 +1559,42 @@ body.cursor-hidden * {
         15s
         linear
         forwards;
+}
+
+/*
+ * Canonical Region waits until the
+ * instructional eye and arrow disappear.
+ */
+/*
+ * iPhone only:
+ * Canonical Region receives its own delayed
+ * arrival after the eye and arrow disappear.
+ */
+@media (max-width: 600px) {
+
+    #phantomControls.intro-playing
+        #canonicalRegionButton {
+
+        opacity: 0;
+
+        animation:
+            canonicalRegionArrival
+            15s
+            linear
+            forwards;
+    }
+}
+
+@keyframes canonicalRegionArrival {
+
+    0%,
+    94.5% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 /*
@@ -1371,16 +1664,17 @@ body.cursor-hidden * {
         transform: scale(0.92);
     }
 
-   20% {
-    opacity: 1;
-    transform: scale(1);
-}
-
-    88% {
+    20% {
         opacity: 1;
         transform: scale(1);
     }
 
+    84% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    90%,
     100% {
         opacity: 0;
         transform: scale(1);
@@ -1399,11 +1693,12 @@ body.cursor-hidden * {
         transform: translateY(0);
     }
 
-    88% {
+    84% {
         opacity: 1;
         transform: translateY(0);
     }
 
+    90%,
     100% {
         opacity: 0;
         transform: translateY(0);
@@ -2396,13 +2691,35 @@ LOOK AGAIN.
         SPEED
     </div>
 
-    <button id="phantomSpeedOne">
-        I
-    </button>
+    <div id="phantomSpeedPresets">
 
-    <button id="phantomSpeedTwo">
-        II
-    </button>
+        <button id="phantomSpeedOne">
+            I
+        </button>
+
+        <button id="phantomSpeedTwo">
+            II
+        </button>
+
+        <button id="phantomSpeedThree">
+           III
+        </button>
+
+    </div>
+
+    <input
+        id="phantomSpeedSlider"
+        type="range"
+        min="-0.003"
+        max="0.003"
+        step="0.0001"
+        value="0.0007"
+        aria-label="Phantom Axis rotation speed"
+    >
+
+    <div id="phantomSpeedReadout">
+        0.0007
+    </div>
 
 </div>
 
@@ -2440,6 +2757,10 @@ LOOK AGAIN.
         type="button">
         RETURN
     </button>
+
+   <button id="canonicalRegionButton">
+    CANONICAL REGION
+   </button>
 
     <button
         id="skipIntroButton"
@@ -2741,7 +3062,7 @@ LOOK AGAIN.
 
         <div class="observation-angle-diagram">
             <img
-                src="./assets/observation-angle.svg?v=42"
+                src="../assets/observation-angle.svg?v=41"
                 alt="Observation angles of 45 degrees and 75 degrees."
             >
         </div>
@@ -2816,7 +3137,7 @@ LOOK AGAIN.
 
        <div class="observation-angle-diagram viewing-tubes-diagram">
        <img
-        src="./assets/viewing-tubes.png?v=5"
+        src="../assets/viewing-tubes.png?v=3"
         alt="Two standard toilet paper rolls lightly glued together at one end. The glued end faces the device, and the open ends face the observer’s eyes."
     >
       </div>
@@ -3556,29 +3877,76 @@ resize();
 
 canvas.style.touchAction = "none";
 canvas.style.cursor = "grab";
+canvas.addEventListener(
+    "pointerdown",
+    function (event) {
 
-canvas.addEventListener("pointerdown", function (event) {
-    isDragging = true;
+        isDragging = true;
 
-    dragStartX = event.clientX;
-    dragStartY = event.clientY;
+        dragStartX = event.clientX;
+        dragStartY = event.clientY;
 
-    offsetStartX = wheelOffsetX;
-    offsetStartY = wheelOffsetY;
+        offsetStartX = wheelOffsetX;
+        offsetStartY = wheelOffsetY;
 
-    canvas.setPointerCapture(event.pointerId);
-    canvas.style.cursor = "grabbing";
-});
+        canvas.setPointerCapture(
+            event.pointerId
+        );
 
-canvas.addEventListener("pointermove", function (event) {
-    if (!isDragging || isPinching) return;
+        canvas.style.cursor =
+            "grabbing";
+    }
+);
 
-    wheelOffsetX =
-        offsetStartX + (event.clientX - dragStartX);
+canvas.addEventListener(
+    "pointermove",
+    function (event) {
 
-    wheelOffsetY =
-        offsetStartY + (event.clientY - dragStartY);
-});
+        if (
+            !isDragging ||
+            isPinching
+        ) {
+            return;
+        }
+
+        /*
+         * Phantom Axis Investigation:
+         * preserve east-west alignment.
+         *
+         * Only north-south locality changes.
+         */
+        if (
+            phantomAxisMode &&
+            phantomInvestigationMode
+        ) {
+            wheelOffsetX =
+                offsetStartX;
+
+            wheelOffsetY =
+                offsetStartY +
+                (
+                    event.clientY -
+                    dragStartY
+                );
+
+            return;
+        }
+
+        wheelOffsetX =
+            offsetStartX +
+            (
+                event.clientX -
+                dragStartX
+            );
+
+        wheelOffsetY =
+            offsetStartY +
+            (
+                event.clientY -
+                dragStartY
+            );
+    }
+);
 
 canvas.addEventListener("pointerup", function (event) {
     isDragging = false;
@@ -4199,6 +4567,107 @@ const phantomCenterShield =
 const phantomGuidance =
     document.getElementById("phantomGuidance");
 
+const phantomInstruction =
+    document.getElementById(
+        "phantomInstruction"
+    );
+
+const phantomInstruction2 =
+    document.getElementById(
+        "phantomInstruction2"
+    );
+
+function setPhantomGuidanceCopy() {
+
+    if (phantomInvestigationMode) {
+
+        /*
+         * Field Explorer:
+         * advanced investigation guidance.
+         */
+        phantomInstruction.innerHTML = `
+FOR BEST RESULTS<br><br>
+
+USE<br><br>
+
+INFINITE FIELD.<br><br>
+
+IT REVEALS THE<br>
+COMPLETE<br>
+ORGANIZATION.<br><br>
+
+—<br>
+
+THE OTHER FIELDS<br>
+END SOONER.<br><br>
+
+—<br>
+
+MOVE<br><br>
+
+ALONG THE<br>
+MERIDIAN.<br><br>
+
+TO EXPLORE<br>
+ITS LIMITS.<br><br>
+
+—<br>
+
+PRESS<br><br>
+
+CANONICAL REGION<br><br>
+
+TO RETURN<br>
+TO ORIGIN.
+`;
+
+phantomInstruction2.innerHTML = `
+USE&nbsp;VIEWING&nbsp;TUBES.
+`;
+
+    } else {
+
+        /*
+         * Regular Phantom Axis Illusion:
+         * preserve the original tutorial exactly.
+         */
+        phantomInstruction.innerHTML = `
+            ENABLE<br>
+            PORTRAIT<br>
+            ORIENTATION LOCK.<br><br>
+
+            IN THE DARK<br><br>
+
+            PLACE THE DEVICE<br>
+            FLAT ON A TABLE.<br><br>
+
+            SELECT<br>
+            VIEWING CIRCLE<br>
+            OR HIDE CENTER MASK.<br><br>
+
+            VIEW THE REGION<br>
+            THROUGH THE<br>
+            VIEWING TUBES<br>
+            AT 45°–75°.<br><br>
+
+            KEEP IT FLAT.<br><br>
+
+            SLOWLY TURN IT<br>
+            TO A DIFFERENT<br>
+            ORIENTATION.<br><br>
+
+            LOOK AGAIN.
+        `;
+
+        phantomInstruction2.innerHTML = `
+            REPEAT<br><br>
+
+            WITHOUT THE<br>
+            VIEWING TUBES.
+        `;
+    }
+}
+
 const phantomControls =
     document.getElementById("phantomControls");
 
@@ -4232,6 +4701,11 @@ const phantomReturnButton =
         "phantomReturnButton"
     );
 
+const phantomEquilibriumButton =
+    document.getElementById(
+        "phantomEquilibriumButton"
+    );
+
     document.addEventListener(
     "pointerdown",
     function (event) {
@@ -4263,6 +4737,58 @@ const phantomSpeedTwo =
         "phantomSpeedTwo"
     );   
 
+const phantomSpeedThree =
+    document.getElementById(
+        "phantomSpeedThree"
+    );
+
+const phantomSpeedSlider =
+    document.getElementById(
+        "phantomSpeedSlider"
+    );
+
+const phantomSpeedReadout =
+    document.getElementById(
+        "phantomSpeedReadout"
+    );
+    
+const canonicalRegionButton =
+    document.getElementById(
+        "canonicalRegionButton"
+    );
+
+const PHANTOM_SPEED_I = 0.0007;
+const PHANTOM_SPEED_II = 0.0014;
+const PHANTOM_SPEED_III = 0.0018;
+
+phantomSpeedOne.addEventListener(
+    "click",
+    function (event) {
+
+        event.stopPropagation();
+
+        rotationSpeed = PHANTOM_SPEED_I;
+
+        updateSpeedDisplay();
+        updatePhantomSpeedButtons();
+
+    }
+);
+
+phantomSpeedTwo.addEventListener(
+    "click",
+    function (event) {
+
+        event.stopPropagation();
+
+        rotationSpeed = PHANTOM_SPEED_II;
+
+        updateSpeedDisplay();
+        updatePhantomSpeedButtons();
+
+    }
+);
+
 const isStandaloneApp =
     window.matchMedia("(display-mode: standalone)").matches ||
     window.navigator.standalone === true;
@@ -4289,12 +4815,6 @@ let fieldExplorerWaitingForLandscape = false;
 let phantomGuidanceStartTimer = null;
 let phantomIntroActive = false;
 let phantomSpeedMode = 1;
-
-const PHANTOM_SPEED_I =
-    0.0007;
-
-const PHANTOM_SPEED_II =
-    0.0013;
 
 centerStarButton.classList.toggle(
     "active",
@@ -5109,7 +5629,12 @@ updateSpeedDisplay();
      * Phantom Axis Illusion remains a sibling
      * destination available from the main panel.
      */
-    phantomAxisButton.hidden = active;
+    phantomAxisButton.hidden = false;
+
+    phantomAxisButton.textContent =
+    active
+        ? "PHANTOM AXIS"
+        : "PHANTOM AXIS ILLUSION";
 
     negativeButton.hidden = !active;
 
@@ -5368,6 +5893,34 @@ phantomAxisButton.addEventListener(
 
             phantomAxisMode = true;
 
+            rotationSpeed = PHANTOM_SPEED_I;
+
+            updateSpeedDisplay();
+            updatePhantomSpeedButtons();
+
+            rotationSpeed = PHANTOM_SPEED_I;
+
+            updateSpeedDisplay();
+            updatePhantomSpeedButtons();
+
+            /*
+             * Field Explorer entry transforms Phantom Axis
+             * from demonstration into investigation.
+            */
+        phantomInvestigationMode =
+                fieldExplorerMode;
+
+        phantomMask.classList.toggle(
+    "investigation-mode",
+    phantomInvestigationMode
+);
+
+phantomSpeedControls.classList.toggle(
+    "investigation-mode",
+    phantomInvestigationMode
+);
+
+setPhantomGuidanceCopy();
             /*
  * Every Phantom Axis observation begins
  * at canonical Speed I.
@@ -5435,7 +5988,8 @@ centerStarButton.classList.toggle(
 
   
 
-    const phantomTargetState = {
+  const equilibriumTargetState = {
+
     wheelScale:
         phantomGeometry.wheelScale,
 
@@ -5445,9 +5999,12 @@ centerStarButton.classList.toggle(
     wheelOffsetY:
         phantomGeometry.wheelOffsetY,
 
-    rotationSpeed: 0.0007,
+    rotationSpeed:
+        PHANTOM_SPEED_I,
 
-    dotSize: 0.3
+    dotSize:
+        0.3
+
 };
 
 phantomAxisButton.classList.add("active");
@@ -5459,7 +6016,7 @@ The wheel journey then begins unobstructed.
 controls.classList.add("hidden");
 
 animatePhantomJourney(
-    phantomTargetState,
+    equilibriumTargetState,
     1800,
     function () {
 
@@ -5598,6 +6155,13 @@ phantomGuidanceStartTimer =
             }
 
             phantomAxisMode = false;
+
+phantomInvestigationMode = false;
+
+phantomMask.classList.remove(
+    "investigation-mode"
+);
+
 savedObservationState = null;
 
 phantomAxisButton.classList.remove("active");
@@ -5722,7 +6286,15 @@ closeControlsButton.addEventListener(
 
 let phantomAxisMode = false;
 
+/*
+ * True only when Phantom Axis is entered
+ * through Field Explorer.
+ */
+let phantomInvestigationMode = false;
+
 let savedObservationState = null;
+
+    updatePhantomSpeedButtons();
 
 let canvasPressStartX = 0;
 let canvasPressStartY = 0;
@@ -5772,9 +6344,19 @@ canvas.addEventListener(
             return;
         }
 
-        controls.classList.toggle(
-            "hidden"
-        );
+       /*
+ * Inside Phantom Axis, a clean tap wakes
+ * the instrument controls instead of
+ * toggling the ordinary control panel.
+ */
+if (phantomAxisMode) {
+    showPhantomControls();
+    return;
+}
+
+controls.classList.toggle(
+    "hidden"
+);
     }
 );
 
@@ -6319,10 +6901,31 @@ function updatePhantomSpeedButtons() {
         phantomSpeedMode === 2
     );
 
-    rotationSpeed =
-        phantomSpeedMode === 1
-            ? PHANTOM_SPEED_I
-            : PHANTOM_SPEED_II;
+    phantomSpeedThree.classList.toggle(
+        "active",
+        phantomSpeedMode === 3
+    );
+
+    if (phantomSpeedMode === 1) {
+        rotationSpeed =
+            PHANTOM_SPEED_I;
+    }
+
+    if (phantomSpeedMode === 2) {
+        rotationSpeed =
+            PHANTOM_SPEED_II;
+    }
+
+    if (phantomSpeedMode === 3) {
+        rotationSpeed =
+            PHANTOM_SPEED_III;
+    }
+
+    phantomSpeedSlider.value =
+        String(rotationSpeed);
+
+    phantomSpeedReadout.textContent =
+        rotationSpeed.toFixed(4);
 }
 
 phantomSpeedOne.addEventListener(
@@ -6354,6 +6957,64 @@ phantomSpeedTwo.addEventListener(
         }
 
         phantomSpeedMode = 2;
+
+        updatePhantomSpeedButtons();
+
+        wakePhantomControls();
+    }
+);
+
+phantomSpeedSlider.addEventListener(
+    "input",
+    function (event) {
+
+        event.stopPropagation();
+
+        if (!phantomAxisMode) {
+            return;
+        }
+
+        /*
+         * Manual adjustment leaves the three
+         * canonical speed presets.
+         */
+        phantomSpeedMode = 0;
+
+        rotationSpeed =
+            Number(
+                phantomSpeedSlider.value
+            );
+
+        phantomSpeedOne.classList.remove(
+            "active"
+        );
+
+        phantomSpeedTwo.classList.remove(
+            "active"
+        );
+
+        phantomSpeedThree.classList.remove(
+            "active"
+       );
+
+        phantomSpeedReadout.textContent =
+            rotationSpeed.toFixed(4);
+
+        wakePhantomControls();
+    }
+);
+
+phantomSpeedThree.addEventListener(
+    "click",
+    function (event) {
+
+        event.stopPropagation();
+
+        if (!phantomAxisMode) {
+            return;
+        }
+
+        phantomSpeedMode = 3;
 
         updatePhantomSpeedButtons();
 
@@ -6718,6 +7379,40 @@ phantomReturnButton.addEventListener(
                  */
                 phantomAxisButton.click();
             }
+        );
+    }
+);
+
+canonicalRegionButton.addEventListener(
+    "click",
+    function (event) {
+
+        event.stopPropagation();
+
+        if (!phantomAxisMode) {
+            return;
+        }
+
+        /*
+         * Wake the complete instrument bank.
+         *
+         * The existing lifecycle then returns it
+         * to idle and eventually hides it again.
+         */
+        wakePhantomControls();
+
+        const target =
+            getPhantomTargetFromMask();
+
+        animatePhantomJourney(
+            {
+                wheelScale: target.wheelScale,
+                wheelOffsetX: target.wheelOffsetX,
+                wheelOffsetY: target.wheelOffsetY,
+                rotationSpeed: rotationSpeed,
+                dotSize: dotSize
+            },
+            1200
         );
     }
 );
